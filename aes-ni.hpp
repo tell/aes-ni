@@ -9,10 +9,6 @@
 #include <fmt/format.h>
 
 namespace clt {
-inline void m128i_to_uint8(uint8_t *out, const __m128i &in) {
-    auto *out_ = reinterpret_cast<__m128i *>(out);
-    _mm_storeu_si128(out_, in);
-}
 inline std::string join(const uint8_t *in, const size_t &n) {
     std::stringstream sst;
     if(n == 0) {

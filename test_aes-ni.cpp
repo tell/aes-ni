@@ -28,7 +28,7 @@ int main() {
             return 1;
         }
     }
-    cipher.dec(sample_out, sample_out);
+    cipher.dec(sample_out, sample_out, 1);
     cout << "dec(k, c) = " << clt::join(sample_out) << endl;
     for(size_t i = 0; i < clt::aes128::block_bytes; i++) {
         if(sample_plaintext[i] != sample_out[i]) {
