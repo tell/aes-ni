@@ -69,7 +69,7 @@ AES128::AES128(const uint8_t *key) {
     __m128i keys_[2 * aes128::num_rounds];
     keys_[0] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(key));
     aes128_key_expansion(keys_);
-    for(size_t i = 0; i < (2 * aes128::num_rounds); i++) {
+    for (size_t i = 0; i < (2 * aes128::num_rounds); i++) {
         _mm_storeu_si128(reinterpret_cast<__m128i *>(expanded_keys_) + i,
                          keys_[i]);
     }
@@ -126,7 +126,7 @@ inline void aes128_enc_impl<10>(__m128i &m0, __m128i &m1, __m128i &m2,
 
 inline void aes128_load_expkey_for_enc(__m128i *keys, const uint8_t *in) {
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
-    for(size_t i = 0; i < (aes128::num_rounds + 1); i++) {
+    for (size_t i = 0; i < (aes128::num_rounds + 1); i++) {
         keys[i] = _mm_loadu_si128(p_in + i);
     }
 }
@@ -150,7 +150,7 @@ void AES128::enc(uint8_t *out, const uint8_t *in, const size_t iter_n) const {
     assert(sizeof(__m128i) == (uintptr_t(p_in + 1) - uintptr_t(p_in)));
     auto *p_out = reinterpret_cast<__m128i *>(out);
     assert(sizeof(__m128i) == (uintptr_t(p_out + 1) - uintptr_t(p_out)));
-    for(size_t i = 0; i < iter_q4; i++) {
+    for (size_t i = 0; i < iter_q4; i++) {
         const auto *p_in4 = p_in + 4 * i;
         __m128i m0 = _mm_loadu_si128(p_in4);
         __m128i m1 = _mm_loadu_si128(p_in4 + 1);
@@ -165,7 +165,7 @@ void AES128::enc(uint8_t *out, const uint8_t *in, const size_t iter_n) const {
     }
     const auto *p_in_last = p_in + 4 * iter_q4;
     auto *p_out_last = p_out + 4 * iter_q4;
-    for(size_t i = 0; i < iter_r4; i++) {
+    for (size_t i = 0; i < iter_r4; i++) {
         __m128i m = _mm_loadu_si128(p_in_last + i);
         internal::aes128_enc_impl<0>(m, keys);
         _mm_storeu_si128(p_out_last + i, m);
@@ -224,7 +224,7 @@ inline void aes128_dec_impl<10>(__m128i &m0, __m128i &m1, __m128i &m2,
 inline void aes128_load_expkey_for_dec(__m128i *keys, const uint8_t *in,
                                        const uint8_t *last) {
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
-    for(size_t i = 0; i < aes128::num_rounds; i++) {
+    for (size_t i = 0; i < aes128::num_rounds; i++) {
         keys[i] = _mm_loadu_si128(p_in + i);
     }
     keys[10] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(last));
@@ -251,7 +251,7 @@ void AES128::dec(uint8_t *out, const uint8_t *in, const size_t iter_n) const {
     assert(sizeof(__m128i) == (uintptr_t(p_in + 1) - uintptr_t(p_in)));
     auto *p_out = reinterpret_cast<__m128i *>(out);
     assert(sizeof(__m128i) == (uintptr_t(p_out + 1) - uintptr_t(p_out)));
-    for(size_t i = 0; i < iter_q4; i++) {
+    for (size_t i = 0; i < iter_q4; i++) {
         const auto *p_in4 = p_in + 4 * i;
         __m128i m0 = _mm_loadu_si128(p_in4);
         __m128i m1 = _mm_loadu_si128(p_in4 + 1);
@@ -266,7 +266,7 @@ void AES128::dec(uint8_t *out, const uint8_t *in, const size_t iter_n) const {
     }
     const auto *p_in_last = p_in + 4 * iter_q4;
     auto *p_out_last = p_out + 4 * iter_q4;
-    for(size_t i = 0; i < iter_r4; i++) {
+    for (size_t i = 0; i < iter_r4; i++) {
         __m128i m = _mm_loadu_si128(p_in_last + i);
         internal::aes128_dec_impl<0>(m, keys);
         _mm_storeu_si128(p_out_last + i, m);
