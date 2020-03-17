@@ -34,13 +34,15 @@ class AES128 {
     uint8_t expanded_keys_[aes128::block_bytes * 2 * aes128::num_rounds];
 
 public:
-    explicit AES128(const uint8_t *key);
+    explicit AES128(const uint8_t *key) noexcept;
     explicit AES128() : AES128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AES128 &x);
-    void enc(uint8_t *out, const uint8_t *in) const;
-    void enc(uint8_t *out, const uint8_t *in, const size_t iter_n) const;
-    void dec(uint8_t *out, const uint8_t *in) const;
-    void dec(uint8_t *out, const uint8_t *in, const size_t iter_n) const;
+    void enc(uint8_t *out, const uint8_t *in) const noexcept;
+    void enc(uint8_t *out, const uint8_t *in, const size_t iter_n) const
+        noexcept;
+    void dec(uint8_t *out, const uint8_t *in) const noexcept;
+    void dec(uint8_t *out, const uint8_t *in, const size_t iter_n) const
+        noexcept;
 };
 } // namespace clt
 

@@ -65,7 +65,7 @@ inline void aes128_key_expansion(__m128i *keys) {
     internal::aes128_key_expansion_imc_impl<0>(keys);
 }
 
-AES128::AES128(const uint8_t *key) {
+AES128::AES128(const uint8_t *key) noexcept {
     __m128i keys_[2 * aes128::num_rounds];
     keys_[0] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(key));
     aes128_key_expansion(keys_);
@@ -132,7 +132,7 @@ inline void aes128_load_expkey_for_enc(__m128i *keys, const uint8_t *in) {
 }
 } // namespace internal
 
-void AES128::enc(uint8_t *out, const uint8_t *in) const {
+void AES128::enc(uint8_t *out, const uint8_t *in) const noexcept {
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     __m128i m = _mm_loadu_si128(reinterpret_cast<const __m128i *>(in));
@@ -140,7 +140,8 @@ void AES128::enc(uint8_t *out, const uint8_t *in) const {
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
-void AES128::enc(uint8_t *out, const uint8_t *in, const size_t iter_n) const {
+void AES128::enc(uint8_t *out, const uint8_t *in, const size_t iter_n) const
+    noexcept {
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     const size_t iter_q4 = iter_n / 4;
@@ -231,7 +232,7 @@ inline void aes128_load_expkey_for_dec(__m128i *keys, const uint8_t *in,
 }
 } // namespace internal
 
-void AES128::dec(uint8_t *out, const uint8_t *in) const {
+void AES128::dec(uint8_t *out, const uint8_t *in) const noexcept {
     __m128i keys[11];
     internal::aes128_load_expkey_for_dec(
         keys, expanded_keys_ + 10 * aes128::block_bytes, expanded_keys_);
@@ -240,7 +241,8 @@ void AES128::dec(uint8_t *out, const uint8_t *in) const {
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
-void AES128::dec(uint8_t *out, const uint8_t *in, const size_t iter_n) const {
+void AES128::dec(uint8_t *out, const uint8_t *in, const size_t iter_n) const
+    noexcept {
     __m128i keys[11];
     internal::aes128_load_expkey_for_dec(
         keys, expanded_keys_ + 10 * aes128::block_bytes, expanded_keys_);
