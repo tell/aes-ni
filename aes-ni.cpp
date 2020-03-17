@@ -1,6 +1,10 @@
 #include "aes-ni.hpp"
 
 namespace clt {
+
+static_assert(aes128::block_bytes == sizeof(__m128i));
+static_assert(aes128::key_bytes == sizeof(__m128i));
+
 constexpr int rcon_array[] = {
     0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36,
 };
@@ -104,26 +108,27 @@ void AES128::enc(uint8_t *out, const uint8_t *in, const size_t iter_n) const {
     const size_t iter_q4 = iter_n / 4;
     const size_t iter_r4 = iter_n % 4;
     assert((4 * iter_q4 + iter_r4) == iter_n);
+    const auto *p_in = reinterpret_cast<const __m128i *>(in);
+    auto *p_out = reinterpret_cast<__m128i *>(out);
     for(size_t i = 0; i < iter_q4; i++) {
-        __m128i m0 =
-            _mm_loadu_si128(reinterpret_cast<const __m128i *>(in) + 4 * i);
-        __m128i m1 =
-            _mm_loadu_si128(reinterpret_cast<const __m128i *>(in) + 4 * i + 1);
-        __m128i m2 =
-            _mm_loadu_si128(reinterpret_cast<const __m128i *>(in) + 4 * i + 2);
-        __m128i m3 =
-            _mm_loadu_si128(reinterpret_cast<const __m128i *>(in) + 4 * i + 3);
+        const auto *p_in4 = p_in + 4 * i;
+        __m128i m0 = _mm_loadu_si128(p_in4);
+        __m128i m1 = _mm_loadu_si128(p_in4 + 1);
+        __m128i m2 = _mm_loadu_si128(p_in4 + 2);
+        __m128i m3 = _mm_loadu_si128(p_in4 + 3);
         internal::aes128_enc_impl<0>(m0, m1, m2, m3, expanded_keys_);
-        _mm_storeu_si128(reinterpret_cast<__m128i *>(out) + 4 * i, m0);
-        _mm_storeu_si128(reinterpret_cast<__m128i *>(out) + 4 * i + 1, m1);
-        _mm_storeu_si128(reinterpret_cast<__m128i *>(out) + 4 * i + 2, m2);
-        _mm_storeu_si128(reinterpret_cast<__m128i *>(out) + 4 * i + 3, m3);
+        auto *p_out4 = p_out + 4 * i;
+        _mm_storeu_si128(p_out4, m0);
+        _mm_storeu_si128(p_out4 + 1, m1);
+        _mm_storeu_si128(p_out4 + 2, m2);
+        _mm_storeu_si128(p_out4 + 3, m3);
     }
+    const auto *p_in_last = p_in + 4 * iter_q4;
+    auto *p_out_last = p_out + 4 * iter_q4;
     for(size_t i = 0; i < iter_r4; i++) {
-        __m128i m = _mm_loadu_si128(reinterpret_cast<const __m128i *>(in) +
-                                    4 * iter_q4 + i);
+        __m128i m = _mm_loadu_si128(p_in_last + i);
         internal::aes128_enc_impl<0>(m, expanded_keys_);
-        _mm_storeu_si128(reinterpret_cast<__m128i *>(out) + 4 * iter_q4 + i, m);
+        _mm_storeu_si128(p_out_last + i, m);
     }
 }
 
