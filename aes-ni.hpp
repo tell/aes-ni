@@ -4,7 +4,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <x86intrin.h>
 
 #include <fmt/format.h>
 
@@ -25,10 +24,6 @@ inline std::string join(const uint8_t *in, const size_t &n) {
 template <class T, size_t N> inline std::string join(const T (&in)[N]) {
     return join(in, N);
 }
-inline std::string join(const __m128i *in) {
-    const auto *in_ = reinterpret_cast<const uint8_t *>(in);
-    return join(in_, sizeof(__m128i));
-}
 namespace aes128 {
 constexpr size_t block_bytes = 16;
 constexpr size_t key_bytes = 16;
@@ -36,7 +31,7 @@ constexpr uint8_t zero_key[key_bytes] = {0};
 constexpr size_t num_rounds = 10;
 } // namespace aes128
 class AES128 {
-    __m128i expanded_keys_[20];
+    uint8_t expanded_keys_[aes128::block_bytes * 2 * aes128::num_rounds];
 
   public:
     explicit AES128(const uint8_t *key);
