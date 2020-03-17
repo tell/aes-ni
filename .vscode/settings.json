@@ -2,5 +2,11 @@
     "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
     "files.associations": {
         "ostream": "cpp"
-    }
+    },
+    // ワークスペース内の.clang-formatファイルを探してそのスタイルを適用する．存在しない場合，C_Cpp.clang_format_fallbackStyleの設定が適用される．
+    "C_Cpp.clang_format_style": "file",
+    // 保存時に自動整形
+    "editor.formatOnSave": true,
+    // エディタで区切りを入力後に自動でフォーマットをするかどうか
+    "editor.formatOnType": true
 }
