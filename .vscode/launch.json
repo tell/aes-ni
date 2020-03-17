@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(lldb) 起動",
+            "name": "(lldb) 起動 test_aes-ni",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/test_aes-ni",

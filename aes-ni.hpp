@@ -38,10 +38,21 @@ public:
     explicit AES128() : AES128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AES128 &x);
     void enc(uint8_t *out, const uint8_t *in) const noexcept;
-    void enc(uint8_t *out, const uint8_t *in, const size_t iter_n) const
+    void enc(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
         noexcept;
     void dec(uint8_t *out, const uint8_t *in) const noexcept;
-    void dec(uint8_t *out, const uint8_t *in, const size_t iter_n) const
+    void dec(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
+        noexcept;
+};
+class MMO128 {
+    uint8_t expanded_keys_[aes128::block_bytes * (aes128::num_rounds + 1)];
+
+public:
+    explicit MMO128(const uint8_t *key) noexcept;
+    explicit MMO128() : MMO128(aes128::zero_key) {}
+    friend std::ostream &operator<<(std::ostream &ost, const MMO128 &x);
+    void hash(uint8_t *out, const uint8_t *in) const noexcept;
+    void hash(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
         noexcept;
 };
 } // namespace clt
