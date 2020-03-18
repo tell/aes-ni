@@ -85,6 +85,28 @@ template <> inline void aes128_enc_impl<10>(__m128i &m, const __m128i *keys) {
 }
 
 template <size_t N>
+inline void aes128_enc_impl(__m128i &m0, __m128i &m1, const __m128i *keys) {
+    static_assert(1 <= N);
+    static_assert(N < 10);
+    m0 = _mm_aesenc_si128(m0, keys[N]);
+    m1 = _mm_aesenc_si128(m1, keys[N]);
+    aes128_enc_impl<N + 1>(m0, m1, keys);
+}
+
+template <>
+inline void aes128_enc_impl<0>(__m128i &m0, __m128i &m1, const __m128i *keys) {
+    m0 = _mm_xor_si128(m0, keys[0]);
+    m1 = _mm_xor_si128(m1, keys[0]);
+    aes128_enc_impl<1>(m0, m1, keys);
+}
+
+template <>
+inline void aes128_enc_impl<10>(__m128i &m0, __m128i &m1, const __m128i *keys) {
+    m0 = _mm_aesenclast_si128(m0, keys[10]);
+    m1 = _mm_aesenclast_si128(m1, keys[10]);
+}
+
+template <size_t N>
 inline void aes128_enc_impl(__m128i &m0, __m128i &m1, __m128i &m2, __m128i &m3,
                             const __m128i *keys) {
     static_assert(1 <= N);
@@ -287,46 +309,59 @@ void MMO128::hash(uint8_t *out, const uint8_t *in) const noexcept {
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
-void MMO128::hash(uint8_t *out, const uint8_t *in,
-                  const size_t num_blocks) const noexcept {
+void hash_impl(uint8_t *out, const uint8_t *in, const size_t num_blocks,
+               const uint8_t *exp_keys) noexcept {
     __m128i keys[11];
-    internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
-    const size_t num_blocks_q4 = num_blocks / 4;
-    const size_t num_blocks_r4 = num_blocks % 4;
-    assert((4 * num_blocks_q4 + num_blocks_r4) == num_blocks);
+    internal::aes128_load_expkey_for_enc(keys, exp_keys);
+    constexpr size_t grain_size = 4;
+    const size_t num_blocks_q = num_blocks / grain_size;
+    const size_t num_blocks_r = num_blocks % grain_size;
+    assert((4 * num_blocks_q + num_blocks_r) == num_blocks);
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
     assert(sizeof(__m128i) == (uintptr_t(p_in + 1) - uintptr_t(p_in)));
     auto *p_out = reinterpret_cast<__m128i *>(out);
     assert(sizeof(__m128i) == (uintptr_t(p_out + 1) - uintptr_t(p_out)));
-    for (size_t i = 0; i < num_blocks_q4; i++) {
-        const auto *p_in4 = p_in + 4 * i;
-        __m128i m0 = _mm_loadu_si128(p_in4);
-        __m128i m1 = _mm_loadu_si128(p_in4 + 1);
-        __m128i m2 = _mm_loadu_si128(p_in4 + 2);
-        __m128i m3 = _mm_loadu_si128(p_in4 + 3);
-        __m128i t0 = m0;
-        __m128i t1 = m1;
-        __m128i t2 = m2;
-        __m128i t3 = m3;
+    for (size_t i = 0; i < num_blocks_q; i++) {
+        const auto *p_inq = p_in + grain_size * i;
+        __m128i m0 = _mm_loadu_si128(p_inq);
+        __m128i m1 = _mm_loadu_si128(p_inq + 1);
+        __m128i m2 = _mm_loadu_si128(p_inq + 2);
+        __m128i m3 = _mm_loadu_si128(p_inq + 3);
         internal::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
-        m0 = _mm_xor_si128(m0, t0);
-        m1 = _mm_xor_si128(m1, t1);
-        m2 = _mm_xor_si128(m2, t2);
-        m3 = _mm_xor_si128(m3, t3);
-        auto *p_out4 = p_out + 4 * i;
-        _mm_storeu_si128(p_out4, m0);
-        _mm_storeu_si128(p_out4 + 1, m1);
-        _mm_storeu_si128(p_out4 + 2, m2);
-        _mm_storeu_si128(p_out4 + 3, m3);
+        m0 = _mm_xor_si128(m0, *p_inq);
+        m1 = _mm_xor_si128(m1, *(p_inq + 1));
+        m2 = _mm_xor_si128(m2, *(p_inq + 2));
+        m3 = _mm_xor_si128(m3, *(p_inq + 3));
+        auto *p_outq = p_out + grain_size * i;
+        _mm_storeu_si128(p_outq, m0);
+        _mm_storeu_si128(p_outq + 1, m1);
+        _mm_storeu_si128(p_outq + 2, m2);
+        _mm_storeu_si128(p_outq + 3, m3);
     }
-    const auto *p_in_last = p_in + 4 * num_blocks_q4;
-    auto *p_out_last = p_out + 4 * num_blocks_q4;
-    for (size_t i = 0; i < num_blocks_r4; i++) {
+    const auto *p_in_last = p_in + grain_size * num_blocks_q;
+    auto *p_out_last = p_out + grain_size * num_blocks_q;
+    for (size_t i = 0; i < num_blocks_r; i++) {
         __m128i m = _mm_loadu_si128(p_in_last + i);
         const __m128i t = m;
         internal::aes128_enc_impl<0>(m, keys);
         m = _mm_xor_si128(m, t);
         _mm_storeu_si128(p_out_last + i, m);
+    }
+}
+
+void MMO128::hash(uint8_t *out, const uint8_t *in,
+                  const size_t num_blocks) const noexcept {
+    __m128i keys[11];
+    internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
+    const auto *p_in = reinterpret_cast<const __m128i *>(in);
+    assert(sizeof(__m128i) == (uintptr_t(p_in + 1) - uintptr_t(p_in)));
+    auto *p_out = reinterpret_cast<__m128i *>(out);
+    assert(sizeof(__m128i) == (uintptr_t(p_out + 1) - uintptr_t(p_out)));
+    for (size_t i = 0; i < num_blocks; i++) {
+        __m128i m = _mm_loadu_si128(p_in + i);
+        internal::aes128_enc_impl<0>(m, keys);
+        m = _mm_xor_si128(m, *(p_in + i));
+        _mm_storeu_si128(p_out + i, m);
     }
 }
 } // namespace clt

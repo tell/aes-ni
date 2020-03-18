@@ -87,12 +87,33 @@ void test_mmo() {
         0xe6, 0x6c, 0x37, 0x10,
         //
     };
+    const uint8_t sample_ciphertexts[] = {
+        // 3ad77bb40d7a3660a89ecaf32466ef97
+        0x3a, 0xd7, 0x7b, 0xb4, 0x0d, 0x7a, 0x36, 0x60, 0xa8, 0x9e, 0xca, 0xf3,
+        0x24, 0x66, 0xef, 0x97,
+        // f5d3d58503b9699de785895a96fdbaaf
+        0xf5, 0xd3, 0xd5, 0x85, 0x03, 0xb9, 0x69, 0x9d, 0xe7, 0x85, 0x89, 0x5a,
+        0x96, 0xfd, 0xba, 0xaf,
+        // 43b1cd7f598ece23881b00e3ed030688
+        0x43, 0xb1, 0xcd, 0x7f, 0x59, 0x8e, 0xce, 0x23, 0x88, 0x1b, 0x00, 0xe3,
+        0xed, 0x03, 0x06, 0x88,
+        // 7b0c785e27e8ad3f8223207104725dd4
+        0x7b, 0x0c, 0x78, 0x5e, 0x27, 0xe8, 0xad, 0x3f, 0x82, 0x23, 0x20, 0x71,
+        0x04, 0x72, 0x5d, 0xd4,
+        //
+    };
+    assert(size(sample_plaintexts) == size(sample_ciphertexts));
     assert((size(sample_plaintexts) % clt::aes128::block_bytes) == 0);
     const auto num_blocks = size(sample_plaintexts) / clt::aes128::block_bytes;
     uint8_t sample_out[size(sample_plaintexts)];
     cout << "A sample plaintext = " << clt::join(sample_plaintexts) << endl;
     crh.hash(sample_out, sample_plaintexts, num_blocks);
     cout << "crh(p) = " << clt::join(sample_out) << endl;
+    for (size_t i = 0; i < size(sample_plaintexts); i++) {
+        if ((sample_plaintexts[i] ^ sample_ciphertexts[i]) != sample_out[i]) {
+            cout << "!!!!" << endl;
+        }
+    }
 }
 
 int main() {
