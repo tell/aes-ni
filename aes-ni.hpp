@@ -57,9 +57,9 @@ public:
     explicit MMO128(const uint8_t *key) noexcept;
     explicit MMO128() : MMO128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const MMO128 &x);
-    void hash(uint8_t *out, const uint8_t *in) const noexcept;
-    void hash(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
-        noexcept;
+    void operator()(uint8_t *out, const uint8_t *in) const noexcept;
+    void operator()(uint8_t *out, const uint8_t *in,
+                    const size_t num_blocks) const noexcept;
 };
 } // namespace clt
 

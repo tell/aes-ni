@@ -7,5 +7,6 @@
     // 保存時に自動整形
     "editor.formatOnSave": true,
     // エディタで区切りを入力後に自動でフォーマットをするかどうか
-    "editor.formatOnType": true
+    "editor.formatOnType": true,
+    "cmake.configureOnOpen": false
 }

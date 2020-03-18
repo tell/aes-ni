@@ -76,8 +76,8 @@ template <class T, class U, class V>
 void do_hash(T &out, const U &in, const V &hash) {
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_blocks = out.size() / clt::aes128::block_bytes;
-    const double elapsed_time = measure_cputime(
-        [&]() { hash.hash(out.data(), in.data(), num_blocks); });
+    const double elapsed_time =
+        measure_cputime([&]() { hash(out.data(), in.data(), num_blocks); });
     const auto bytes_per_sec = out.size() / elapsed_time;
     fmt::print("hash: {:.5e} bytes/s\n", bytes_per_sec);
     const auto blocks_per_sec = num_blocks / elapsed_time;

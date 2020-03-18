@@ -107,7 +107,7 @@ void test_mmo() {
     const auto num_blocks = size(sample_plaintexts) / clt::aes128::block_bytes;
     uint8_t sample_out[size(sample_plaintexts)];
     cout << "A sample plaintext = " << clt::join(sample_plaintexts) << endl;
-    crh.hash(sample_out, sample_plaintexts, num_blocks);
+    crh(sample_out, sample_plaintexts, num_blocks);
     cout << "crh(p) = " << clt::join(sample_out) << endl;
     for (size_t i = 0; i < size(sample_plaintexts); i++) {
         if ((sample_plaintexts[i] ^ sample_ciphertexts[i]) != sample_out[i]) {
