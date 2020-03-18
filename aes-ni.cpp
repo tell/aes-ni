@@ -20,7 +20,8 @@ constexpr int rcon_array[] = {
 };
 
 namespace internal {
-inline __m128i aes128_key_exp_internal(const __m128i &k0, const __m128i &k1) {
+inline __m128i aes128_key_expansion_shift_xor(const __m128i &k0,
+                                              const __m128i &k1) {
     __m128i key = _mm_xor_si128(k0, _mm_slli_si128(k0, 4));
     key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
     key = _mm_xor_si128(key, _mm_slli_si128(key, 4));
@@ -33,7 +34,7 @@ template <size_t N> inline void aes128_key_expansion_impl(__m128i *keys) {
     static_assert(N < aes128::num_rounds);
     // NOTE: The second argument must be constant.
     const auto key_ass = _mm_aeskeygenassist_si128(keys[N], rcon_array[N]);
-    keys[N + 1] = aes128_key_exp_internal(keys[N], key_ass);
+    keys[N + 1] = aes128_key_expansion_shift_xor(keys[N], key_ass);
     aes128_key_expansion_impl<N + 1>(keys);
 }
 
