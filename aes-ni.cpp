@@ -60,37 +60,6 @@ inline void aes128_enc_impl<10>(__m128i &m0, __m128i &m1, const __m128i *keys) {
     m1 = _mm_aesenclast_si128(m1, keys[10]);
 }
 
-template <size_t N>
-inline void aes128_enc_impl(__m128i &m0, __m128i &m1, __m128i &m2, __m128i &m3,
-                            const __m128i *keys) {
-    static_assert(1 <= N);
-    static_assert(N < 10);
-    m0 = _mm_aesenc_si128(m0, keys[N]);
-    m1 = _mm_aesenc_si128(m1, keys[N]);
-    m2 = _mm_aesenc_si128(m2, keys[N]);
-    m3 = _mm_aesenc_si128(m3, keys[N]);
-    aes128_enc_impl<N + 1>(m0, m1, m2, m3, keys);
-}
-
-template <>
-inline void aes128_enc_impl<0>(__m128i &m0, __m128i &m1, __m128i &m2,
-                               __m128i &m3, const __m128i *keys) {
-    m0 = _mm_xor_si128(m0, keys[0]);
-    m1 = _mm_xor_si128(m1, keys[0]);
-    m2 = _mm_xor_si128(m2, keys[0]);
-    m3 = _mm_xor_si128(m3, keys[0]);
-    aes128_enc_impl<1>(m0, m1, m2, m3, keys);
-}
-
-template <>
-inline void aes128_enc_impl<10>(__m128i &m0, __m128i &m1, __m128i &m2,
-                                __m128i &m3, const __m128i *keys) {
-    m0 = _mm_aesenclast_si128(m0, keys[10]);
-    m1 = _mm_aesenclast_si128(m1, keys[10]);
-    m2 = _mm_aesenclast_si128(m2, keys[10]);
-    m3 = _mm_aesenclast_si128(m3, keys[10]);
-}
-
 inline void aes128_load_expkey_for_enc(__m128i *keys, const uint8_t *in) {
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
     for (size_t i = 0; i < (aes128::num_rounds + 1); i++) {
@@ -110,6 +79,7 @@ void AES128::enc(uint8_t *out, const uint8_t *in) const noexcept {
 
 void AES128::enc(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
     noexcept {
+    _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     const size_t num_blocks_q4 = num_blocks / 4;
@@ -125,7 +95,7 @@ void AES128::enc(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
         __m128i m1 = _mm_loadu_si128(p_in4 + 1);
         __m128i m2 = _mm_loadu_si128(p_in4 + 2);
         __m128i m3 = _mm_loadu_si128(p_in4 + 3);
-        internal::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
+        internal::quad::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
         auto *p_out4 = p_out + 4 * i;
         _mm_storeu_si128(p_out4, m0);
         _mm_storeu_si128(p_out4 + 1, m1);
@@ -212,6 +182,7 @@ void AES128::dec(uint8_t *out, const uint8_t *in) const noexcept {
 
 void AES128::dec(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
     noexcept {
+    _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_dec(
         keys, expanded_keys_ + 10 * aes128::block_bytes, expanded_keys_);
@@ -268,6 +239,7 @@ void MMO128::hash(uint8_t *out, const uint8_t *in) const noexcept {
 
 void hash_impl(uint8_t *out, const uint8_t *in, const size_t num_blocks,
                const uint8_t *exp_keys) noexcept {
+    _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, exp_keys);
     constexpr size_t grain_size = 4;
@@ -284,7 +256,7 @@ void hash_impl(uint8_t *out, const uint8_t *in, const size_t num_blocks,
         __m128i m1 = _mm_loadu_si128(p_inq + 1);
         __m128i m2 = _mm_loadu_si128(p_inq + 2);
         __m128i m3 = _mm_loadu_si128(p_inq + 3);
-        internal::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
+        internal::quad::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
         m0 = _mm_xor_si128(m0, *p_inq);
         m1 = _mm_xor_si128(m1, *(p_inq + 1));
         m2 = _mm_xor_si128(m2, *(p_inq + 2));
@@ -309,6 +281,7 @@ void hash_impl(uint8_t *out, const uint8_t *in, const size_t num_blocks,
 
 void MMO128::hash(uint8_t *out, const uint8_t *in,
                   const size_t num_blocks) const noexcept {
+    _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
