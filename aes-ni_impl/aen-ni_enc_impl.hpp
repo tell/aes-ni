@@ -3,7 +3,26 @@
 #include <x86intrin.h>
 
 namespace clt {
-namespace internal::sfinae {
+namespace internal {
+namespace single {
+template <size_t N>
+inline void aes128_enc_impl(__m128i &m, const __m128i *keys) {
+    static_assert(1 <= N);
+    static_assert(N < 10);
+    m = _mm_aesenc_si128(m, keys[N]);
+    aes128_enc_impl<N + 1>(m, keys);
+}
+
+template <> inline void aes128_enc_impl<0>(__m128i &m, const __m128i *keys) {
+    m = _mm_xor_si128(m, keys[0]);
+    aes128_enc_impl<1>(m, keys);
+}
+
+template <> inline void aes128_enc_impl<10>(__m128i &m, const __m128i *keys) {
+    m = _mm_aesenclast_si128(m, keys[10]);
+}
+} // namespace single
+namespace sfinae {
 template <size_t W, size_t N>
 using width_round_t = std::integer_sequence<size_t, W, N>;
 
@@ -34,5 +53,6 @@ inline void aes128_enc_impl(__m128i *ms, const width_round_t<W, 0> &,
     }
     aes128_enc_impl(ms, width_round_t<W, 1>{}, keys);
 }
-} // namespace internal::sfinae
+} // namespace sfinae
+} // namespace internal
 } // namespace clt
