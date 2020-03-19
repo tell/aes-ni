@@ -1,12 +1,12 @@
 #include <ctime>
 #include <chrono>
-#include <random>
 #include <vector>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
 #include "aes-ni.hpp"
+#include "rng.hpp"
 
 using namespace std;
 using namespace std::chrono;
@@ -32,19 +32,18 @@ constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
 void init(vector<uint8_t> &buff, const size_t num_bytes) {
-    array<seed_seq::result_type, mt19937::state_size> seed_data;
-    random_device seed_gen;
-    generate(seed_data.begin(), seed_data.end(), ref(seed_gen));
-    seed_seq seq(seed_data.begin(), seed_data.end());
-    std::mt19937 engine(seq);
+    clt::rng::RNG rng;
     buff.resize(num_bytes);
-    generate(begin(buff), end(buff), ref(engine));
+    if (!rng.getrandom(buff.data(), num_bytes)) {
+        fmt::print(cerr, "ERROR!! init is failed.");
+    }
 }
 
 void gen_key(clt::AES128::key_t &key) {
-    // NOTE: Unsafe generation because this is experimental.
-    random_device engine;
-    generate(begin(key), end(key), ref(engine));
+    clt::rng::RNG rng;
+    if (!rng.getrandom(key.data(), clt::aes128::key_bytes)) {
+        fmt::print(cerr, "ERROR!! gen_key is failed.");
+    }
 }
 
 template <class T, class U, class V>

@@ -17,7 +17,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -s -DNDEBUG")
 
-add_library(aes-ni aes-ni.cpp)
+add_library(aes-ni aes-ni.cpp rng.cpp)
 target_link_libraries(aes-ni fmt::fmt-header-only)
 add_executable(test_aes-ni test_aes-ni.cpp)
 target_link_libraries(test_aes-ni aes-ni fmt::fmt-header-only)
