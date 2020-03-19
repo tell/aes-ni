@@ -89,7 +89,10 @@ void AES128::enc(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
         __m128i m1 = _mm_loadu_si128(p_in4 + 1);
         __m128i m2 = _mm_loadu_si128(p_in4 + 2);
         __m128i m3 = _mm_loadu_si128(p_in4 + 3);
-        internal::quad::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
+        // internal::quad::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
+        using internal::variadic::aes128_enc_impl;
+        using internal::variadic::round_t;
+        aes128_enc_impl(round_t<0>{}, keys, m0, m1, m2, m3);
         auto *p_out4 = p_out + 4 * i;
         _mm_storeu_si128(p_out4, m0);
         _mm_storeu_si128(p_out4 + 1, m1);

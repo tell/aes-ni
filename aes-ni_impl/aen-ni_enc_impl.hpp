@@ -94,6 +94,34 @@ inline void aes128_enc_impl(__m128i *ms, const width_round_t<W, 0> &,
     aes128_enc_impl(ms, width_round_t<W, 1>{}, keys);
 }
 } // namespace sfinae
+namespace variadic {
+template <size_t Round> using round_t = std::integer_sequence<size_t, Round>;
+
+template <class... Args>
+inline void aes128_enc_impl(const round_t<10> &, const __m128i *keys,
+                            Args &&... args) {
+    using swallow = std::initializer_list<int>;
+    (void)swallow{(void(args = _mm_aesenclast_si128(args, keys[10])), 0)...};
+}
+
+template <size_t Round,
+          class T = std::enable_if_t<(1 <= Round) && (Round < 10)>,
+          class... Args>
+inline void aes128_enc_impl(const round_t<Round> &, const __m128i *keys,
+                            Args &&... args) {
+    using swallow = std::initializer_list<int>;
+    (void)swallow{(void(args = _mm_aesenc_si128(args, keys[Round])), 0)...};
+    aes128_enc_impl(round_t<Round + 1>{}, keys, std::forward<Args>(args)...);
+}
+
+template <class... Args>
+inline void aes128_enc_impl(const round_t<0> &, const __m128i *keys,
+                            Args &&... args) {
+    using swallow = std::initializer_list<int>;
+    (void)swallow{(void(args = _mm_xor_si128(args, keys[0])), 0)...};
+    aes128_enc_impl(round_t<1>{}, keys, std::forward<Args>(args)...);
+}
+} // namespace variadic
 inline void hash_impl(uint8_t *out, const uint8_t *in, const size_t num_blocks,
                       const uint8_t *exp_keys) noexcept {
     _mm256_zeroall();
