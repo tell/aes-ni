@@ -106,6 +106,26 @@ void do_hash(T &out, const U &in, const V &hash) {
                blocks_per_sec);
 }
 
+template <class T> void do_hash_iteration(const T &hash) {
+    constexpr size_t num_loop = 1;
+    size_t current = start_byte_size;
+    while (current < stop_byte_size) {
+        vector<uint8_t> buff(current);
+        vector<uint8_t> hash_buff(buff.size());
+        for (size_t i = 0; i < num_loop; i++) {
+            init(buff, current);
+            do_hash(hash_buff, buff, hash);
+        }
+        current <<= 1;
+    }
+    vector<uint8_t> buff(stop_byte_size);
+    vector<uint8_t> hash_buff(buff.size());
+    for (size_t i = 0; i < num_loop; i++) {
+        init(buff, stop_byte_size);
+        do_hash(hash_buff, buff, hash);
+    }
+}
+
 int main() {
     fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     clt::AES128::key_t key;
@@ -148,5 +168,6 @@ int main() {
             abort();
         }
     }
+    do_hash_iteration(hash);
     return 0;
 }
