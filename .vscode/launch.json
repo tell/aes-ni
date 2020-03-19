@@ -15,6 +15,18 @@
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb"
-        }
+        },
+        {
+            "name": "(lldb) 起動 bench_aes-ni",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bench_aes-ni",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
     ]
 }
