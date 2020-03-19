@@ -28,95 +28,121 @@ template <class Func> auto measure_cputime(Func &&f) {
     return (stop - start) / CLOCKS_PER_SEC;
 }
 
-void init(vector<uint8_t> &buff) {
+constexpr size_t start_byte_size = 1 << 10;
+constexpr size_t stop_byte_size = 1 << 30;
+
+void init(vector<uint8_t> &buff, const size_t num_bytes) {
     array<seed_seq::result_type, mt19937::state_size> seed_data;
     random_device seed_gen;
     generate(seed_data.begin(), seed_data.end(), ref(seed_gen));
     seed_seq seq(seed_data.begin(), seed_data.end());
     std::mt19937 engine(seq);
+    buff.resize(num_bytes);
     generate(begin(buff), end(buff), ref(engine));
 }
 
 void gen_key(clt::AES128::key_t &key) {
-    using result_t = random_device::result_type;
-    static_assert((sizeof(decltype(key)) % sizeof(result_t)) == 0);
-    constexpr size_t width = sizeof(decltype(key)) / sizeof(result_t);
+    // NOTE: Unsafe generation because this is experimental.
     random_device engine;
-    auto *p_out = reinterpret_cast<result_t *>(key.data());
-    for (size_t i = 0; i < width; i++) {
-        p_out[i] = engine();
-    }
+    generate(begin(key), end(key), ref(engine));
 }
 
 template <class T, class U, class V>
 void do_enc(T &out, const U &in, const V &cipher) {
     assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_blocks = out.size() / clt::aes128::block_bytes;
+    const size_t num_bytes = out.size();
+    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
     const auto elapsed_time = measure_cputime(
         [&]() { cipher.enc(out.data(), in.data(), num_blocks); });
-    const auto bytes_per_sec = out.size() / elapsed_time;
-    fmt::print(" enc: {:.5e} bytes/s\n", bytes_per_sec);
+    const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print(" enc: {:.5e} blocks/s\n", blocks_per_sec);
+    fmt::print("enc,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+               blocks_per_sec);
+}
+
+template <class T> void do_enc_iteration(const T &cipher) {
+    constexpr size_t num_loop = 1;
+    size_t current = start_byte_size;
+    while (current < stop_byte_size) {
+        vector<uint8_t> buff(current);
+        vector<uint8_t> enc_buff(buff.size());
+        for (size_t i = 0; i < num_loop; i++) {
+            init(buff, current);
+            do_enc(enc_buff, buff, cipher);
+        }
+        current <<= 1;
+    }
+    vector<uint8_t> buff(stop_byte_size);
+    vector<uint8_t> enc_buff(buff.size());
+    for (size_t i = 0; i < num_loop; i++) {
+        init(buff, stop_byte_size);
+        do_enc(enc_buff, buff, cipher);
+    }
 }
 
 template <class T, class U, class V>
 void do_dec(T &out, const U &in, const V &cipher) {
     assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_blocks = out.size() / clt::aes128::block_bytes;
+    const size_t num_bytes = out.size();
+    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
     const double elapsed_time = measure_cputime(
         [&]() { cipher.dec(out.data(), in.data(), num_blocks); });
-    const auto bytes_per_sec = out.size() / elapsed_time;
-    fmt::print(" dec: {:.5e} bytes/s\n", bytes_per_sec);
+    const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print(" dec: {:.5e} blocks/s\n", blocks_per_sec);
+    fmt::print("dec,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+               blocks_per_sec);
 }
 
 template <class T, class U, class V>
 void do_hash(T &out, const U &in, const V &hash) {
     assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_blocks = out.size() / clt::aes128::block_bytes;
+    const size_t num_bytes = out.size();
+    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
     const double elapsed_time =
         measure_cputime([&]() { hash(out.data(), in.data(), num_blocks); });
-    const auto bytes_per_sec = out.size() / elapsed_time;
-    fmt::print("hash: {:.5e} bytes/s\n", bytes_per_sec);
+    const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("hash: {:.5e} blocks/s\n", blocks_per_sec);
+    fmt::print("hash,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+               blocks_per_sec);
 }
 
 int main() {
-    fmt::print("CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
+    fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     clt::AES128::key_t key;
     gen_key(key);
-    fmt::print("key = {}\n", clt::join(key));
-    constexpr size_t buff_bytes = 1 << 30;
+    fmt::print(cerr, "key = {}\n", clt::join(key));
+    constexpr size_t buff_bytes = 1 << 10;
     vector<uint8_t> buff(buff_bytes);
-    init(buff);
+    init(buff, buff_bytes);
     vector<uint8_t> enc_buff(buff.size()), dec_buff(buff.size());
     assert((buff.size() % clt::aes128::block_bytes) == 0);
     assert((enc_buff.size() % clt::aes128::block_bytes) == 0);
     assert((dec_buff.size() % clt::aes128::block_bytes) == 0);
     clt::AES128 cipher(key.data());
-    fmt::print("cipher = {}\n", cipher);
+    fmt::print(cerr, "cipher = {}\n", cipher);
+    fmt::print("mode,bytes,bytes/s,blocks/s\n");
     do_enc(enc_buff, buff, cipher);
     do_dec(dec_buff, enc_buff, cipher);
-    fmt::print("     buff[:10] = {}\n", clt::join(buff.data(), 10));
-    fmt::print(" dec_buff[:10] = {}\n", clt::join(dec_buff.data(), 10));
+    fmt::print(cerr, "     buff[:10] = {}\n", clt::join(buff.data(), 10));
+    fmt::print(cerr, " dec_buff[:10] = {}\n", clt::join(dec_buff.data(), 10));
     for (size_t i = 0; i < buff_bytes; i++) {
         if (buff[i] != dec_buff[i]) {
-            fmt::print("ERROR!! at i = {x}, buff[i] = {x}, dec_buff[i] = {x}\n",
+            fmt::print(cerr,
+                       "ERROR!! at i = {x}, buff[i] = {x}, dec_buff[i] = {x}\n",
                        i, buff[i], dec_buff[i]);
             abort();
         }
     }
+    do_enc_iteration(cipher);
     vector<uint8_t> hash_buff(buff.size());
     clt::MMO128 hash(key.data());
-    fmt::print("hash = {}\n", hash);
+    fmt::print(cerr, "hash = {}\n", hash);
     do_hash(hash_buff, buff, hash);
-    fmt::print("hash_buff[:10] = {}\n", clt::join(hash_buff.data(), 10));
+    fmt::print(cerr, "hash_buff[:10] = {}\n", clt::join(hash_buff.data(), 10));
     for (size_t i = 0; i < buff_bytes; i++) {
         if ((buff[i] ^ enc_buff[i]) != hash_buff[i]) {
             fmt::print(
+                cerr,
                 "ERROR!! at i = {x}, buff[i] ^ enc_buff[i] = {x}, hash_buff[i] = {x}\n",
                 i, buff[i] ^ enc_buff[i], hash_buff[i]);
             abort();
