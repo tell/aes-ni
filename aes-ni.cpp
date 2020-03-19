@@ -76,33 +76,34 @@ void AES128::enc(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
     _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
-    const size_t num_blocks_q4 = num_blocks / 4;
-    const size_t num_blocks_r4 = num_blocks % 4;
-    assert((4 * num_blocks_q4 + num_blocks_r4) == num_blocks);
+    constexpr size_t grain_size = 4;
+    const size_t num_blocks_q = num_blocks / grain_size;
+    const size_t num_blocks_r = num_blocks % grain_size;
+    assert((4 * num_blocks_q + num_blocks_r) == num_blocks);
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
     assert(sizeof(__m128i) == (uintptr_t(p_in + 1) - uintptr_t(p_in)));
     auto *p_out = reinterpret_cast<__m128i *>(out);
     assert(sizeof(__m128i) == (uintptr_t(p_out + 1) - uintptr_t(p_out)));
-    for (size_t i = 0; i < num_blocks_q4; i++) {
-        const auto *p_in4 = p_in + 4 * i;
-        __m128i m0 = _mm_loadu_si128(p_in4);
-        __m128i m1 = _mm_loadu_si128(p_in4 + 1);
-        __m128i m2 = _mm_loadu_si128(p_in4 + 2);
-        __m128i m3 = _mm_loadu_si128(p_in4 + 3);
+    for (size_t i = 0; i < num_blocks_q; i++) {
+        const auto *p_inq = p_in + grain_size * i;
+        __m128i m0 = _mm_loadu_si128(p_inq);
+        __m128i m1 = _mm_loadu_si128(p_inq + 1);
+        __m128i m2 = _mm_loadu_si128(p_inq + 2);
+        __m128i m3 = _mm_loadu_si128(p_inq + 3);
         // internal::quad::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
         using internal::variadic::aes128_enc_impl;
         using internal::variadic::round_t;
         aes128_enc_impl(round_t<0>{}, keys, m0, m1, m2, m3);
-        auto *p_out4 = p_out + 4 * i;
-        _mm_storeu_si128(p_out4, m0);
-        _mm_storeu_si128(p_out4 + 1, m1);
-        _mm_storeu_si128(p_out4 + 2, m2);
-        _mm_storeu_si128(p_out4 + 3, m3);
+        auto *p_outq = p_out + grain_size * i;
+        _mm_storeu_si128(p_outq, m0);
+        _mm_storeu_si128(p_outq + 1, m1);
+        _mm_storeu_si128(p_outq + 2, m2);
+        _mm_storeu_si128(p_outq + 3, m3);
     }
-    const auto *p_in_last = p_in + 4 * num_blocks_q4;
-    auto *p_out_last = p_out + 4 * num_blocks_q4;
+    const auto *p_in_last = p_in + grain_size * num_blocks_q;
+    auto *p_out_last = p_out + grain_size * num_blocks_q;
     using internal::single::aes128_enc_impl;
-    for (size_t i = 0; i < num_blocks_r4; i++) {
+    for (size_t i = 0; i < num_blocks_r; i++) {
         __m128i m = _mm_loadu_si128(p_in_last + i);
         aes128_enc_impl<0>(m, keys);
         _mm_storeu_si128(p_out_last + i, m);
