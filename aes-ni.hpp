@@ -35,6 +35,12 @@ public:
 };
 
 class MMO128 {
+    /**
+     * CRH based on AES128 (MMO).
+     * References:
+     * - Guo et al., "Efficient and Secure Multiparty Computation from Fixed-Key Block Ciphers"
+     * https://eprint.iacr.org/2019/074
+     */
     uint8_t expanded_keys_[aes128::block_bytes * (aes128::num_rounds + 1)];
 
 public:
@@ -47,6 +53,12 @@ public:
 };
 
 class AESPRF128 {
+    /**
+     * PRF based on AES128 (AES-PRF).
+     * References:
+     * - Mennink, Neves, "Optimal PRFs from Blockcipher Designs"
+     * https://doi.org/10.13154/tosc.v2017.i3.228-252
+     */
     uint8_t expanded_keys_[aes128::block_bytes * (aes128::num_rounds + 1)];
 
 public:

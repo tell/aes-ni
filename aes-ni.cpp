@@ -237,5 +237,23 @@ void AESPRF128::operator()(void *out, const void *in,
         _mm_storeu_si128(p_out + i, m);
     }
 }
+
+auto AESPRF128::ctr_stream(void *out, const uint64_t num_blocks,
+                           const uint64_t start_count) const noexcept
+    -> decltype(num_blocks + start_count) {
+    _mm256_zeroall();
+    __m128i keys[11];
+    internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
+    auto ctr = _mm_cvtsi64_si128(start_count);
+    const auto inc_v = _mm_cvtsi64_si128(1);
+    for (size_t i = 0; i < num_blocks; i++) {
+        __m128i m = ctr;
+        ctr = _mm_add_epi64(ctr, inc_v);
+        using internal::single::aesprf128_enc_impl;
+        aesprf128_enc_impl<0>(m, keys);
+        _mm_storeu_si128(reinterpret_cast<__m128i *>(out) + i, m);
+    }
+    return num_blocks + start_count;
+}
 } // namespace clt
 // vim: set expandtab :

@@ -188,6 +188,67 @@ template <class T> void do_aesctr_iteration(const T &cipher) {
     }
 }
 
+template <class T, class U, class V>
+void do_prf(T &out, const U &in, const V &prf) {
+    assert((out.size() % clt::aes128::block_bytes) == 0);
+    const size_t num_bytes = out.size();
+    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
+    const double elapsed_time =
+        measure([&]() { prf(out.data(), in.data(), num_blocks); });
+    const auto bytes_per_sec = num_bytes / elapsed_time;
+    const auto blocks_per_sec = num_blocks / elapsed_time;
+    fmt::print("prf,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+               blocks_per_sec);
+}
+
+template <class T> void do_prf_iteration(const T &prf) {
+    constexpr size_t num_loop = 1;
+    size_t current = start_byte_size;
+    while (current < stop_byte_size) {
+        vector<uint8_t> buff(current);
+        vector<uint8_t> prf_buff(buff.size());
+        for (size_t i = 0; i < num_loop; i++) {
+            init(buff, current);
+            do_prf(prf_buff, buff, prf);
+        }
+        current <<= 1;
+    }
+    vector<uint8_t> buff(stop_byte_size);
+    vector<uint8_t> prf_buff(buff.size());
+    for (size_t i = 0; i < num_loop; i++) {
+        init(buff, stop_byte_size);
+        do_prf(prf_buff, buff, prf);
+    }
+}
+
+template <class T, class U> void do_prfctr(T &out, const U &prf) {
+    assert((out.size() % clt::aes128::block_bytes) == 0);
+    const size_t num_bytes = out.size();
+    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
+    const double elapsed_time =
+        measure([&]() { prf.ctr_stream(out.data(), num_blocks, 0); });
+    const auto bytes_per_sec = num_bytes / elapsed_time;
+    const auto blocks_per_sec = num_blocks / elapsed_time;
+    fmt::print("prfctr,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+               blocks_per_sec);
+}
+
+template <class T> void do_prfctr_iteration(const T &prf) {
+    constexpr size_t num_loop = 1;
+    size_t current = start_byte_size;
+    while (current < stop_byte_size) {
+        vector<uint8_t> buff(current);
+        for (size_t i = 0; i < num_loop; i++) {
+            do_prfctr(buff, prf);
+        }
+        current <<= 1;
+    }
+    vector<uint8_t> buff(stop_byte_size);
+    for (size_t i = 0; i < num_loop; i++) {
+        do_prfctr(buff, prf);
+    }
+}
+
 int main() {
     fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     do_rng_iterate();
@@ -234,5 +295,8 @@ int main() {
     }
     do_hash_iteration(hash);
     do_aesctr_iteration(cipher);
+    clt::AESPRF128 prf;
+    do_prf_iteration(prf);
+    do_prfctr_iteration(prf);
     return 0;
 }
