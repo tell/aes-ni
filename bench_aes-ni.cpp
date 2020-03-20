@@ -14,6 +14,7 @@ using namespace std::chrono;
 using sec_spec = microseconds;
 constexpr double time_scale = 1e-6;
 
+namespace internal {
 template <class Func> auto measure_walltime(Func &&f) {
     const auto start = system_clock::now();
     f();
@@ -27,9 +28,10 @@ template <class Func> auto measure_cputime(Func &&f) {
     const double stop = clock();
     return (stop - start) / CLOCKS_PER_SEC;
 }
+} // namespace internal
 
 template <class Func> auto measure(Func &&f) {
-    return measure_walltime(forward<Func>(f));
+    return internal::measure_walltime(forward<Func>(f));
 }
 
 constexpr size_t start_byte_size = 1 << 10;
@@ -39,7 +41,7 @@ clt::rng::RNG rng;
 
 void init(vector<uint8_t> &buff, const size_t num_bytes) {
     buff.resize(num_bytes);
-    const auto status = rng.getrandom(buff.data(), num_bytes);
+    const auto status = rng(buff.data(), num_bytes);
     if (!status) {
         fmt::print(cerr, "ERROR!! gen_key is failed.");
         abort();
@@ -47,7 +49,7 @@ void init(vector<uint8_t> &buff, const size_t num_bytes) {
 }
 
 void gen_key(clt::AES128::key_t &key) {
-    if (!rng.getrandom(key.data(), clt::aes128::key_bytes)) {
+    if (!rng(key.data(), clt::aes128::key_bytes)) {
         fmt::print(cerr, "ERROR!! gen_key is failed.");
     }
 }
@@ -56,8 +58,7 @@ template <class T, class U> void do_rng(T &out, U &rng) {
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const auto elapsed_time =
-        measure_cputime([&]() { rng.getrandom(out.data(), num_blocks); });
+    const auto elapsed_time = measure([&]() { rng(out.data(), num_blocks); });
     const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
     fmt::print("rng,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
@@ -85,8 +86,8 @@ void do_enc(T &out, const U &in, const V &cipher) {
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const auto elapsed_time = measure_cputime(
-        [&]() { cipher.enc(out.data(), in.data(), num_blocks); });
+    const auto elapsed_time =
+        measure([&]() { cipher.enc(out.data(), in.data(), num_blocks); });
     const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
     fmt::print("enc,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
@@ -118,8 +119,8 @@ void do_dec(T &out, const U &in, const V &cipher) {
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const double elapsed_time = measure_cputime(
-        [&]() { cipher.dec(out.data(), in.data(), num_blocks); });
+    const double elapsed_time =
+        measure([&]() { cipher.dec(out.data(), in.data(), num_blocks); });
     const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
     fmt::print("dec,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
@@ -132,7 +133,7 @@ void do_hash(T &out, const U &in, const V &hash) {
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
     const double elapsed_time =
-        measure_cputime([&]() { hash(out.data(), in.data(), num_blocks); });
+        measure([&]() { hash(out.data(), in.data(), num_blocks); });
     const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
     fmt::print("hash,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,

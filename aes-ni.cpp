@@ -26,7 +26,7 @@ inline void aes128_key_expansion(__m128i *keys) {
     internal::aes128_key_expansion_imc_impl<0>(keys);
 }
 
-AES128::AES128(const uint8_t *key) noexcept {
+AES128::AES128(const void *key) noexcept {
     __m128i keys[2 * aes128::num_rounds];
     static_assert(sizeof(keys) == sizeof(expanded_keys_));
     keys[0] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(key));
@@ -62,7 +62,7 @@ inline void aes128_enc_impl<10>(__m128i &m0, __m128i &m1, const __m128i *keys) {
 
 } // namespace internal
 
-void AES128::enc(uint8_t *out, const uint8_t *in) const noexcept {
+void AES128::enc(void *out, const void *in) const noexcept {
     using internal::single::aes128_enc_impl;
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
@@ -71,7 +71,7 @@ void AES128::enc(uint8_t *out, const uint8_t *in) const noexcept {
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
-void AES128::enc(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
+void AES128::enc(void *out, const void *in, const size_t num_blocks) const
     noexcept {
     _mm256_zeroall();
     __m128i keys[11];
@@ -108,6 +108,25 @@ void AES128::enc(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
         aes128_enc_impl<0>(m, keys);
         _mm_storeu_si128(p_out_last + i, m);
     }
+}
+
+auto AES128::ctr_stream(void *out, const size_t num_blocks,
+                        const size_t start_count) const noexcept
+    -> decltype(num_blocks + start_count) {
+    _mm256_zeroall();
+    __m128i keys[11];
+    internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
+    auto ctr = _mm_cvtsi64_si128(start_count);
+    const auto inc_v = _mm_cvtsi64_si128(1);
+    for (size_t i = 0; i < num_blocks; i++) {
+        __m128i m = ctr;
+        ctr = _mm_add_epi64(ctr, inc_v);
+        using internal::variadic::aes128_enc_impl;
+        using internal::variadic::round_t;
+        aes128_enc_impl(round_t<0>{}, keys, m);
+        _mm_storeu_si128(reinterpret_cast<__m128i *>(out) + i, m);
+    }
+    return num_blocks + start_count;
 }
 
 namespace internal {
@@ -169,7 +188,7 @@ inline void aes128_load_expkey_for_dec(__m128i *keys, const uint8_t *in,
 }
 } // namespace internal
 
-void AES128::dec(uint8_t *out, const uint8_t *in) const noexcept {
+void AES128::dec(void *out, const void *in) const noexcept {
     __m128i keys[11];
     internal::aes128_load_expkey_for_dec(
         keys, expanded_keys_ + 10 * aes128::block_bytes, expanded_keys_);
@@ -178,7 +197,7 @@ void AES128::dec(uint8_t *out, const uint8_t *in) const noexcept {
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
-void AES128::dec(uint8_t *out, const uint8_t *in, const size_t num_blocks) const
+void AES128::dec(void *out, const void *in, const size_t num_blocks) const
     noexcept {
     _mm256_zeroall();
     __m128i keys[11];

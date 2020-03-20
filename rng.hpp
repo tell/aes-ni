@@ -21,7 +21,7 @@ public:
     RNG(const path &dev_random = "/dev/urandom")
         : fst_rdev_(dev_random, std::ios_base::in | std::ios_base::binary) {}
 
-    bool getrandom(void *buff, const size_t byte_size);
+    bool operator()(void *buff, const size_t byte_size);
 };
 } // namespace rng
 } // namespace clt

@@ -1,6 +1,33 @@
+#include <vector>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
+
 #include "aes-ni.hpp"
+#include "rng.hpp"
 
 using namespace std;
+
+template <class T>
+void init_iota(T &&out, const size_t n, const size_t elem_per_block = 2) {
+    assert(0 < elem_per_block);
+    for (size_t i = 0; i < n; i++) {
+        out[i * elem_per_block] = i;
+        for (size_t j = 1; j < elem_per_block; j++) {
+            out[i * elem_per_block + j] = 0;
+        }
+    }
+}
+
+clt::rng::RNG rng;
+
+void init_random(void *out, const size_t byte_size) {
+    const auto status = rng(out, byte_size);
+    if (!status) {
+        fmt::print(cerr, "ERROR!! init_random is failed.\n");
+        abort();
+    }
+}
 
 void test_aes_ni() {
     constexpr uint8_t sample_key[clt::aes128::key_bytes] = {
@@ -116,9 +143,32 @@ void test_mmo() {
     }
 }
 
+void test_aes_ctr_stream() {
+    clt::AES128::key_t key;
+    init_random(key.data(), key.size());
+    clt::AES128 cipher(key);
+    vector<uint64_t> buff, enc_buff, dec_buff, str_buff;
+    constexpr size_t num_blocks = 1 << 10;
+    buff.resize(num_blocks * clt::aes128::block_bytes / sizeof(uint64_t));
+    enc_buff.resize(buff.size());
+    dec_buff.resize(buff.size());
+    str_buff.resize(buff.size());
+    init_iota(buff, buff.size(), 2);
+    fmt::print("buff[:8] = {}\n", clt::join(buff.data(), 8));
+    fmt::print("buff[:64] = {}\n", clt::join((uint8_t *)buff.data(), 64));
+    cipher.enc(enc_buff.data(), buff.data(), enc_buff.size());
+    cipher.ctr_stream(str_buff.data(), num_blocks, 0);
+    for (size_t i = 0; i < enc_buff.size(); i++) {
+        if (enc_buff[i] != str_buff[i]) {
+            fmt::print("!!!!\n");
+        }
+    }
+}
+
 int main() {
     test_aes_ni();
     test_mmo();
+    test_aes_ctr_stream();
     return 0;
 }
 // vim: set expandtab :
