@@ -160,6 +160,34 @@ template <class T> void do_hash_iteration(const T &hash) {
     }
 }
 
+template <class T, class U> void do_aesctr(T &out, const U &cipher) {
+    assert((out.size() % clt::aes128::block_bytes) == 0);
+    const size_t num_bytes = out.size();
+    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
+    const double elapsed_time =
+        measure([&]() { cipher.ctr_stream(out.data(), num_blocks, 0); });
+    const auto bytes_per_sec = num_bytes / elapsed_time;
+    const auto blocks_per_sec = num_blocks / elapsed_time;
+    fmt::print("aesctr,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+               blocks_per_sec);
+}
+
+template <class T> void do_aesctr_iteration(const T &cipher) {
+    constexpr size_t num_loop = 1;
+    size_t current = start_byte_size;
+    while (current < stop_byte_size) {
+        vector<uint8_t> buff(current);
+        for (size_t i = 0; i < num_loop; i++) {
+            do_aesctr(buff, cipher);
+        }
+        current <<= 1;
+    }
+    vector<uint8_t> buff(stop_byte_size);
+    for (size_t i = 0; i < num_loop; i++) {
+        do_aesctr(buff, cipher);
+    }
+}
+
 int main() {
     fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     do_rng_iterate();
@@ -205,5 +233,6 @@ int main() {
         }
     }
     do_hash_iteration(hash);
+    do_aesctr_iteration(cipher);
     return 0;
 }
