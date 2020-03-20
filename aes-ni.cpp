@@ -200,5 +200,42 @@ void MMO128::operator()(void *out, const void *in,
         _mm_storeu_si128(p_out + i, m);
     }
 }
+
+AESPRF128::AESPRF128(const void *key) noexcept {
+    __m128i keys[aes128::num_rounds + 1];
+    static_assert(sizeof(keys) == sizeof(expanded_keys_));
+    keys[0] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(key));
+    internal::aes128_key_expansion_impl<0>(keys);
+    auto *p_out = reinterpret_cast<__m128i *>(expanded_keys_);
+    for (size_t i = 0; i < std::size(keys); i++) {
+        _mm_storeu_si128(p_out + i, keys[i]);
+    }
+}
+
+void AESPRF128::operator()(void *out, const void *in) const noexcept {
+    __m128i keys[11];
+    internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
+    __m128i m = _mm_loadu_si128(reinterpret_cast<const __m128i *>(in));
+    using internal::single::aesprf128_enc_impl;
+    aesprf128_enc_impl<0>(m, keys);
+    _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
+}
+
+void AESPRF128::operator()(void *out, const void *in,
+                           const size_t num_blocks) const noexcept {
+    _mm256_zeroall();
+    __m128i keys[11];
+    internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
+    const auto *p_in = reinterpret_cast<const __m128i *>(in);
+    assert(sizeof(__m128i) == (uintptr_t(p_in + 1) - uintptr_t(p_in)));
+    auto *p_out = reinterpret_cast<__m128i *>(out);
+    assert(sizeof(__m128i) == (uintptr_t(p_out + 1) - uintptr_t(p_out)));
+    for (size_t i = 0; i < num_blocks; i++) {
+        __m128i m = _mm_loadu_si128(p_in + i);
+        using internal::single::aesprf128_enc_impl;
+        aesprf128_enc_impl<0>(m, keys);
+        _mm_storeu_si128(p_out + i, m);
+    }
+}
 } // namespace clt
 // vim: set expandtab :

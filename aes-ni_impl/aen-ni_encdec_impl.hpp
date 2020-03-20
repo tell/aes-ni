@@ -48,6 +48,31 @@ template <> inline void aes128_dec_impl<0>(__m128i &m, const __m128i *keys) {
 template <> inline void aes128_dec_impl<10>(__m128i &m, const __m128i *keys) {
     m = _mm_aesdeclast_si128(m, keys[10]);
 }
+
+template <size_t N>
+inline void aesprf128_enc_impl(__m128i &m, const __m128i *keys) {
+    static_assert(1 <= N);
+    static_assert(N < 10);
+    m = _mm_aesenc_si128(m, keys[N]);
+    aesprf128_enc_impl<N + 1>(m, keys);
+}
+
+template <> inline void aesprf128_enc_impl<0>(__m128i &m, const __m128i *keys) {
+    m = _mm_xor_si128(m, keys[0]);
+    aesprf128_enc_impl<1>(m, keys);
+}
+
+template <> inline void aesprf128_enc_impl<5>(__m128i &m, const __m128i *keys) {
+    m = _mm_aesenc_si128(m, keys[5]);
+    const __m128i m5 = m;
+    aesprf128_enc_impl<6>(m, keys);
+    m = _mm_xor_si128(m, m5);
+}
+
+template <>
+inline void aesprf128_enc_impl<10>(__m128i &m, const __m128i *keys) {
+    m = _mm_aesenclast_si128(m, keys[10]);
+}
 } // namespace single
 namespace quad {
 template <size_t N>

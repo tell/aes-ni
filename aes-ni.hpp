@@ -45,6 +45,21 @@ public:
     void operator()(void *out, const void *in, const size_t num_blocks) const
         noexcept;
 };
+
+class AESPRF128 {
+    uint8_t expanded_keys_[aes128::block_bytes * (aes128::num_rounds + 1)];
+
+public:
+    explicit AESPRF128(const void *key) noexcept;
+    explicit AESPRF128() : AESPRF128(aes128::zero_key) {}
+    friend std::ostream &operator<<(std::ostream &ost, const AESPRF128 &x);
+    void operator()(void *out, const void *in) const noexcept;
+    void operator()(void *out, const void *in, const size_t num_blocks) const
+        noexcept;
+    auto ctr_stream(void *out, const uint64_t num_blocks,
+                    const uint64_t start_count) const noexcept
+        -> decltype(num_blocks + start_count);
+};
 } // namespace clt
 
 #include "aes-ni_impl/aes-ni_inline.hpp"
