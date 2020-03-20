@@ -28,21 +28,55 @@ template <class Func> auto measure_cputime(Func &&f) {
     return (stop - start) / CLOCKS_PER_SEC;
 }
 
+template <class Func> auto measure(Func &&f) {
+    return measure_walltime(forward<Func>(f));
+}
+
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
+clt::rng::RNG rng;
+
 void init(vector<uint8_t> &buff, const size_t num_bytes) {
-    clt::rng::RNG rng;
     buff.resize(num_bytes);
-    if (!rng.getrandom(buff.data(), num_bytes)) {
-        fmt::print(cerr, "ERROR!! init is failed.");
+    const auto status = rng.getrandom(buff.data(), num_bytes);
+    if (!status) {
+        fmt::print(cerr, "ERROR!! gen_key is failed.");
+        abort();
     }
 }
 
 void gen_key(clt::AES128::key_t &key) {
-    clt::rng::RNG rng;
     if (!rng.getrandom(key.data(), clt::aes128::key_bytes)) {
         fmt::print(cerr, "ERROR!! gen_key is failed.");
+    }
+}
+
+template <class T, class U> void do_rng(T &out, U &rng) {
+    assert((out.size() % clt::aes128::block_bytes) == 0);
+    const size_t num_bytes = out.size();
+    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
+    const auto elapsed_time =
+        measure_cputime([&]() { rng.getrandom(out.data(), num_blocks); });
+    const auto bytes_per_sec = num_bytes / elapsed_time;
+    const auto blocks_per_sec = num_blocks / elapsed_time;
+    fmt::print("rng,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+               blocks_per_sec);
+}
+
+void do_rng_iterate() {
+    constexpr size_t num_loop = 1;
+    size_t current = start_byte_size;
+    while (current < stop_byte_size) {
+        vector<uint8_t> buff(current);
+        for (size_t i = 0; i < num_loop; i++) {
+            do_rng(buff, rng);
+        }
+        current <<= 1;
+    }
+    vector<uint8_t> buff(stop_byte_size);
+    for (size_t i = 0; i < num_loop; i++) {
+        do_rng(buff, rng);
     }
 }
 
@@ -127,7 +161,9 @@ template <class T> void do_hash_iteration(const T &hash) {
 
 int main() {
     fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
+    do_rng_iterate();
     clt::AES128::key_t key;
+    copy(begin(clt::aes128::zero_key), end(clt::aes128::zero_key), begin(key));
     gen_key(key);
     fmt::print(cerr, "key = {}\n", clt::join(key));
     constexpr size_t buff_bytes = 1 << 10;

@@ -1,18 +1,25 @@
 #pragma once
 
-#include <cstdint>
 #include <fstream>
+#if __cpp_lib_filesystem && !defined(__APPLE__)
+#include <filesystem>
+namespace clt {
+using path = std::filesystem::path;
+}
+#else
+namespace clt {
+using path = std::string;
+}
+#endif
 
 namespace clt {
-
 namespace rng {
 class RNG {
     std::ifstream fst_rdev_;
 
 public:
-    RNG()
-        : fst_rdev_("/dev/urandom", std::ios_base::in | std::ios_base::binary) {
-    }
+    RNG(const path &dev_random = "/dev/urandom")
+        : fst_rdev_(dev_random, std::ios_base::in | std::ios_base::binary) {}
 
     bool getrandom(void *buff, const size_t byte_size);
 };

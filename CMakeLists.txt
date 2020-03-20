@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.16.0)
-project(aes-ni VERSION 0.1.0)
-enable_language(CXX)
-# set(CMAKE_CXX_COMPILER "g++-mp-8")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
+
+enable_language(CXX)
 # find_package(Threads REQUIRED)
 find_package(fmt)
 
 # include(CTest)
-enable_testing()
+# enable_testing()
 
 set(CMAKE_CXX_FLAGS "-march=native -Wall -Wextra -pedantic")
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
@@ -17,6 +16,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -s -DNDEBUG")
 
+project(aes-ni VERSION 0.1.0)
 add_library(aes-ni aes-ni.cpp rng.cpp)
 target_link_libraries(aes-ni fmt::fmt-header-only)
 add_executable(test_aes-ni test_aes-ni.cpp)
