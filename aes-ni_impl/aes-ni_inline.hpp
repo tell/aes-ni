@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "../util.hpp"
+
 namespace clt {
 inline std::ostream &operator<<(std::ostream &ost, const AES128 &x) {
     static_assert((sizeof(x.expanded_keys_) % aes128::block_bytes) == 0);

@@ -17,7 +17,7 @@ static_assert(aes128::key_bytes == sizeof(__m128i));
 
 } // namespace clt
 
-#include "aes-ni_impl/aen-ni_enc_impl.hpp"
+#include "aes-ni_impl/aen-ni_encdec_impl.hpp"
 #include "aes-ni_impl/aes-ni_key-exp_impl.hpp"
 
 namespace clt {
@@ -36,31 +36,6 @@ AES128::AES128(const void *key) noexcept {
         _mm_storeu_si128(p_out + i, keys[i]);
     }
 }
-
-namespace internal {
-template <size_t N>
-inline void aes128_enc_impl(__m128i &m0, __m128i &m1, const __m128i *keys) {
-    static_assert(1 <= N);
-    static_assert(N < 10);
-    m0 = _mm_aesenc_si128(m0, keys[N]);
-    m1 = _mm_aesenc_si128(m1, keys[N]);
-    aes128_enc_impl<N + 1>(m0, m1, keys);
-}
-
-template <>
-inline void aes128_enc_impl<0>(__m128i &m0, __m128i &m1, const __m128i *keys) {
-    m0 = _mm_xor_si128(m0, keys[0]);
-    m1 = _mm_xor_si128(m1, keys[0]);
-    aes128_enc_impl<1>(m0, m1, keys);
-}
-
-template <>
-inline void aes128_enc_impl<10>(__m128i &m0, __m128i &m1, const __m128i *keys) {
-    m0 = _mm_aesenclast_si128(m0, keys[10]);
-    m1 = _mm_aesenclast_si128(m1, keys[10]);
-}
-
-} // namespace internal
 
 void AES128::enc(void *out, const void *in) const noexcept {
     using internal::single::aes128_enc_impl;
@@ -90,7 +65,6 @@ void AES128::enc(void *out, const void *in, const size_t num_blocks) const
         __m128i m1 = _mm_loadu_si128(p_inq + 1);
         __m128i m2 = _mm_loadu_si128(p_inq + 2);
         __m128i m3 = _mm_loadu_si128(p_inq + 3);
-        // internal::quad::aes128_enc_impl<0>(m0, m1, m2, m3, keys);
         using internal::variadic::aes128_enc_impl;
         using internal::variadic::round_t;
         aes128_enc_impl(round_t<0>{}, keys, m0, m1, m2, m3);
@@ -110,8 +84,8 @@ void AES128::enc(void *out, const void *in, const size_t num_blocks) const
     }
 }
 
-auto AES128::ctr_stream(void *out, const size_t num_blocks,
-                        const size_t start_count) const noexcept
+auto AES128::ctr_stream(void *out, const uint64_t num_blocks,
+                        const uint64_t start_count) const noexcept
     -> decltype(num_blocks + start_count) {
     _mm256_zeroall();
     __m128i keys[11];
@@ -130,54 +104,6 @@ auto AES128::ctr_stream(void *out, const size_t num_blocks,
 }
 
 namespace internal {
-template <size_t N>
-inline void aes128_dec_impl(__m128i &m, const __m128i *keys) {
-    static_assert(1 <= N);
-    static_assert(N < 10);
-    m = _mm_aesdec_si128(m, keys[N]);
-    aes128_dec_impl<N + 1>(m, keys);
-}
-
-template <> inline void aes128_dec_impl<0>(__m128i &m, const __m128i *keys) {
-    m = _mm_xor_si128(m, keys[0]);
-    aes128_dec_impl<1>(m, keys);
-}
-
-template <> inline void aes128_dec_impl<10>(__m128i &m, const __m128i *keys) {
-    m = _mm_aesdeclast_si128(m, keys[10]);
-}
-
-template <size_t N>
-inline void aes128_dec_impl(__m128i &m0, __m128i &m1, __m128i &m2, __m128i &m3,
-                            const __m128i *keys) {
-    static_assert(1 <= N);
-    static_assert(N < 10);
-    m0 = _mm_aesdec_si128(m0, keys[N]);
-    m1 = _mm_aesdec_si128(m1, keys[N]);
-    m2 = _mm_aesdec_si128(m2, keys[N]);
-    m3 = _mm_aesdec_si128(m3, keys[N]);
-    aes128_dec_impl<N + 1>(m0, m1, m2, m3, keys);
-}
-
-template <>
-inline void aes128_dec_impl<0>(__m128i &m0, __m128i &m1, __m128i &m2,
-                               __m128i &m3, const __m128i *keys) {
-    m0 = _mm_xor_si128(m0, keys[0]);
-    m1 = _mm_xor_si128(m1, keys[0]);
-    m2 = _mm_xor_si128(m2, keys[0]);
-    m3 = _mm_xor_si128(m3, keys[0]);
-    aes128_dec_impl<1>(m0, m1, m2, m3, keys);
-}
-
-template <>
-inline void aes128_dec_impl<10>(__m128i &m0, __m128i &m1, __m128i &m2,
-                                __m128i &m3, const __m128i *keys) {
-    m0 = _mm_aesdeclast_si128(m0, keys[10]);
-    m1 = _mm_aesdeclast_si128(m1, keys[10]);
-    m2 = _mm_aesdeclast_si128(m2, keys[10]);
-    m3 = _mm_aesdeclast_si128(m3, keys[10]);
-}
-
 inline void aes128_load_expkey_for_dec(__m128i *keys, const uint8_t *in,
                                        const uint8_t *last) {
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
@@ -193,7 +119,8 @@ void AES128::dec(void *out, const void *in) const noexcept {
     internal::aes128_load_expkey_for_dec(
         keys, expanded_keys_ + 10 * aes128::block_bytes, expanded_keys_);
     __m128i m = _mm_loadu_si128(reinterpret_cast<const __m128i *>(in));
-    internal::aes128_dec_impl<0>(m, keys);
+    using internal::single::aes128_dec_impl;
+    aes128_dec_impl<0>(m, keys);
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
@@ -216,7 +143,8 @@ void AES128::dec(void *out, const void *in, const size_t num_blocks) const
         __m128i m1 = _mm_loadu_si128(p_in4 + 1);
         __m128i m2 = _mm_loadu_si128(p_in4 + 2);
         __m128i m3 = _mm_loadu_si128(p_in4 + 3);
-        internal::aes128_dec_impl<0>(m0, m1, m2, m3, keys);
+        using internal::quad::aes128_dec_impl;
+        aes128_dec_impl<0>(m0, m1, m2, m3, keys);
         auto *p_out4 = p_out + 4 * i;
         _mm_storeu_si128(p_out4, m0);
         _mm_storeu_si128(p_out4 + 1, m1);
@@ -227,12 +155,13 @@ void AES128::dec(void *out, const void *in, const size_t num_blocks) const
     auto *p_out_last = p_out + 4 * num_blocks_q4;
     for (size_t i = 0; i < num_blocks_r4; i++) {
         __m128i m = _mm_loadu_si128(p_in_last + i);
-        internal::aes128_dec_impl<0>(m, keys);
+        using internal::single::aes128_dec_impl;
+        aes128_dec_impl<0>(m, keys);
         _mm_storeu_si128(p_out_last + i, m);
     }
 }
 
-MMO128::MMO128(const uint8_t *key) noexcept {
+MMO128::MMO128(const void *key) noexcept {
     __m128i keys[aes128::num_rounds + 1];
     static_assert(sizeof(keys) == sizeof(expanded_keys_));
     keys[0] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(key));
@@ -243,7 +172,7 @@ MMO128::MMO128(const uint8_t *key) noexcept {
     }
 }
 
-void MMO128::operator()(uint8_t *out, const uint8_t *in) const noexcept {
+void MMO128::operator()(void *out, const void *in) const noexcept {
     using internal::single::aes128_enc_impl;
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
@@ -254,7 +183,7 @@ void MMO128::operator()(uint8_t *out, const uint8_t *in) const noexcept {
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
-void MMO128::operator()(uint8_t *out, const uint8_t *in,
+void MMO128::operator()(void *out, const void *in,
                         const size_t num_blocks) const noexcept {
     _mm256_zeroall();
     __m128i keys[11];

@@ -9,38 +9,6 @@
 #include <fmt/format.h>
 
 namespace clt {
-inline std::string join(const uint64_t *in, const size_t &n) {
-    std::stringstream sst;
-    if (n == 0) {
-        return "";
-    }
-    sst << fmt::format("{:>016x}", uint_fast64_t(in[0]));
-    if (n > 1) {
-        for (size_t i = 1; i < n; i++) {
-            sst << fmt::format(":{:>016x}", uint_fast64_t(in[i]));
-        }
-    }
-    return sst.str();
-}
-inline std::string join(const uint8_t *in, const size_t &n) {
-    std::stringstream sst;
-    if (n == 0) {
-        return "";
-    }
-    sst << fmt::format("{:>02x}", (uint_fast64_t(in[0]) & 0xffull));
-    if (n > 1) {
-        for (size_t i = 1; i < n; i++) {
-            sst << fmt::format(":{:>02x}", (uint_fast64_t(in[i]) & 0xffull));
-        }
-    }
-    return sst.str();
-}
-template <class T, size_t N> inline auto join(const T (&in)[N]) {
-    return join(in, N);
-}
-template <class T, size_t N> inline auto join(const std::array<T, N> &in) {
-    return join(in.data(), N);
-}
 namespace aes128 {
 constexpr size_t block_bytes = 16;
 constexpr size_t key_bytes = 16;
@@ -61,20 +29,21 @@ public:
     void enc(void *out, const void *in, const size_t num_blocks) const noexcept;
     void dec(void *out, const void *in) const noexcept;
     void dec(void *out, const void *in, const size_t num_blocks) const noexcept;
-    auto ctr_stream(void *out, const size_t num_blocks,
-                    const size_t start_count) const noexcept
+    auto ctr_stream(void *out, const uint64_t num_blocks,
+                    const uint64_t start_count) const noexcept
         -> decltype(num_blocks + start_count);
 };
+
 class MMO128 {
     uint8_t expanded_keys_[aes128::block_bytes * (aes128::num_rounds + 1)];
 
 public:
-    explicit MMO128(const uint8_t *key) noexcept;
+    explicit MMO128(const void *key) noexcept;
     explicit MMO128() : MMO128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const MMO128 &x);
-    void operator()(uint8_t *out, const uint8_t *in) const noexcept;
-    void operator()(uint8_t *out, const uint8_t *in,
-                    const size_t num_blocks) const noexcept;
+    void operator()(void *out, const void *in) const noexcept;
+    void operator()(void *out, const void *in, const size_t num_blocks) const
+        noexcept;
 };
 } // namespace clt
 

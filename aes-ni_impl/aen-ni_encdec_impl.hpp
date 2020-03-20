@@ -2,6 +2,8 @@
 
 #include <x86intrin.h>
 
+#include "../aes-ni.hpp"
+
 namespace clt {
 namespace internal {
 inline void aes128_load_expkey_for_enc(__m128i *keys,
@@ -28,6 +30,23 @@ template <> inline void aes128_enc_impl<0>(__m128i &m, const __m128i *keys) {
 
 template <> inline void aes128_enc_impl<10>(__m128i &m, const __m128i *keys) {
     m = _mm_aesenclast_si128(m, keys[10]);
+}
+
+template <size_t N>
+inline void aes128_dec_impl(__m128i &m, const __m128i *keys) {
+    static_assert(1 <= N);
+    static_assert(N < 10);
+    m = _mm_aesdec_si128(m, keys[N]);
+    aes128_dec_impl<N + 1>(m, keys);
+}
+
+template <> inline void aes128_dec_impl<0>(__m128i &m, const __m128i *keys) {
+    m = _mm_xor_si128(m, keys[0]);
+    aes128_dec_impl<1>(m, keys);
+}
+
+template <> inline void aes128_dec_impl<10>(__m128i &m, const __m128i *keys) {
+    m = _mm_aesdeclast_si128(m, keys[10]);
 }
 } // namespace single
 namespace quad {
@@ -60,6 +79,37 @@ inline void aes128_enc_impl<10>(__m128i &m0, __m128i &m1, __m128i &m2,
     m1 = _mm_aesenclast_si128(m1, keys[10]);
     m2 = _mm_aesenclast_si128(m2, keys[10]);
     m3 = _mm_aesenclast_si128(m3, keys[10]);
+}
+
+template <size_t N>
+inline void aes128_dec_impl(__m128i &m0, __m128i &m1, __m128i &m2, __m128i &m3,
+                            const __m128i *keys) {
+    static_assert(1 <= N);
+    static_assert(N < 10);
+    m0 = _mm_aesdec_si128(m0, keys[N]);
+    m1 = _mm_aesdec_si128(m1, keys[N]);
+    m2 = _mm_aesdec_si128(m2, keys[N]);
+    m3 = _mm_aesdec_si128(m3, keys[N]);
+    aes128_dec_impl<N + 1>(m0, m1, m2, m3, keys);
+}
+
+template <>
+inline void aes128_dec_impl<0>(__m128i &m0, __m128i &m1, __m128i &m2,
+                               __m128i &m3, const __m128i *keys) {
+    m0 = _mm_xor_si128(m0, keys[0]);
+    m1 = _mm_xor_si128(m1, keys[0]);
+    m2 = _mm_xor_si128(m2, keys[0]);
+    m3 = _mm_xor_si128(m3, keys[0]);
+    aes128_dec_impl<1>(m0, m1, m2, m3, keys);
+}
+
+template <>
+inline void aes128_dec_impl<10>(__m128i &m0, __m128i &m1, __m128i &m2,
+                                __m128i &m3, const __m128i *keys) {
+    m0 = _mm_aesdeclast_si128(m0, keys[10]);
+    m1 = _mm_aesdeclast_si128(m1, keys[10]);
+    m2 = _mm_aesdeclast_si128(m2, keys[10]);
+    m3 = _mm_aesdeclast_si128(m3, keys[10]);
 }
 } // namespace quad
 namespace sfinae {
