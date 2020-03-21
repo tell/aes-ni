@@ -11,6 +11,7 @@ using namespace std;
 template <class T>
 void init_iota(T &&out, const size_t n, const size_t elem_per_block = 2) {
     assert(0 < elem_per_block);
+    assert((n * elem_per_block) <= size(out));
     for (size_t i = 0; i < n; i++) {
         out[i * elem_per_block] = i;
         for (size_t j = 1; j < elem_per_block; j++) {
@@ -149,14 +150,15 @@ void test_aes_ctr_stream() {
     clt::AES128 cipher(key);
     vector<uint64_t> buff, enc_buff, dec_buff, str_buff;
     constexpr size_t num_blocks = 1 << 10;
+    static_assert((clt::aes128::block_bytes % sizeof(uint64_t)) == 0);
     buff.resize(num_blocks * clt::aes128::block_bytes / sizeof(uint64_t));
     enc_buff.resize(buff.size());
     dec_buff.resize(buff.size());
     str_buff.resize(buff.size());
-    init_iota(buff, buff.size(), 2);
+    init_iota(buff, num_blocks, 2);
     fmt::print("buff[:8] = {}\n", clt::join(buff.data(), 8));
     fmt::print("buff[:64] = {}\n", clt::join((uint8_t *)buff.data(), 64));
-    cipher.enc(enc_buff.data(), buff.data(), enc_buff.size());
+    cipher.enc(enc_buff.data(), buff.data(), num_blocks);
     cipher.ctr_stream(str_buff.data(), num_blocks, 0);
     for (size_t i = 0; i < enc_buff.size(); i++) {
         if (enc_buff[i] != str_buff[i]) {

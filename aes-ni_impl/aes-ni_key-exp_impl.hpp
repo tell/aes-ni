@@ -5,6 +5,7 @@
 namespace clt {
 constexpr int rcon_array[] = {
     0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1b, 0x36,
+    0x00,
 };
 
 namespace internal {
@@ -17,17 +18,18 @@ inline __m128i aes128_key_expansion_shift_xor(const __m128i &k0,
     return _mm_xor_si128(key, gen_key);
 }
 
-template <size_t N> inline void aes128_key_expansion_impl(__m128i *keys) {
+template <size_t N, int RCON = rcon_array[N]>
+inline void aes128_key_expansion_impl(__m128i *keys) {
     static_assert(0 <= N);
     static_assert(N < aes128::num_rounds);
     // NOTE: The second argument in the next function call must be constant.
-    const auto key_ass = _mm_aeskeygenassist_si128(keys[N], rcon_array[N]);
+    const auto key_ass = _mm_aeskeygenassist_si128(keys[N], RCON);
     keys[N + 1] = aes128_key_expansion_shift_xor(keys[N], key_ass);
     aes128_key_expansion_impl<N + 1>(keys);
 }
 
 template <>
-inline void aes128_key_expansion_impl<aes128::num_rounds>(__m128i *) {}
+inline void aes128_key_expansion_impl<10, 0>(__m128i *) {}
 
 template <size_t N> inline void aes128_key_expansion_imc_impl(__m128i *keys) {
     static_assert(0 <= N);
