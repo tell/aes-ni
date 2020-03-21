@@ -1,19 +1,24 @@
-cmake_minimum_required(VERSION 3.16.0)
+cmake_minimum_required(VERSION 3.10.0)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 enable_language(CXX)
 # find_package(Threads REQUIRED)
-find_package(fmt)
+
+if(IS_DIRECTORY fmt)
+  add_subdirectory(fmt)
+else()
+  find_package(fmt)
+endif()
 
 # include(CTest)
 # enable_testing()
 
 set(CMAKE_CXX_FLAGS "-march=native -Wall -Wextra -pedantic")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
+set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG")
-set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fsanitize=address")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -s -DNDEBUG")
 
 project(aes-ni VERSION 0.1.0)
