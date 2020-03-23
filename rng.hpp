@@ -1,5 +1,10 @@
 #pragma once
 
+#if defined(__linux__)
+#include <string.h>
+#include <sys/random.h>
+#endif
+
 #include <fstream>
 #if __cpp_lib_filesystem && !defined(__APPLE__)
 #include <filesystem>
@@ -10,11 +15,6 @@ using path = std::filesystem::path;
 namespace clt {
 using path = std::string;
 }
-#endif
-
-#if defined(__linux__)
-#include <string.h>
-#include <sys/random.h>
 #endif
 
 namespace clt {
@@ -48,8 +48,7 @@ inline void getrandom(void *out, const size_t num_bytes)
         gened_bytes += ret_bytes;
     } while (gened_bytes < num_bytes);
 #else
-    static RNG rng;
-    rng(out, num_bytes);
+    throw std::runtime_error("not implemented yet");
 #endif
 }
 } // namespace rng
