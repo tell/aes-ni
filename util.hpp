@@ -7,7 +7,8 @@
 #include <fmt/format.h>
 
 namespace clt {
-inline std::string join(const uint64_t *in, const size_t &n) {
+inline std::string join(const uint64_t *in, const size_t &n)
+{
     std::stringstream sst;
     if (n == 0) {
         return "";
@@ -20,7 +21,9 @@ inline std::string join(const uint64_t *in, const size_t &n) {
     }
     return sst.str();
 }
-inline std::string join(const uint8_t *in, const size_t &n) {
+
+inline std::string join(const uint8_t *in, const size_t &n)
+{
     std::stringstream sst;
     if (n == 0) {
         return "";
@@ -33,10 +36,14 @@ inline std::string join(const uint8_t *in, const size_t &n) {
     }
     return sst.str();
 }
-template <class T, size_t N> inline auto join(const T (&in)[N]) {
+
+template <class T, size_t N> inline auto join(const T (&in)[N])
+{
     return join(in, N);
 }
-template <class T, size_t N> inline auto join(const std::array<T, N> &in) {
+
+template <class T, size_t N> inline auto join(const std::array<T, N> &in)
+{
     return join(in.data(), N);
 }
-}
+} // namespace clt

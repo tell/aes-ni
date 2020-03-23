@@ -19,7 +19,9 @@ class RNG {
 
 public:
     RNG(const path &dev_random = "/dev/urandom")
-        : fst_rdev_(dev_random, std::ios_base::in | std::ios_base::binary) {}
+        : fst_rdev_(dev_random, std::ios_base::in | std::ios_base::binary)
+    {
+    }
 
     bool operator()(void *buff, const size_t byte_size);
 };

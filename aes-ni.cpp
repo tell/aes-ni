@@ -21,12 +21,14 @@ static_assert(aes128::key_bytes == sizeof(__m128i));
 #include "aes-ni_impl/aes-ni_key-exp_impl.hpp"
 
 namespace clt {
-inline void aes128_key_expansion(__m128i *keys) {
+inline void aes128_key_expansion(__m128i *keys)
+{
     internal::aes128_key_expansion_impl<0>(keys);
     internal::aes128_key_expansion_imc_impl<0>(keys);
 }
 
-AES128::AES128(const void *key) noexcept {
+AES128::AES128(const void *key) noexcept
+{
     __m128i keys[2 * aes128::num_rounds];
     static_assert(sizeof(keys) == sizeof(expanded_keys_));
     keys[0] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(key));
@@ -37,7 +39,8 @@ AES128::AES128(const void *key) noexcept {
     }
 }
 
-void AES128::enc(void *out, const void *in) const noexcept {
+void AES128::enc(void *out, const void *in) const noexcept
+{
     using internal::single::aes128_enc_impl;
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
@@ -47,7 +50,8 @@ void AES128::enc(void *out, const void *in) const noexcept {
 }
 
 void AES128::enc(void *out, const void *in, const size_t num_blocks) const
-    noexcept {
+    noexcept
+{
     _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
@@ -86,7 +90,8 @@ void AES128::enc(void *out, const void *in, const size_t num_blocks) const
 
 auto AES128::ctr_stream(void *out, const uint64_t num_blocks,
                         const uint64_t start_count) const noexcept
-    -> decltype(num_blocks + start_count) {
+    -> decltype(num_blocks + start_count)
+{
     _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
@@ -105,7 +110,8 @@ auto AES128::ctr_stream(void *out, const uint64_t num_blocks,
 
 namespace internal {
 inline void aes128_load_expkey_for_dec(__m128i *keys, const uint8_t *in,
-                                       const uint8_t *last) {
+                                       const uint8_t *last)
+{
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
     for (size_t i = 0; i < aes128::num_rounds; i++) {
         keys[i] = _mm_loadu_si128(p_in + i);
@@ -114,7 +120,8 @@ inline void aes128_load_expkey_for_dec(__m128i *keys, const uint8_t *in,
 }
 } // namespace internal
 
-void AES128::dec(void *out, const void *in) const noexcept {
+void AES128::dec(void *out, const void *in) const noexcept
+{
     __m128i keys[11];
     internal::aes128_load_expkey_for_dec(
         keys, expanded_keys_ + 10 * aes128::block_bytes, expanded_keys_);
@@ -125,7 +132,8 @@ void AES128::dec(void *out, const void *in) const noexcept {
 }
 
 void AES128::dec(void *out, const void *in, const size_t num_blocks) const
-    noexcept {
+    noexcept
+{
     _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_dec(
@@ -161,7 +169,8 @@ void AES128::dec(void *out, const void *in, const size_t num_blocks) const
     }
 }
 
-MMO128::MMO128(const void *key) noexcept {
+MMO128::MMO128(const void *key) noexcept
+{
     __m128i keys[aes128::num_rounds + 1];
     static_assert(sizeof(keys) == sizeof(expanded_keys_));
     keys[0] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(key));
@@ -172,7 +181,8 @@ MMO128::MMO128(const void *key) noexcept {
     }
 }
 
-void MMO128::operator()(void *out, const void *in) const noexcept {
+void MMO128::operator()(void *out, const void *in) const noexcept
+{
     using internal::single::aes128_enc_impl;
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
@@ -184,7 +194,8 @@ void MMO128::operator()(void *out, const void *in) const noexcept {
 }
 
 void MMO128::operator()(void *out, const void *in,
-                        const size_t num_blocks) const noexcept {
+                        const size_t num_blocks) const noexcept
+{
     _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
@@ -201,7 +212,8 @@ void MMO128::operator()(void *out, const void *in,
     }
 }
 
-AESPRF128::AESPRF128(const void *key) noexcept {
+AESPRF128::AESPRF128(const void *key) noexcept
+{
     __m128i keys[aes128::num_rounds + 1];
     static_assert(sizeof(keys) == sizeof(expanded_keys_));
     keys[0] = _mm_loadu_si128(reinterpret_cast<const __m128i *>(key));
@@ -212,7 +224,8 @@ AESPRF128::AESPRF128(const void *key) noexcept {
     }
 }
 
-void AESPRF128::operator()(void *out, const void *in) const noexcept {
+void AESPRF128::operator()(void *out, const void *in) const noexcept
+{
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     __m128i m = _mm_loadu_si128(reinterpret_cast<const __m128i *>(in));
@@ -222,7 +235,8 @@ void AESPRF128::operator()(void *out, const void *in) const noexcept {
 }
 
 void AESPRF128::operator()(void *out, const void *in,
-                           const size_t num_blocks) const noexcept {
+                           const size_t num_blocks) const noexcept
+{
     _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
@@ -240,7 +254,8 @@ void AESPRF128::operator()(void *out, const void *in,
 
 auto AESPRF128::ctr_stream(void *out, const uint64_t num_blocks,
                            const uint64_t start_count) const noexcept
-    -> decltype(num_blocks + start_count) {
+    -> decltype(num_blocks + start_count)
+{
     _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);

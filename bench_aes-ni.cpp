@@ -15,14 +15,16 @@ using sec_spec = microseconds;
 constexpr double time_scale = 1e-6;
 
 namespace internal {
-template <class Func> auto measure_walltime(Func &&f) {
+template <class Func> auto measure_walltime(Func &&f)
+{
     const auto start = system_clock::now();
     f();
     const auto stop = system_clock::now();
     return duration_cast<sec_spec>(stop - start).count() * time_scale;
 }
 
-template <class Func> auto measure_cputime(Func &&f) {
+template <class Func> auto measure_cputime(Func &&f)
+{
     const double start = clock();
     f();
     const double stop = clock();
@@ -30,7 +32,8 @@ template <class Func> auto measure_cputime(Func &&f) {
 }
 } // namespace internal
 
-template <class Func> auto measure(Func &&f) {
+template <class Func> auto measure(Func &&f)
+{
     return internal::measure_walltime(forward<Func>(f));
 }
 
@@ -39,7 +42,8 @@ constexpr size_t stop_byte_size = 1 << 30;
 
 clt::rng::RNG rng;
 
-void init(vector<uint8_t> &buff, const size_t num_bytes) {
+void init(vector<uint8_t> &buff, const size_t num_bytes)
+{
     buff.resize(num_bytes);
     const auto status = rng(buff.data(), num_bytes);
     if (!status) {
@@ -48,13 +52,15 @@ void init(vector<uint8_t> &buff, const size_t num_bytes) {
     }
 }
 
-void gen_key(clt::AES128::key_t &key) {
+void gen_key(clt::AES128::key_t &key)
+{
     if (!rng(key.data(), clt::aes128::key_bytes)) {
         fmt::print(cerr, "ERROR!! gen_key is failed.");
     }
 }
 
-template <class T, class U> void do_rng(T &out, U &rng) {
+template <class T, class U> void do_rng(T &out, U &rng)
+{
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
@@ -65,7 +71,8 @@ template <class T, class U> void do_rng(T &out, U &rng) {
                blocks_per_sec);
 }
 
-void do_rng_iterate() {
+void do_rng_iterate()
+{
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
     while (current < stop_byte_size) {
@@ -82,7 +89,8 @@ void do_rng_iterate() {
 }
 
 template <class T, class U, class V>
-void do_enc(T &out, const U &in, const V &cipher) {
+void do_enc(T &out, const U &in, const V &cipher)
+{
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
@@ -94,7 +102,8 @@ void do_enc(T &out, const U &in, const V &cipher) {
                blocks_per_sec);
 }
 
-template <class T> void do_enc_iteration(const T &cipher) {
+template <class T> void do_enc_iteration(const T &cipher)
+{
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
     while (current < stop_byte_size) {
@@ -115,7 +124,8 @@ template <class T> void do_enc_iteration(const T &cipher) {
 }
 
 template <class T, class U, class V>
-void do_dec(T &out, const U &in, const V &cipher) {
+void do_dec(T &out, const U &in, const V &cipher)
+{
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
@@ -128,7 +138,8 @@ void do_dec(T &out, const U &in, const V &cipher) {
 }
 
 template <class T, class U, class V>
-void do_hash(T &out, const U &in, const V &hash) {
+void do_hash(T &out, const U &in, const V &hash)
+{
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
@@ -140,7 +151,8 @@ void do_hash(T &out, const U &in, const V &hash) {
                blocks_per_sec);
 }
 
-template <class T> void do_hash_iteration(const T &hash) {
+template <class T> void do_hash_iteration(const T &hash)
+{
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
     while (current < stop_byte_size) {
@@ -160,7 +172,8 @@ template <class T> void do_hash_iteration(const T &hash) {
     }
 }
 
-template <class T, class U> void do_aesctr(T &out, const U &cipher) {
+template <class T, class U> void do_aesctr(T &out, const U &cipher)
+{
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
@@ -172,7 +185,8 @@ template <class T, class U> void do_aesctr(T &out, const U &cipher) {
                blocks_per_sec);
 }
 
-template <class T> void do_aesctr_iteration(const T &cipher) {
+template <class T> void do_aesctr_iteration(const T &cipher)
+{
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
     while (current < stop_byte_size) {
@@ -189,7 +203,8 @@ template <class T> void do_aesctr_iteration(const T &cipher) {
 }
 
 template <class T, class U, class V>
-void do_prf(T &out, const U &in, const V &prf) {
+void do_prf(T &out, const U &in, const V &prf)
+{
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
@@ -201,7 +216,8 @@ void do_prf(T &out, const U &in, const V &prf) {
                blocks_per_sec);
 }
 
-template <class T> void do_prf_iteration(const T &prf) {
+template <class T> void do_prf_iteration(const T &prf)
+{
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
     while (current < stop_byte_size) {
@@ -221,7 +237,8 @@ template <class T> void do_prf_iteration(const T &prf) {
     }
 }
 
-template <class T, class U> void do_prfctr(T &out, const U &prf) {
+template <class T, class U> void do_prfctr(T &out, const U &prf)
+{
     assert((out.size() % clt::aes128::block_bytes) == 0);
     const size_t num_bytes = out.size();
     const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
@@ -233,7 +250,8 @@ template <class T, class U> void do_prfctr(T &out, const U &prf) {
                blocks_per_sec);
 }
 
-template <class T> void do_prfctr_iteration(const T &prf) {
+template <class T> void do_prfctr_iteration(const T &prf)
+{
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
     while (current < stop_byte_size) {
@@ -249,7 +267,8 @@ template <class T> void do_prfctr_iteration(const T &prf) {
     }
 }
 
-int main() {
+int main()
+{
     fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     do_rng_iterate();
     clt::AES128::key_t key;

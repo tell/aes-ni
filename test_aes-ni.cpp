@@ -9,7 +9,8 @@
 using namespace std;
 
 template <class T>
-void init_iota(T &&out, const size_t n, const size_t elem_per_block = 2) {
+void init_iota(T &&out, const size_t n, const size_t elem_per_block = 2)
+{
     assert(0 < elem_per_block);
     assert((n * elem_per_block) <= size(out));
     for (size_t i = 0; i < n; i++) {
@@ -22,7 +23,8 @@ void init_iota(T &&out, const size_t n, const size_t elem_per_block = 2) {
 
 clt::rng::RNG rng;
 
-void init_random(void *out, const size_t byte_size) {
+void init_random(void *out, const size_t byte_size)
+{
     const auto status = rng(out, byte_size);
     if (!status) {
         fmt::print(cerr, "ERROR!! init_random is failed.\n");
@@ -30,7 +32,8 @@ void init_random(void *out, const size_t byte_size) {
     }
 }
 
-void test_aes_ni() {
+void test_aes_ni()
+{
     constexpr uint8_t sample_key[clt::aes128::key_bytes] = {
         // 2b7e151628aed2a6abf7158809cf4f3c
         0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
@@ -91,7 +94,8 @@ void test_aes_ni() {
     }
 }
 
-void test_mmo() {
+void test_mmo()
+{
     constexpr uint8_t sample_key[clt::aes128::key_bytes] = {
         // 2b7e151628aed2a6abf7158809cf4f3c
         0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
@@ -144,7 +148,8 @@ void test_mmo() {
     }
 }
 
-void test_aes_ctr_stream() {
+void test_aes_ctr_stream()
+{
     clt::AES128::key_t key;
     init_random(key.data(), key.size());
     clt::AES128 cipher(key);
@@ -167,7 +172,8 @@ void test_aes_ctr_stream() {
     }
 }
 
-int main() {
+int main()
+{
     test_aes_ni();
     test_mmo();
     test_aes_ctr_stream();
