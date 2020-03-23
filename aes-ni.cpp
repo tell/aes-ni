@@ -17,8 +17,8 @@ static_assert(aes128::key_bytes == sizeof(__m128i));
 
 } // namespace clt
 
-#include "aes-ni_impl/aen-ni_encdec_impl.hpp"
-#include "aes-ni_impl/aes-ni_key-exp_impl.hpp"
+#include "clt/aen-ni_encdec_impl.hpp"
+#include "clt/aes-ni_key-exp_impl.hpp"
 
 namespace clt {
 inline void aes128_key_expansion(__m128i *keys)
