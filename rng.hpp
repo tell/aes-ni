@@ -31,7 +31,8 @@ public:
     bool operator()(void *buff, const size_t byte_size);
 };
 
-inline void getrandom(void *out, const size_t num_bytes)
+inline void getrandom([[maybe_unused]] void *out,
+                      [[maybe_unused]] const size_t num_bytes)
 {
 #if defined(__linux__)
     auto *p_out = reinterpret_cast<uint8_t *>(out);
