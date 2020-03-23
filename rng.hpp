@@ -12,6 +12,11 @@ using path = std::string;
 }
 #endif
 
+#if defined(__linux__)
+#include <string.h>
+#include <sys/random.h>
+#endif
+
 namespace clt {
 namespace rng {
 class RNG {
@@ -25,5 +30,27 @@ public:
 
     bool operator()(void *buff, const size_t byte_size);
 };
+
+inline void getrandom(void *out, const size_t num_bytes)
+{
+#if defined(__linux__)
+    auto *p_out = reinterpret_cast<uint8_t *>(out);
+    size_t gened_bytes = 0;
+    errno = 0;
+    do {
+        const auto ret_bytes =
+            ::getrandom(p_out, num_bytes - gened_bytes, GRND_NONBLOCK);
+        if (ret_bytes < 0) {
+            const auto str = std::string(strerror(errno));
+            throw std::runtime_error(str);
+        }
+        p_out += ret_bytes;
+        gened_bytes += ret_bytes;
+    } while (gened_bytes < num_bytes);
+#else
+    static RNG rng;
+    rng(out, num_bytes);
+#endif
+}
 } // namespace rng
 } // namespace clt

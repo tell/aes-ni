@@ -75,14 +75,16 @@ void do_rng_iterate()
 {
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
+    vector<uint8_t> buff;
+    buff.reserve(stop_byte_size);
     while (current < stop_byte_size) {
-        vector<uint8_t> buff(current);
+        buff.resize(current);
         for (size_t i = 0; i < num_loop; i++) {
             do_rng(buff, rng);
         }
         current <<= 1;
     }
-    vector<uint8_t> buff(stop_byte_size);
+    buff.resize(stop_byte_size);
     for (size_t i = 0; i < num_loop; i++) {
         do_rng(buff, rng);
     }
@@ -106,17 +108,20 @@ template <class T> void do_enc_iteration(const T &cipher)
 {
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
+    vector<uint8_t> buff, enc_buff;
+    buff.reserve(stop_byte_size);
+    enc_buff.reserve(stop_byte_size);
     while (current < stop_byte_size) {
-        vector<uint8_t> buff(current);
-        vector<uint8_t> enc_buff(buff.size());
+        buff.resize(current);
+        enc_buff.resize(buff.size());
         for (size_t i = 0; i < num_loop; i++) {
             init(buff, current);
             do_enc(enc_buff, buff, cipher);
         }
         current <<= 1;
     }
-    vector<uint8_t> buff(stop_byte_size);
-    vector<uint8_t> enc_buff(buff.size());
+    buff.resize(current);
+    enc_buff.resize(buff.size());
     for (size_t i = 0; i < num_loop; i++) {
         init(buff, stop_byte_size);
         do_enc(enc_buff, buff, cipher);
@@ -155,17 +160,20 @@ template <class T> void do_hash_iteration(const T &hash)
 {
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
+    vector<uint8_t> buff, hash_buff;
+    buff.reserve(stop_byte_size);
+    hash_buff.reserve(stop_byte_size);
     while (current < stop_byte_size) {
-        vector<uint8_t> buff(current);
-        vector<uint8_t> hash_buff(buff.size());
+        buff.resize(current);
+        hash_buff.resize(buff.size());
         for (size_t i = 0; i < num_loop; i++) {
             init(buff, current);
             do_hash(hash_buff, buff, hash);
         }
         current <<= 1;
     }
-    vector<uint8_t> buff(stop_byte_size);
-    vector<uint8_t> hash_buff(buff.size());
+    buff.resize(stop_byte_size);
+    hash_buff.resize(buff.size());
     for (size_t i = 0; i < num_loop; i++) {
         init(buff, stop_byte_size);
         do_hash(hash_buff, buff, hash);
@@ -189,14 +197,16 @@ template <class T> void do_aesctr_iteration(const T &cipher)
 {
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
+    vector<uint8_t> buff;
+    buff.reserve(stop_byte_size);
     while (current < stop_byte_size) {
-        vector<uint8_t> buff(current);
+        buff.resize(current);
         for (size_t i = 0; i < num_loop; i++) {
             do_aesctr(buff, cipher);
         }
         current <<= 1;
     }
-    vector<uint8_t> buff(stop_byte_size);
+    buff.resize(stop_byte_size);
     for (size_t i = 0; i < num_loop; i++) {
         do_aesctr(buff, cipher);
     }
@@ -220,17 +230,20 @@ template <class T> void do_prf_iteration(const T &prf)
 {
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
+    vector<uint8_t> buff, prf_buff;
+    buff.reserve(stop_byte_size);
+    prf_buff.reserve(stop_byte_size);
     while (current < stop_byte_size) {
-        vector<uint8_t> buff(current);
-        vector<uint8_t> prf_buff(buff.size());
+        buff.resize(current);
+        prf_buff.resize(buff.size());
         for (size_t i = 0; i < num_loop; i++) {
             init(buff, current);
             do_prf(prf_buff, buff, prf);
         }
         current <<= 1;
     }
-    vector<uint8_t> buff(stop_byte_size);
-    vector<uint8_t> prf_buff(buff.size());
+    buff.resize(stop_byte_size);
+    prf_buff.resize(buff.size());
     for (size_t i = 0; i < num_loop; i++) {
         init(buff, stop_byte_size);
         do_prf(prf_buff, buff, prf);
@@ -254,14 +267,16 @@ template <class T> void do_prfctr_iteration(const T &prf)
 {
     constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
+    vector<uint8_t> buff;
+    buff.reserve(stop_byte_size);
     while (current < stop_byte_size) {
-        vector<uint8_t> buff(current);
+        buff.resize(current);
         for (size_t i = 0; i < num_loop; i++) {
             do_prfctr(buff, prf);
         }
         current <<= 1;
     }
-    vector<uint8_t> buff(stop_byte_size);
+    buff.resize(stop_byte_size);
     for (size_t i = 0; i < num_loop; i++) {
         do_prfctr(buff, prf);
     }
