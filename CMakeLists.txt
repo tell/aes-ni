@@ -6,7 +6,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 enable_language(CXX)
-# find_package(Threads REQUIRED)
 
 if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/fmt")
   add_subdirectory("${CMAKE_SOURCE_DIR}/fmt")
