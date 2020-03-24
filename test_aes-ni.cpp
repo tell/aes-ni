@@ -1,4 +1,6 @@
 #include <vector>
+#include <numeric>
+#include <algorithm>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -172,11 +174,29 @@ void test_aes_ctr_stream()
     }
 }
 
+void test_shuffle()
+{
+    // TODO
+    vector<uint32_t> vec(1 << 10);
+    iota(begin(vec), end(vec), 0);
+    fmt::print("Before: vec = {}\n", clt::join(vec.data(), 20));
+    clt::rng::shuffle(vec.data(), vec.size());
+    fmt::print(" After: vec = {}\n", clt::join(vec.data(), 20));
+    const auto vec_size = vec.size();
+    for (size_t i = 0; i < vec_size; i++) {
+        const auto at_v = find(begin(vec), end(vec), i);
+        if (at_v == end(vec)) {
+            fmt::print(cerr, "Not found: {}", i);
+        }
+    }
+}
+
 int main()
 {
     test_aes_ni();
     test_mmo();
     test_aes_ctr_stream();
+    test_shuffle();
     return 0;
 }
 // vim: set expandtab :

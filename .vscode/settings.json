@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "ostream": "cpp"
+        "ostream": "cpp",
+        "fstream": "cpp"
     },
     // ワークスペース内の.clang-formatファイルを探してそのスタイルを適用する．存在しない場合，C_Cpp.clang_format_fallbackStyleの設定が適用される．
     "C_Cpp.clang_format_style": "file",
