@@ -39,7 +39,7 @@ inline void print_throughput(const std::string &label, Func &&func,
         const auto bytes_per_sec = num_bytes / elapsed_time;
         if (std::isinf(bytes_per_sec)) {
             fmt::print(std::cerr,
-                       "Obtained throughput is the infinity, re-examine...\n");
+                       "Obtained throughput is the infinity, try again...\n");
         } else {
             fmt::print(format, num_bytes, bytes_per_sec);
             break;
