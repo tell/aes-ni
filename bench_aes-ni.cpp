@@ -94,18 +94,8 @@ int main()
 {
     fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     clt::AES128::key_t key;
-    copy(begin(clt::aes128::zero_key), end(clt::aes128::zero_key), begin(key));
     clt::gen_key(key);
     fmt::print(cerr, "key = {}\n", clt::join(key));
-    constexpr size_t buff_bytes = 1 << 10;
-    vector<uint8_t> buff(buff_bytes);
-    clt::init(buff, buff_bytes);
-    vector<uint8_t> enc_buff(buff.size()), dec_buff(buff.size());
-    assert((buff.size() % clt::aes128::block_bytes) == 0);
-    assert((enc_buff.size() % clt::aes128::block_bytes) == 0);
-    assert((dec_buff.size() % clt::aes128::block_bytes) == 0);
-    clt::AES128 cipher(key.data());
-    fmt::print(cerr, "cipher = {}\n", cipher);
     fmt::print("mode,bytes,bytes/s,blocks/s\n");
     clt::AESPRF128 prf(key.data());
     do_prf_iteration(prf);

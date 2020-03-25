@@ -23,7 +23,7 @@ set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fsanitize=address")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -s -DNDEBUG")
 
 project(aes-ni VERSION 0.1.0)
-include_directories("include")
+include_directories("${CMAKE_SOURCE_DIR}/include")
 add_library(aes-ni aes-ni.cpp rng.cpp)
 target_link_libraries(aes-ni fmt::fmt-header-only)
 add_subdirectory("${CMAKE_SOURCE_DIR}/bench")
