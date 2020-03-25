@@ -29,8 +29,6 @@ target_link_libraries(aes-ni fmt::fmt-header-only)
 add_subdirectory("${CMAKE_SOURCE_DIR}/bench")
 add_executable(test_aes-ni test_aes-ni.cpp)
 target_link_libraries(test_aes-ni aes-ni fmt::fmt-header-only)
-add_executable(bench_aes-ni bench_aes-ni.cpp)
-target_link_libraries(bench_aes-ni aes-ni fmt::fmt-header-only)
 
 # set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 # set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
