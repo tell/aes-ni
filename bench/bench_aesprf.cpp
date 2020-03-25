@@ -12,28 +12,25 @@ template <class T> inline void do_aesprf_iteration(const T &prf)
     vector<uint8_t> buff, prf_buff;
     buff.reserve(stop_byte_size);
     prf_buff.reserve(stop_byte_size);
-    fmt::print("mode,bytes,bytes/s\n");
     while (current <= stop_byte_size) {
         buff.resize(current);
         prf_buff.resize(buff.size());
         assert((prf_buff.size() % clt::aes128::block_bytes) == 0);
         const size_t num_blocks = prf_buff.size() / clt::aes128::block_bytes;
         init(buff, current);
-        print_throughput(
-            "aes128prf",
-            [&]() { prf(prf_buff.data(), buff.data(), num_blocks); },
-            prf_buff.size());
+        print_throughput("aes128prf", prf_buff.size(), [&]() {
+            prf(prf_buff.data(), buff.data(), num_blocks);
+        });
         current <<= 1;
     }
 }
 
 int main()
 {
-    fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
-    AES128::key_t key;
-    gen_key(key);
-    fmt::print(cerr, "key = {}\n", clt::join(key));
-    clt::MMO128 hash(key.data());
+    print_diagnosis();
+    const auto key = gen_key();
+    fmt::print(cerr, "key = {}\n", join(key));
+    MMO128 hash(key.data());
     do_aesprf_iteration(hash);
     return 0;
 }

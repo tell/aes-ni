@@ -11,22 +11,20 @@ inline void do_rng_iteration()
     size_t current = start_byte_size;
     vector<uint8_t> buff;
     buff.reserve(stop_byte_size);
-    fmt::print("mode,bytes,bytes/s\n");
     while (current <= stop_byte_size) {
         buff.resize(current);
         assert((buff.size() % clt::aes128::block_bytes) == 0);
         const size_t num_blocks = buff.size() / clt::aes128::block_bytes;
-        print_throughput(
-            "/dev/urandom",
-            [&]() { clt::rng::rng_global(buff.data(), num_blocks); },
-            buff.size());
+        print_throughput("/dev/urandom", buff.size(), [&]() {
+            clt::rng::rng_global(buff.data(), num_blocks);
+        });
         current <<= 1;
     }
 }
 
 int main()
 {
-    fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
+    print_diagnosis();
     do_rng_iteration();
     return 0;
 }

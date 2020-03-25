@@ -24,15 +24,31 @@ template <class Func> inline auto measure_cputime(Func &&f)
 }
 } // namespace internal
 
+inline void print_diagnosis()
+{
+    fmt::print(std::cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
+}
+
 template <class Func> inline auto measure(Func &&func)
 {
     return internal::measure_cputime(std::forward<Func>(func));
 }
 
-template <class Func>
-inline void print_throughput(const std::string &label, Func &&func,
-                             const size_t num_bytes)
+inline bool print_throughput_call_once()
 {
+    [[maybe_unused]] static bool call_once__ = ([]() {
+        fmt::print("mode,bytes,bytes/s\n");
+        return true;
+    })();
+    return true;
+}
+
+template <class Func>
+inline void print_throughput(const std::string &label, const size_t num_bytes,
+                             Func &&func)
+{
+    [[maybe_unused]] static bool call_once__ =
+        ([]() { return print_throughput_call_once(); })();
     while (true) {
         const std::string format = label + ",{},{:.5e}\n";
         const auto elapsed_time = measure(std::forward<Func>(func));
@@ -61,11 +77,13 @@ inline void init(std::vector<uint8_t> &buff, const size_t num_bytes)
     }
 }
 
-inline void gen_key(clt::AES128::key_t &key)
+inline auto gen_key()
 {
+    clt::AES128::key_t key;
     if (!clt::rng::rng_global(key.data(), clt::aes128::key_bytes)) {
         fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
     }
+    return key;
 }
 
 template <class T>

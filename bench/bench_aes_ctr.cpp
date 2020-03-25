@@ -6,38 +6,27 @@ using namespace std;
 using namespace clt;
 using namespace clt::bench;
 
-template <class T, class U> inline void do_aesprf_ctr(T &out, const U &cipher)
-{
-    assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_bytes = out.size();
-    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const double elapsed_time =
-        measure([&]() { cipher.ctr_stream(out.data(), num_blocks, 0); });
-    const auto bytes_per_sec = num_bytes / elapsed_time;
-    const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("aesprf128_ctr,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
-               blocks_per_sec);
-}
-
 template <class T> inline void do_aesprf_ctr_iteration(const T &cipher)
 {
     size_t current = start_byte_size;
     vector<uint8_t> buff;
     buff.reserve(stop_byte_size);
-    fmt::print("mode,bytes,bytes/s,blocks/s\n");
     while (current <= stop_byte_size) {
         buff.resize(current);
-        do_aesprf_ctr(buff, cipher);
+        assert((buff.size() % clt::aes128::block_bytes) == 0);
+        const size_t num_blocks = buff.size() / clt::aes128::block_bytes;
+        print_throughput("aesprf128_ctr", buff.size(), [&]() {
+            cipher.ctr_stream(buff.data(), num_blocks, 0);
+        });
         current <<= 1;
     }
 }
 
 int main()
 {
-    fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
-    AES128::key_t key;
-    gen_key(key);
-    fmt::print(cerr, "key = {}\n", clt::join(key));
+    print_diagnosis();
+    const AES128::key_t key = gen_key();
+    fmt::print(cerr, "key = {}\n", join(key));
     AES128 cipher(key);
     do_aesprf_ctr_iteration(cipher);
     return 0;
