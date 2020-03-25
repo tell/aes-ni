@@ -16,7 +16,7 @@ inline void do_enc(T &out, const U &in, const V &cipher)
         measure([&]() { cipher.enc(out.data(), in.data(), num_blocks); });
     const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("enc,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+    fmt::print("aes128enc,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
                blocks_per_sec);
 }
 
@@ -30,7 +30,7 @@ inline void do_dec(T &out, const U &in, const V &cipher)
         measure([&]() { cipher.dec(out.data(), in.data(), num_blocks); });
     const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("dec,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+    fmt::print("aes128dec,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
                blocks_per_sec);
 }
 

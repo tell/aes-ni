@@ -11,81 +11,14 @@
 #include "bench/bench_config.hpp"
 
 using namespace std;
-using namespace std::chrono;
 
-using sec_spec = microseconds;
-constexpr double time_scale = 1e-6;
-
-namespace internal {
-template <class Func> auto measure_walltime(Func &&f)
+template <class Func> inline auto measure(Func &&f)
 {
-    const auto start = system_clock::now();
-    f();
-    const auto stop = system_clock::now();
-    return duration_cast<sec_spec>(stop - start).count() * time_scale;
-}
-
-template <class Func> auto measure_cputime(Func &&f)
-{
-    const double start = clock();
-    f();
-    const double stop = clock();
-    return (stop - start) / CLOCKS_PER_SEC;
-}
-} // namespace internal
-
-template <class Func> auto measure(Func &&f)
-{
-    return internal::measure_walltime(forward<Func>(f));
+    return clt::bench::measure(forward<Func>(f));
 }
 
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
-
-template <class T, class U> void do_rng(T &out, U &rng)
-{
-    assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_bytes = out.size();
-    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const auto elapsed_time = measure([&]() { rng(out.data(), num_blocks); });
-    const auto bytes_per_sec = num_bytes / elapsed_time;
-    const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("rng,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
-               blocks_per_sec);
-}
-
-void do_rng_iterate()
-{
-    constexpr size_t num_loop = 1;
-    size_t current = start_byte_size;
-    vector<uint8_t> buff;
-    buff.reserve(stop_byte_size);
-    while (current < stop_byte_size) {
-        buff.resize(current);
-        for (size_t i = 0; i < num_loop; i++) {
-            do_rng(buff, clt::rng::rng_global);
-        }
-        current <<= 1;
-    }
-    buff.resize(stop_byte_size);
-    for (size_t i = 0; i < num_loop; i++) {
-        do_rng(buff, clt::rng::rng_global);
-    }
-}
-
-template <class T, class U, class V>
-void do_dec(T &out, const U &in, const V &cipher)
-{
-    assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_bytes = out.size();
-    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const double elapsed_time =
-        measure([&]() { cipher.dec(out.data(), in.data(), num_blocks); });
-    const auto bytes_per_sec = num_bytes / elapsed_time;
-    const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("dec,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
-               blocks_per_sec);
-}
 
 template <class T, class U, class V>
 void do_hash(T &out, const U &in, const V &hash)
@@ -230,7 +163,6 @@ template <class T> void do_prfctr_iteration(const T &prf)
 int main()
 {
     fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
-    do_rng_iterate();
     clt::AES128::key_t key;
     copy(begin(clt::aes128::zero_key), end(clt::aes128::zero_key), begin(key));
     clt::gen_key(key);

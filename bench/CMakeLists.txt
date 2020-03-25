@@ -1,2 +1,4 @@
-add_executable(bench_aes_enc bench_aes_enc.cpp)
-target_link_libraries(bench_aes_enc aes-ni fmt::fmt-header-only)
+add_executable(bench_rng bench_rng.cpp)
+target_link_libraries(bench_rng aes-ni fmt::fmt-header-only)
+add_executable(bench_aes_encdec bench_aes_encdec.cpp)
+target_link_libraries(bench_aes_encdec aes-ni fmt::fmt-header-only)
