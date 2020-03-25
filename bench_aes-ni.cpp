@@ -20,38 +20,6 @@ template <class Func> inline auto measure(Func &&f)
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
-template <class T, class U> void do_aesctr(T &out, const U &cipher)
-{
-    assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_bytes = out.size();
-    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const double elapsed_time =
-        measure([&]() { cipher.ctr_stream(out.data(), num_blocks, 0); });
-    const auto bytes_per_sec = num_bytes / elapsed_time;
-    const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("aesctr,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
-               blocks_per_sec);
-}
-
-template <class T> void do_aesctr_iteration(const T &cipher)
-{
-    constexpr size_t num_loop = 1;
-    size_t current = start_byte_size;
-    vector<uint8_t> buff;
-    buff.reserve(stop_byte_size);
-    while (current < stop_byte_size) {
-        buff.resize(current);
-        for (size_t i = 0; i < num_loop; i++) {
-            do_aesctr(buff, cipher);
-        }
-        current <<= 1;
-    }
-    buff.resize(stop_byte_size);
-    for (size_t i = 0; i < num_loop; i++) {
-        do_aesctr(buff, cipher);
-    }
-}
-
 template <class T, class U, class V>
 void do_prf(T &out, const U &in, const V &prf)
 {
@@ -139,19 +107,7 @@ int main()
     clt::AES128 cipher(key.data());
     fmt::print(cerr, "cipher = {}\n", cipher);
     fmt::print("mode,bytes,bytes/s,blocks/s\n");
-    vector<uint8_t> hash_buff(buff.size());
-    fmt::print(cerr, "hash_buff[:10] = {}\n", clt::join(hash_buff.data(), 10));
-    for (size_t i = 0; i < buff_bytes; i++) {
-        if ((buff[i] ^ enc_buff[i]) != hash_buff[i]) {
-            fmt::print(
-                cerr,
-                "ERROR!! at i = {x}, buff[i] ^ enc_buff[i] = {x}, hash_buff[i] = {x}\n",
-                i, buff[i] ^ enc_buff[i], hash_buff[i]);
-            abort();
-        }
-    }
-    do_aesctr_iteration(cipher);
-    clt::AESPRF128 prf;
+    clt::AESPRF128 prf(key.data());
     do_prf_iteration(prf);
     do_prfctr_iteration(prf);
     return 0;

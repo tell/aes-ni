@@ -34,6 +34,19 @@ inline void do_dec(T &out, const U &in, const V &cipher)
                blocks_per_sec);
 }
 
+template <class T>
+inline bool eq_check(const vector<T> &buff0, const vector<T> &buff1)
+{
+    assert(buff0.size() == buff1.size());
+    const size_t num_elems = buff0.size();
+    for (size_t i = 0; i < num_elems; i++) {
+        if (buff0[i] != buff1[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 template <class T> inline void do_enc_dec_iteration(const T &cipher)
 {
     size_t current = start_byte_size;
@@ -45,7 +58,6 @@ template <class T> inline void do_enc_dec_iteration(const T &cipher)
     vector<uint8_t> dec_buff;
     dec_buff.reserve(stop_byte_size);
 #endif
-    fmt::print("mode,bytes,bytes/s,blocks/s\n");
     while (current <= stop_byte_size) {
         buff.resize(current);
         enc_buff.resize(buff.size());
@@ -60,12 +72,38 @@ template <class T> inline void do_enc_dec_iteration(const T &cipher)
     }
 }
 
+template <class T, class U> void do_aesctr(T &out, const U &cipher)
+{
+    assert((out.size() % clt::aes128::block_bytes) == 0);
+    const size_t num_bytes = out.size();
+    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
+    const double elapsed_time =
+        measure([&]() { cipher.ctr_stream(out.data(), num_blocks, 0); });
+    const auto bytes_per_sec = num_bytes / elapsed_time;
+    const auto blocks_per_sec = num_blocks / elapsed_time;
+    fmt::print("aesctr,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+               blocks_per_sec);
+}
+
+template <class T> void do_aesctr_iteration(const T &cipher)
+{
+    constexpr size_t num_loop = 1;
+    size_t current = start_byte_size;
+    vector<uint8_t> buff;
+    buff.reserve(stop_byte_size);
+    while (current <= stop_byte_size) {
+        buff.resize(current);
+        for (size_t i = 0; i < num_loop; i++) {
+            do_aesctr(buff, cipher);
+        }
+        current <<= 1;
+    }
+}
+
 int main()
 {
-    fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     AES128::key_t key;
     gen_key(key);
-    fmt::print(cerr, "key = {}\n", clt::join(key));
     AES128 cipher(key);
     do_enc_dec_iteration(cipher);
     return 0;

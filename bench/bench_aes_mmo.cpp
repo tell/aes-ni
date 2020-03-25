@@ -22,32 +22,37 @@ inline void do_aes128_mmo(T &out, const U &in, const V &hash)
 
 template <class T> inline void do_hash_iteration(const T &hash)
 {
-    constexpr size_t num_loop = 1;
     size_t current = start_byte_size;
     vector<uint8_t> buff, hash_buff;
     buff.reserve(stop_byte_size);
     hash_buff.reserve(stop_byte_size);
-    while (current < stop_byte_size) {
+    fmt::print("mode,bytes,bytes/s,blocks/s\n");
+    while (current <= stop_byte_size) {
         buff.resize(current);
         hash_buff.resize(buff.size());
-        for (size_t i = 0; i < num_loop; i++) {
-            clt::init(buff, current);
-            do_aes128_mmo(hash_buff, buff, hash);
-        }
+        clt::init(buff, current);
+        do_aes128_mmo(hash_buff, buff, hash);
         current <<= 1;
     }
-    buff.resize(stop_byte_size);
-    hash_buff.resize(buff.size());
-    for (size_t i = 0; i < num_loop; i++) {
-        clt::init(buff, stop_byte_size);
-        do_aes128_mmo(hash_buff, buff, hash);
+#if 0
+    for (size_t i = 0; i < buff_bytes; i++) {
+        if ((buff[i] ^ enc_buff[i]) != hash_buff[i]) {
+            fmt::print(
+                cerr,
+                "ERROR!! at i = {x}, buff[i] ^ enc_buff[i] = {x}, hash_buff[i] = {x}\n",
+                i, buff[i] ^ enc_buff[i], hash_buff[i]);
+            abort();
+        }
     }
+#endif
 }
 
 int main()
 {
+    fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     AES128::key_t key;
     gen_key(key);
+    fmt::print(cerr, "key = {}\n", clt::join(key));
     clt::MMO128 hash(key.data());
     do_hash_iteration(hash);
     return 0;

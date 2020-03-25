@@ -49,4 +49,17 @@ inline void gen_key(clt::AES128::key_t &key)
         fmt::print(std::cerr, "ERROR!! gen_key is failed.");
     }
 }
+
+template <class T>
+inline bool eq_check(const std::vector<T> &buff0, const std::vector<T> &buff1)
+{
+    assert(buff0.size() == buff1.size());
+    const size_t num_elems = buff0.size();
+    for (size_t i = 0; i < num_elems; i++) {
+        if (buff0[i] != buff1[i]) {
+            return false;
+        }
+    }
+    return true;
+}
 } // namespace clt
