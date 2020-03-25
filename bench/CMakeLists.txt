@@ -12,5 +12,7 @@ foreach(basename
     add_dependencies(benchmarks "${basename}")
 endforeach()
 
-add_custom_target(run_benchmarks bash "${CMAKE_SOURCE_DIR}/bench/run_benchmarks.sh"
-    DEPENDS benchmarks)
+add_custom_target(run_benchmarks
+    bash "${CMAKE_SOURCE_DIR}/bench/run_benchmarks.sh"
+    DEPENDS benchmarks
+)
