@@ -8,6 +8,8 @@
 #include <clt/aes-ni.hpp>
 #include <clt/rng.hpp>
 
+#include "bench/bench_config.hpp"
+
 using namespace std;
 using namespace std::chrono;
 
@@ -40,25 +42,6 @@ template <class Func> auto measure(Func &&f)
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
-clt::rng::RNG rng;
-
-void init(vector<uint8_t> &buff, const size_t num_bytes)
-{
-    buff.resize(num_bytes);
-    const auto status = rng(buff.data(), num_bytes);
-    if (!status) {
-        fmt::print(cerr, "ERROR!! gen_key is failed.");
-        abort();
-    }
-}
-
-void gen_key(clt::AES128::key_t &key)
-{
-    if (!rng(key.data(), clt::aes128::key_bytes)) {
-        fmt::print(cerr, "ERROR!! gen_key is failed.");
-    }
-}
-
 template <class T, class U> void do_rng(T &out, U &rng)
 {
     assert((out.size() % clt::aes128::block_bytes) == 0);
@@ -80,51 +63,13 @@ void do_rng_iterate()
     while (current < stop_byte_size) {
         buff.resize(current);
         for (size_t i = 0; i < num_loop; i++) {
-            do_rng(buff, rng);
+            do_rng(buff, clt::rng::rng_global);
         }
         current <<= 1;
     }
     buff.resize(stop_byte_size);
     for (size_t i = 0; i < num_loop; i++) {
-        do_rng(buff, rng);
-    }
-}
-
-template <class T, class U, class V>
-void do_enc(T &out, const U &in, const V &cipher)
-{
-    assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_bytes = out.size();
-    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const auto elapsed_time =
-        measure([&]() { cipher.enc(out.data(), in.data(), num_blocks); });
-    const auto bytes_per_sec = num_bytes / elapsed_time;
-    const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("enc,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
-               blocks_per_sec);
-}
-
-template <class T> void do_enc_iteration(const T &cipher)
-{
-    constexpr size_t num_loop = 1;
-    size_t current = start_byte_size;
-    vector<uint8_t> buff, enc_buff;
-    buff.reserve(stop_byte_size);
-    enc_buff.reserve(stop_byte_size);
-    while (current < stop_byte_size) {
-        buff.resize(current);
-        enc_buff.resize(buff.size());
-        for (size_t i = 0; i < num_loop; i++) {
-            init(buff, current);
-            do_enc(enc_buff, buff, cipher);
-        }
-        current <<= 1;
-    }
-    buff.resize(current);
-    enc_buff.resize(buff.size());
-    for (size_t i = 0; i < num_loop; i++) {
-        init(buff, stop_byte_size);
-        do_enc(enc_buff, buff, cipher);
+        do_rng(buff, clt::rng::rng_global);
     }
 }
 
@@ -167,7 +112,7 @@ template <class T> void do_hash_iteration(const T &hash)
         buff.resize(current);
         hash_buff.resize(buff.size());
         for (size_t i = 0; i < num_loop; i++) {
-            init(buff, current);
+            clt::init(buff, current);
             do_hash(hash_buff, buff, hash);
         }
         current <<= 1;
@@ -175,7 +120,7 @@ template <class T> void do_hash_iteration(const T &hash)
     buff.resize(stop_byte_size);
     hash_buff.resize(buff.size());
     for (size_t i = 0; i < num_loop; i++) {
-        init(buff, stop_byte_size);
+        clt::init(buff, stop_byte_size);
         do_hash(hash_buff, buff, hash);
     }
 }
@@ -237,7 +182,7 @@ template <class T> void do_prf_iteration(const T &prf)
         buff.resize(current);
         prf_buff.resize(buff.size());
         for (size_t i = 0; i < num_loop; i++) {
-            init(buff, current);
+            clt::init(buff, current);
             do_prf(prf_buff, buff, prf);
         }
         current <<= 1;
@@ -245,7 +190,7 @@ template <class T> void do_prf_iteration(const T &prf)
     buff.resize(stop_byte_size);
     prf_buff.resize(buff.size());
     for (size_t i = 0; i < num_loop; i++) {
-        init(buff, stop_byte_size);
+        clt::init(buff, stop_byte_size);
         do_prf(prf_buff, buff, prf);
     }
 }
@@ -288,11 +233,11 @@ int main()
     do_rng_iterate();
     clt::AES128::key_t key;
     copy(begin(clt::aes128::zero_key), end(clt::aes128::zero_key), begin(key));
-    gen_key(key);
+    clt::gen_key(key);
     fmt::print(cerr, "key = {}\n", clt::join(key));
     constexpr size_t buff_bytes = 1 << 10;
     vector<uint8_t> buff(buff_bytes);
-    init(buff, buff_bytes);
+    clt::init(buff, buff_bytes);
     vector<uint8_t> enc_buff(buff.size()), dec_buff(buff.size());
     assert((buff.size() % clt::aes128::block_bytes) == 0);
     assert((enc_buff.size() % clt::aes128::block_bytes) == 0);
@@ -300,19 +245,6 @@ int main()
     clt::AES128 cipher(key.data());
     fmt::print(cerr, "cipher = {}\n", cipher);
     fmt::print("mode,bytes,bytes/s,blocks/s\n");
-    do_enc(enc_buff, buff, cipher);
-    do_dec(dec_buff, enc_buff, cipher);
-    fmt::print(cerr, "     buff[:10] = {}\n", clt::join(buff.data(), 10));
-    fmt::print(cerr, " dec_buff[:10] = {}\n", clt::join(dec_buff.data(), 10));
-    for (size_t i = 0; i < buff_bytes; i++) {
-        if (buff[i] != dec_buff[i]) {
-            fmt::print(cerr,
-                       "ERROR!! at i = {x}, buff[i] = {x}, dec_buff[i] = {x}\n",
-                       i, buff[i], dec_buff[i]);
-            abort();
-        }
-    }
-    do_enc_iteration(cipher);
     vector<uint8_t> hash_buff(buff.size());
     clt::MMO128 hash(key.data());
     fmt::print(cerr, "hash = {}\n", hash);
