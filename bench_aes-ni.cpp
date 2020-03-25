@@ -20,44 +20,6 @@ template <class Func> inline auto measure(Func &&f)
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
-template <class T, class U, class V>
-void do_hash(T &out, const U &in, const V &hash)
-{
-    assert((out.size() % clt::aes128::block_bytes) == 0);
-    const size_t num_bytes = out.size();
-    const size_t num_blocks = num_bytes / clt::aes128::block_bytes;
-    const double elapsed_time =
-        measure([&]() { hash(out.data(), in.data(), num_blocks); });
-    const auto bytes_per_sec = num_bytes / elapsed_time;
-    const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("hash,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
-               blocks_per_sec);
-}
-
-template <class T> void do_hash_iteration(const T &hash)
-{
-    constexpr size_t num_loop = 1;
-    size_t current = start_byte_size;
-    vector<uint8_t> buff, hash_buff;
-    buff.reserve(stop_byte_size);
-    hash_buff.reserve(stop_byte_size);
-    while (current < stop_byte_size) {
-        buff.resize(current);
-        hash_buff.resize(buff.size());
-        for (size_t i = 0; i < num_loop; i++) {
-            clt::init(buff, current);
-            do_hash(hash_buff, buff, hash);
-        }
-        current <<= 1;
-    }
-    buff.resize(stop_byte_size);
-    hash_buff.resize(buff.size());
-    for (size_t i = 0; i < num_loop; i++) {
-        clt::init(buff, stop_byte_size);
-        do_hash(hash_buff, buff, hash);
-    }
-}
-
 template <class T, class U> void do_aesctr(T &out, const U &cipher)
 {
     assert((out.size() % clt::aes128::block_bytes) == 0);
@@ -178,9 +140,6 @@ int main()
     fmt::print(cerr, "cipher = {}\n", cipher);
     fmt::print("mode,bytes,bytes/s,blocks/s\n");
     vector<uint8_t> hash_buff(buff.size());
-    clt::MMO128 hash(key.data());
-    fmt::print(cerr, "hash = {}\n", hash);
-    do_hash(hash_buff, buff, hash);
     fmt::print(cerr, "hash_buff[:10] = {}\n", clt::join(hash_buff.data(), 10));
     for (size_t i = 0; i < buff_bytes; i++) {
         if ((buff[i] ^ enc_buff[i]) != hash_buff[i]) {
@@ -191,7 +150,6 @@ int main()
             abort();
         }
     }
-    do_hash_iteration(hash);
     do_aesctr_iteration(cipher);
     clt::AESPRF128 prf;
     do_prf_iteration(prf);
