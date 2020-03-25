@@ -5,8 +5,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include "aes-ni.hpp"
-#include "rng.hpp"
+#include <clt/aes-ni.hpp>
+#include <clt/rng.hpp>
 
 using namespace std;
 

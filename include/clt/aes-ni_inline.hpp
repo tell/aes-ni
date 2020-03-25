@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include "../util.hpp"
+#include "util.hpp"
 
 namespace clt {
 inline std::ostream &operator<<(std::ostream &ost, const AES128 &x)

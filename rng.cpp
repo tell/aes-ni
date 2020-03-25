@@ -1,4 +1,4 @@
-#include "rng.hpp"
+#include <clt/rng.hpp>
 
 namespace clt {
 namespace rng {

@@ -2,7 +2,7 @@
 
 #include <x86intrin.h>
 
-#include "../aes-ni.hpp"
+#include "aes-ni.hpp"
 
 namespace clt {
 namespace internal {
