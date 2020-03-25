@@ -56,7 +56,7 @@ inline void init(std::vector<uint8_t> &buff, const size_t num_bytes)
     buff.resize(num_bytes);
     const auto status = clt::rng::rng_global(buff.data(), num_bytes);
     if (!status) {
-        fmt::print(std::cerr, "ERROR!! gen_key is failed.");
+        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
         abort();
     }
 }
@@ -64,7 +64,7 @@ inline void init(std::vector<uint8_t> &buff, const size_t num_bytes)
 inline void gen_key(clt::AES128::key_t &key)
 {
     if (!clt::rng::rng_global(key.data(), clt::aes128::key_bytes)) {
-        fmt::print(std::cerr, "ERROR!! gen_key is failed.");
+        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
     }
 }
 
