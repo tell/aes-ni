@@ -24,6 +24,7 @@ inline void do_rng_iteration()
     size_t current = start_byte_size;
     vector<uint8_t> buff;
     buff.reserve(stop_byte_size);
+    fmt::print("mode,bytes,bytes/s,blocks/s\n");
     while (current <= stop_byte_size) {
         buff.resize(current);
         for (size_t i = 0; i < num_loop; i++) {
@@ -35,6 +36,7 @@ inline void do_rng_iteration()
 
 int main()
 {
+    fmt::print(cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
     do_rng_iteration();
     return 0;
 }

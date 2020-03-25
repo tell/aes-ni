@@ -81,7 +81,7 @@ template <class T, class U> void do_aesctr(T &out, const U &cipher)
         measure([&]() { cipher.ctr_stream(out.data(), num_blocks, 0); });
     const auto bytes_per_sec = num_bytes / elapsed_time;
     const auto blocks_per_sec = num_blocks / elapsed_time;
-    fmt::print("aesctr,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
+    fmt::print("aes128ctr,{},{:.5e},{:.5e}\n", num_bytes, bytes_per_sec,
                blocks_per_sec);
 }
 
