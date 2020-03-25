@@ -3,7 +3,7 @@
 namespace clt {
 namespace bench {
 namespace internal {
-template <class Func> auto measure_walltime(Func &&f)
+template <class Func> inline auto measure_walltime(Func &&f)
 {
     using sec_spec = std::chrono::microseconds;
     constexpr double time_scale = 1e-6;
@@ -15,7 +15,7 @@ template <class Func> auto measure_walltime(Func &&f)
            time_scale;
 }
 
-template <class Func> auto measure_cputime(Func &&f)
+template <class Func> inline auto measure_cputime(Func &&f)
 {
     const double start = clock();
     f();
@@ -24,9 +24,27 @@ template <class Func> auto measure_cputime(Func &&f)
 }
 } // namespace internal
 
-template <class Func> auto measure(Func &&f)
+template <class Func> inline auto measure(Func &&func)
 {
-    return internal::measure_cputime(std::forward<Func>(f));
+    return internal::measure_cputime(std::forward<Func>(func));
+}
+
+template <class Func>
+inline void print_throughput(const std::string &label, Func &&func,
+                             const size_t num_bytes)
+{
+    while (true) {
+        const std::string format = label + ",{},{:.5e}\n";
+        const auto elapsed_time = measure(std::forward<Func>(func));
+        const auto bytes_per_sec = num_bytes / elapsed_time;
+        if (std::isinf(bytes_per_sec)) {
+            fmt::print(std::cerr,
+                       "Obtained throughput is the infinity, re-examine...\n");
+        } else {
+            fmt::print(format, num_bytes, bytes_per_sec);
+            break;
+        }
+    }
 }
 } // namespace bench
 
