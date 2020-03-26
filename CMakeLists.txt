@@ -7,10 +7,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 enable_language(CXX)
 
+find_package(GTest REQUIRED)
 if(IS_DIRECTORY "${CMAKE_SOURCE_DIR}/fmt")
   add_subdirectory("${CMAKE_SOURCE_DIR}/fmt")
 else()
-  find_package(fmt)
+  find_package(fmt REQUIRED)
 endif()
 
 # include(CTest)

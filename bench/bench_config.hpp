@@ -2,6 +2,42 @@
 
 namespace clt {
 namespace bench {
+
+constexpr size_t start_byte_size = 1 << 10;
+constexpr size_t stop_byte_size = 1 << 30;
+
+template <class T> inline void init(std::vector<T> &buff)
+{
+    const size_t num_bytes = sizeof(T) * buff.size();
+    const auto status = clt::rng::rng_global(buff.data(), num_bytes);
+    if (!status) {
+        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
+        abort();
+    }
+}
+
+inline auto gen_key()
+{
+    AES128::key_t key;
+    if (!clt::rng::rng_global(key.data(), aes128::key_bytes)) {
+        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
+    }
+    return key;
+}
+
+template <class T>
+inline bool eq_check(const std::vector<T> &buff0, const std::vector<T> &buff1)
+{
+    assert(buff0.size() == buff1.size());
+    const size_t num_elems = buff0.size();
+    for (size_t i = 0; i < num_elems; i++) {
+        if (buff0[i] != buff1[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 namespace internal {
 template <class Func> inline auto measure_walltime(Func &&f)
 {
@@ -63,39 +99,4 @@ inline void print_throughput(const std::string &label, const size_t num_bytes,
     }
 }
 } // namespace bench
-
-constexpr size_t start_byte_size = 1 << 10;
-constexpr size_t stop_byte_size = 1 << 30;
-
-inline void init(std::vector<uint8_t> &buff, const size_t num_bytes)
-{
-    buff.resize(num_bytes);
-    const auto status = clt::rng::rng_global(buff.data(), num_bytes);
-    if (!status) {
-        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
-        abort();
-    }
-}
-
-inline auto gen_key()
-{
-    clt::AES128::key_t key;
-    if (!clt::rng::rng_global(key.data(), clt::aes128::key_bytes)) {
-        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
-    }
-    return key;
-}
-
-template <class T>
-inline bool eq_check(const std::vector<T> &buff0, const std::vector<T> &buff1)
-{
-    assert(buff0.size() == buff1.size());
-    const size_t num_elems = buff0.size();
-    for (size_t i = 0; i < num_elems; i++) {
-        if (buff0[i] != buff1[i]) {
-            return false;
-        }
-    }
-    return true;
-}
 } // namespace clt

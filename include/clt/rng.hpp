@@ -57,7 +57,8 @@ inline void getrandom([[maybe_unused]] void *out,
 #endif
 }
 
-template <class T> void shuffle(T *inplace, const size_t n)
+template <class T, class Func>
+void shuffle(T *inplace, const size_t n, Func &&rng)
 {
     // TODO:
     assert(n < (uint64_t(1) << 32));
@@ -65,7 +66,7 @@ template <class T> void shuffle(T *inplace, const size_t n)
     constexpr auto elem_bytes = sizeof(T);
     const auto random_bytes = n * elem_bytes;
     std::vector<uint64_t> random_indices(n);
-    rng_global(random_indices.data(), random_bytes);
+    rng(random_indices.data(), random_bytes);
     for (size_t i = 1; i < (n - 1); i++) {
         const auto j = random_indices[n - i] % (n - i);
         std::swap(inplace[j], inplace[n - i]);

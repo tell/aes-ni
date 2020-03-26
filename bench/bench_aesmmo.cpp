@@ -15,7 +15,7 @@ template <class T> inline void do_aesmmo_iteration(const T &hash)
     while (current <= stop_byte_size) {
         buff.resize(current);
         hash_buff.resize(buff.size());
-        init(buff, current);
+        init(buff);
         assert((hash_buff.size() % clt::aes128::block_bytes) == 0);
         const size_t num_blocks = hash_buff.size() / clt::aes128::block_bytes;
         print_throughput("aes128mmo", hash_buff.size(), [&]() {

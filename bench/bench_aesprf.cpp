@@ -17,7 +17,7 @@ template <class T> inline void do_aesprf_iteration(const T &prf)
         prf_buff.resize(buff.size());
         assert((prf_buff.size() % clt::aes128::block_bytes) == 0);
         const size_t num_blocks = prf_buff.size() / clt::aes128::block_bytes;
-        init(buff, current);
+        init(buff);
         print_throughput("aes128prf", prf_buff.size(), [&]() {
             prf(prf_buff.data(), buff.data(), num_blocks);
         });

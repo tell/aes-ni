@@ -9,6 +9,8 @@
 #include <clt/rng.hpp>
 
 using namespace std;
+using namespace clt;
+using namespace clt::rng;
 
 template <class T>
 void init_iota(T &&out, const size_t n, const size_t elem_per_block = 2)
@@ -23,11 +25,9 @@ void init_iota(T &&out, const size_t n, const size_t elem_per_block = 2)
     }
 }
 
-clt::rng::RNG rng;
-
 void init_random(void *out, const size_t byte_size)
 {
-    const auto status = rng(out, byte_size);
+    const auto status = rng_global(out, byte_size);
     if (!status) {
         fmt::print(cerr, "ERROR!! init_random is failed.\n");
         abort();
@@ -180,13 +180,13 @@ void test_shuffle()
     vector<uint32_t> vec(1 << 10);
     iota(begin(vec), end(vec), 0);
     fmt::print("Before: vec = {}\n", clt::join(vec.data(), 20));
-    clt::rng::shuffle(vec.data(), vec.size());
+    shuffle(vec.data(), vec.size(), rng_global);
     fmt::print(" After: vec = {}\n", clt::join(vec.data(), 20));
     const auto vec_size = vec.size();
     for (size_t i = 0; i < vec_size; i++) {
         const auto at_v = find(begin(vec), end(vec), i);
         if (at_v == end(vec)) {
-            fmt::print(cerr, "Not found: {}", i);
+            throw runtime_error(fmt::format("Not found index: {}", i));
         }
     }
 }

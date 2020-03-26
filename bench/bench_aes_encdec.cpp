@@ -20,7 +20,7 @@ template <class T> inline void do_enc_dec_iteration(const T &cipher)
     while (current <= stop_byte_size) {
         buff.resize(current);
         enc_buff.resize(buff.size());
-        init(buff, current);
+        init(buff);
         assert((enc_buff.size() % aes128::block_bytes) == 0);
         {
             const size_t num_blocks = enc_buff.size() / aes128::block_bytes;
