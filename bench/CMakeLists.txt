@@ -1,5 +1,6 @@
 add_custom_target(benchmarks)
 foreach(basename
+        bench_shuffle_ys
         bench_rng
         bench_aes_encdec
         bench_aes_ctr

@@ -4,6 +4,7 @@
 
 using namespace std;
 using namespace clt;
+using namespace clt::rng;
 using namespace clt::bench;
 
 inline void do_rng_iteration()
@@ -13,10 +14,8 @@ inline void do_rng_iteration()
     buff.reserve(stop_byte_size);
     while (current <= stop_byte_size) {
         buff.resize(current);
-        assert((buff.size() % clt::aes128::block_bytes) == 0);
-        const size_t num_blocks = buff.size() / clt::aes128::block_bytes;
         print_throughput("/dev/urandom", buff.size(), [&]() {
-            clt::rng::rng_global(buff.data(), num_blocks);
+            clt::rng::rng_global(buff.data(), size(buff));
         });
         current <<= 1;
     }
