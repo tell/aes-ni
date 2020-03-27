@@ -99,6 +99,12 @@ inline void shuffle(T *inplace, const size_t n, Func &&rng)
     }
 }
 
+template <class T, class Func>
+inline void shuffle(std::vector<T> &inplace, Func &&rng)
+{
+    shuffle(inplace.data(), size(inplace), std::forward<Func>(rng));
+}
+
 template <class T, class U>
 inline void apply_permutation(T *out, const T *in, const U *perm,
                               const size_t n)
@@ -109,9 +115,20 @@ inline void apply_permutation(T *out, const T *in, const U *perm,
     }
 }
 
+template <class T, class U>
+inline auto apply_permutation(const std::vector<T> &in,
+                              const std::vector<U> &perm)
+{
+    assert(size(in) == size(perm));
+    std::vector<T> out(size(in));
+    apply_permutation(out.data(), in.data(), perm.data(), size(in));
+    return out;
+}
+
 template <class T>
 inline void inverse_permutation(T *out, const T *in, const size_t n)
 {
+    assert(out != in);
     const auto end_iter = std::next(in, n);
     for (size_t i = 0; i < n; i++) {
         const auto at_v = std::find(in, end_iter, i);
@@ -122,5 +139,13 @@ inline void inverse_permutation(T *out, const T *in, const size_t n)
         out[i] = index;
     }
 }
+
+template <class T> inline auto inverse_permutation(const std::vector<T> &in)
+{
+    std::vector<T> out(size(in));
+    inverse_permutation(out.data(), in.data(), size(in));
+    return out;
+}
+
 } // namespace rng
 } // namespace clt

@@ -127,21 +127,18 @@ TEST_F(BasicTest, shuffle_YS)
 {
     vector<uint32_t> perm(10);
     iota(begin(perm), end(perm), 0);
-    shuffle(perm.data(), perm.size(), rng_global);
+    shuffle(perm, rng_global);
     for (size_t i = 0; i < size(perm); i++) {
         const auto at_v = find(begin(perm), end(perm), i);
         if (at_v == end(perm)) {
             throw runtime_error(fmt::format("Not found index: {}", i));
         }
     }
-    vector<uint32_t> inv_perm(size(perm));
-    inverse_permutation(inv_perm.data(), perm.data(), size(perm));
-    vector<uint64_t> buff(size(perm)), perm_buff(size(perm)),
-        inv_perm_buff(size(perm));
+    const auto inv_perm = inverse_permutation(perm);
+    vector<uint64_t> buff(size(perm));
     iota(begin(buff), end(buff), 100);
-    apply_permutation(perm_buff.data(), buff.data(), perm.data(), size(perm));
-    apply_permutation(inv_perm_buff.data(), perm_buff.data(), inv_perm.data(),
-                      size(perm));
+    const auto perm_buff = apply_permutation(buff, perm);
+    const auto inv_perm_buff = apply_permutation(perm_buff, inv_perm);
     ASSERT_EQ(buff, inv_perm_buff);
 }
 
