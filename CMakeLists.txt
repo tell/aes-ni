@@ -5,6 +5,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 
+if(CMAKE_HOST_APPLE)
+  message("This is macOS platform, therefore clang and clang++ are used.")
+  set(CMAKE_C_COMPILER "clang")
+  set(CMAKE_CXX_COMPILER "clang++")
+endif()
+
 enable_language(CXX)
 project(aes-ni VERSION 0.1.0)
 
