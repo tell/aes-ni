@@ -123,7 +123,7 @@ TEST_F(BasicTest, aes_ctr_stream)
     ASSERT_EQ(str_buff, enc_buff);
 }
 
-TEST_F(BasicTest, shuffle_YS)
+TEST_F(BasicTest, shuffle_FY)
 {
     vector<uint32_t> perm(10);
     iota(begin(perm), end(perm), 0);
