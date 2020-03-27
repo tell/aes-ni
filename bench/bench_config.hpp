@@ -6,25 +6,6 @@ namespace bench {
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
-template <class T> inline void init(std::vector<T> &buff)
-{
-    const size_t num_bytes = sizeof(T) * buff.size();
-    const auto status = clt::rng::rng_global(buff.data(), num_bytes);
-    if (!status) {
-        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
-        abort();
-    }
-}
-
-inline auto gen_key()
-{
-    AES128::key_t key;
-    if (!clt::rng::rng_global(key.data(), aes128::key_bytes)) {
-        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
-    }
-    return key;
-}
-
 template <class T>
 inline bool eq_check(const std::vector<T> &buff0, const std::vector<T> &buff1)
 {

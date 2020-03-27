@@ -84,4 +84,46 @@ template <class T> inline auto join(const std::vector<T> &in)
 {
     return join(in.data(), in.size());
 }
+
+template <class T>
+void init_iota(T &&out, const size_t n, const size_t elem_per_block = 2)
+{
+    assert(0 < elem_per_block);
+    assert((n * elem_per_block) <= size(out));
+    for (size_t i = 0; i < n; i++) {
+        out[i * elem_per_block] = i;
+        for (size_t j = 1; j < elem_per_block; j++) {
+            out[i * elem_per_block + j] = 0;
+        }
+    }
+}
+
+template <class T> inline void init(T *buff, const size_t num_elems)
+{
+    const size_t num_bytes = sizeof(T) * num_elems;
+    const auto status = clt::rng::rng_global(buff, num_bytes);
+    if (!status) {
+        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
+        abort();
+    }
+}
+
+template <class T> inline void init(std::vector<T> &buff)
+{
+    init(buff.data(), buff.size());
+}
+
+template <class T, size_t N> inline void init(std::array<T, N> &buff)
+{
+    init(buff.data(), N);
+}
+
+inline auto gen_key()
+{
+    AES128::key_t key;
+    if (!clt::rng::rng_global(key.data(), aes128::key_bytes)) {
+        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
+    }
+    return key;
+}
 } // namespace clt
