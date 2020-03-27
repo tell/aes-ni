@@ -125,15 +125,27 @@ TEST_F(BasicTest, aes_ctr_stream)
 
 TEST_F(BasicTest, shuffle_YS)
 {
-    vector<uint32_t> vec(1 << 10);
-    iota(begin(vec), end(vec), 0);
-    shuffle(vec.data(), vec.size(), rng_global);
-    for (size_t i = 0; i < size(vec); i++) {
-        const auto at_v = find(begin(vec), end(vec), i);
-        if (at_v == end(vec)) {
+    vector<uint32_t> perm(10);
+    iota(begin(perm), end(perm), 0);
+    shuffle(perm.data(), perm.size(), rng_global);
+    fmt::print("perm = {}\n", join(perm));
+    for (size_t i = 0; i < size(perm); i++) {
+        const auto at_v = find(begin(perm), end(perm), i);
+        if (at_v == end(perm)) {
             throw runtime_error(fmt::format("Not found index: {}", i));
         }
     }
+    vector<uint32_t> inv_perm(size(perm));
+    inverse_permutation(inv_perm.data(), perm.data(), size(perm));
+    fmt::print("inv_perm = {}\n", join(inv_perm));
+    vector<uint64_t> buff(size(perm)), perm_buff(size(perm));
+    iota(begin(buff), end(buff), 100);
+    copy(begin(buff), end(buff), begin(perm_buff));
+    apply_permutation(perm_buff.data(), perm_buff.data(), perm.data(),
+                      size(perm));
+    apply_permutation(perm_buff.data(), perm_buff.data(), inv_perm.data(),
+                      size(perm));
+    ASSERT_EQ(buff, perm_buff);
 }
 
 int main(int argc, char **argv)

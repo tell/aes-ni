@@ -8,6 +8,8 @@
 
 #include <fmt/format.h>
 
+#include <clt/rng.hpp>
+
 namespace clt {
 namespace aes128 {
 constexpr size_t block_bytes = 16;
@@ -15,6 +17,7 @@ constexpr size_t key_bytes = 16;
 constexpr uint8_t zero_key[key_bytes] = {0};
 constexpr size_t num_rounds = 10;
 } // namespace aes128
+
 class AES128 {
     uint8_t expanded_keys_[aes128::block_bytes * 2 * aes128::num_rounds];
 
@@ -33,6 +36,15 @@ public:
                     const uint64_t start_count) const noexcept
         -> decltype(num_blocks + start_count);
 };
+
+inline auto gen_key()
+{
+    AES128::key_t key;
+    if (!clt::rng::rng_global(key.data(), aes128::key_bytes)) {
+        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
+    }
+    return key;
+}
 
 class MMO128 {
     /**

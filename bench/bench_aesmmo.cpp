@@ -4,6 +4,7 @@
 
 using namespace std;
 using namespace clt;
+using namespace clt::rng;
 using namespace clt::bench;
 
 template <class T> inline void do_aesmmo_iteration(const T &hash)

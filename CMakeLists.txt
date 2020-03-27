@@ -17,7 +17,7 @@ project(aes-ni VERSION 0.1.0)
 message("CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
 message("CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
 
-set(CMAKE_CXX_FLAGS "-march=native -Wall -Wextra -pedantic -pthread")
+set(CMAKE_CXX_FLAGS "-march=native -Wall -Wextra -pedantic")
 set(CMAKE_CXX_FLAGS_DEBUG "-g -fsanitize=address")
 set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fsanitize=address")

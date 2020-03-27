@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 
 #if defined(__linux__)
@@ -19,6 +20,10 @@ using path = std::string;
 }
 #endif
 
+#include <fmt/format.h>
+
+#include <clt/util.hpp>
+
 namespace clt {
 namespace rng {
 class RNG {
@@ -34,6 +39,26 @@ public:
 };
 
 extern RNG rng_global;
+
+template <class T> inline void init(T *buff, const size_t num_elems)
+{
+    const size_t num_bytes = sizeof(T) * num_elems;
+    const auto status = rng_global(buff, num_bytes);
+    if (!status) {
+        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
+        abort();
+    }
+}
+
+template <class T> inline void init(std::vector<T> &buff)
+{
+    init(buff.data(), buff.size());
+}
+
+template <class T, size_t N> inline void init(std::array<T, N> &buff)
+{
+    init(buff.data(), N);
+}
 
 inline void getrandom([[maybe_unused]] void *out,
                       [[maybe_unused]] const size_t num_bytes)
@@ -58,18 +83,42 @@ inline void getrandom([[maybe_unused]] void *out,
 }
 
 template <class T, class Func>
-void shuffle(T *inplace, const size_t n, Func &&rng)
+inline void shuffle(T *inplace, const size_t n, Func &&rng)
 {
-    // TODO:
+    // NOTE: FY shuffle.
     assert(n < (uint64_t(1) << 32));
     static_assert((2 * sizeof(T)) <= sizeof(uint64_t));
     constexpr auto elem_bytes = sizeof(T);
     const auto random_bytes = n * elem_bytes;
     std::vector<uint64_t> random_indices(n);
     rng(random_indices.data(), random_bytes);
+    fmt::print("ri = {}\n", clt::join(random_indices));
     for (size_t i = 1; i < (n - 1); i++) {
         const auto j = random_indices[n - i] % (n - i);
         std::swap(inplace[j], inplace[n - i]);
+    }
+}
+
+template <class T, class U>
+inline void apply_permutation(T *out, const T *in, const U *perm,
+                              const size_t n)
+{
+    for (size_t i = 0; i < n; i++) {
+        out[i] = in[perm[i]];
+    }
+}
+
+template <class T>
+inline void inverse_permutation(T *out, const T *in, const size_t n)
+{
+    const auto end_iter = std::next(in, n);
+    for (size_t i = 0; i < n; i++) {
+        const auto at_v = std::find(in, end_iter, i);
+        if (at_v == end_iter) {
+            throw std::runtime_error(fmt::format("Not found index: {}", i));
+        }
+        const auto index = std::distance(in, at_v);
+        out[index] = index;
     }
 }
 } // namespace rng
