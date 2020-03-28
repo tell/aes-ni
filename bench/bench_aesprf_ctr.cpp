@@ -7,8 +7,11 @@ using namespace std;
 using namespace clt;
 using namespace clt::bench;
 
-template <class T> inline void do_aesprf_ctr_iteration(const T &prf)
+inline void do_aesprf_ctr_iteration()
 {
+    const AES128::key_t key = gen_key();
+    fmt::print(cerr, "key = {}\n", join(key));
+    AESPRF128 prf(key.data());
     size_t current = start_byte_size;
     vector<uint8_t> buff;
     buff.reserve(stop_byte_size);
@@ -27,9 +30,6 @@ template <class T> inline void do_aesprf_ctr_iteration(const T &prf)
 int main()
 {
     print_diagnosis();
-    const AES128::key_t key = gen_key();
-    fmt::print(cerr, "key = {}\n", join(key));
-    AESPRF128 prf(key.data());
-    do_aesprf_ctr_iteration(prf);
+    do_aesprf_ctr_iteration();
     return 0;
 }
