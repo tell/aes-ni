@@ -25,8 +25,7 @@ set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -s -DNDEBUG")
 
 include("${CMAKE_SOURCE_DIR}/search_module.cmake")
 
-include_directories("${CMAKE_SOURCE_DIR}/include")
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")
-add_executable(test_aes-ni test_aes-ni.cpp)
-target_link_libraries(test_aes-ni aes-ni fmt::fmt-header-only GTest::GTest randen)
 add_subdirectory("${CMAKE_SOURCE_DIR}/bench")
+enable_testing()
+add_subdirectory("${CMAKE_SOURCE_DIR}/test")

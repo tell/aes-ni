@@ -1,0 +1,16 @@
+find_package(GTest REQUIRED)
+
+function(add_unit_test testname)
+    add_executable(${testname} ${testname}.cpp)
+    target_link_libraries(${testname}
+        fmt::fmt-header-only
+        GTest::GTest
+        aes-ni
+        randen
+    )
+    add_test(NAME ${testname}
+        COMMAND ${testname}
+    )
+endfunction()
+
+add_unit_test(test_aes-ni)
