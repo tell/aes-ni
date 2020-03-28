@@ -5,13 +5,25 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "(lldb) 起動 bench_randen",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bench/bench_randen",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/bench",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
+        {
             "name": "(lldb) 起動 test_aes-ni",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/build/test_aes-ni",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build",
             "environment": [],
             "externalConsole": false,
             "MIMode": "lldb"

@@ -14,6 +14,7 @@ inline void do_randen_iteration()
     static_assert((stop_byte_size % sizeof(uint64_t)) == 0);
     constexpr size_t start_uint64_size = start_byte_size / sizeof(uint64_t);
     constexpr size_t stop_uint64_size = stop_byte_size / sizeof(uint64_t);
+    // NOTE: The constructor without argument initializes as all-zero-state.
     randen::Randen<uint64_t> eng_randen;
     size_t current = start_uint64_size;
     vector<uint64_t> buff;
