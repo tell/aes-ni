@@ -10,7 +10,7 @@ endforeach()
 
 target_link_libraries(bench_randen randen)
 
-add_custom_target(run_benchmarks
-    bash "${CMAKE_SOURCE_DIR}/bench/run_benchmarks.sh"
-    DEPENDS benchmarks
-)
+# add_custom_target(run_benchmarks
+#     bash "${CMAKE_SOURCE_DIR}/bench/run_benchmarks.sh"
+#     DEPENDS benchmarks
+# )

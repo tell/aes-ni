@@ -3,8 +3,8 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/**",
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/third_party/randen/**"
             ],
             "defines": [],
             "macFrameworkPath": [

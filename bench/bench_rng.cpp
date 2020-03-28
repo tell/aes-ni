@@ -1,4 +1,5 @@
 #include <clt/aes-ni.hpp>
+#include <clt/statistics.hpp>
 
 #include "bench_config.hpp"
 
@@ -17,6 +18,9 @@ inline void do_rng_iteration()
         print_throughput("/dev/urandom", buff.size(), [&]() {
             clt::rng::rng_global(buff.data(), size(buff));
         });
+        if (check_random_bits(buff)) {
+            fmt::print(cerr, "WARNING: Outside statistics.\n");
+        }
         current <<= 1;
     }
 }

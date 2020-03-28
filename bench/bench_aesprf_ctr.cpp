@@ -1,4 +1,5 @@
 #include <clt/aes-ni.hpp>
+#include <clt/statistics.hpp>
 
 #include "bench_config.hpp"
 
@@ -16,13 +17,16 @@ template <class T> inline void do_aesprf_ctr_iteration(const T &prf)
         const size_t num_blocks = buff.size() / clt::aes128::block_bytes;
         print_throughput("aes128prf_ctr", buff.size(),
                          [&]() { prf.ctr_stream(buff.data(), num_blocks, 0); });
-        fmt::print(cerr, "result = {:02x}\n", all_xor(buff));
+        if (check_random_bits(buff)) {
+            fmt::print(cerr, "WARNING: Outside statistics.\n");
+        }
         current <<= 1;
     }
 }
 
 int main()
 {
+    print_diagnosis();
     const AES128::key_t key = gen_key();
     fmt::print(cerr, "key = {}\n", join(key));
     AESPRF128 prf(key.data());

@@ -35,4 +35,19 @@ template <class T> inline auto popcnt(const T &vec)
     return result;
 }
 
+template <class T> inline auto check_random_bits(const T &vec)
+{
+    /**
+     * NOTE: Very rough statistical check, not believe this.
+     */
+    using value_t = typename T::value_type;
+    const size_t num_bytes = std::size(vec) * sizeof(value_t);
+    const size_t num_bits = num_bytes * CHAR_BIT;
+    const auto stats = binomial_statistics(num_bits);
+    const auto low = std::get<2>(stats);
+    const auto high = std::get<3>(stats);
+    const auto popcnt_vec = popcnt(vec);
+    return (popcnt_vec < low) || (high < popcnt_vec);
+}
+
 } // namespace clt

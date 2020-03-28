@@ -1,4 +1,6 @@
 #include <clt/aes-ni.hpp>
+#include <clt/statistics.hpp>
+
 #include <randen.h>
 
 #include "bench_config.hpp"
@@ -30,7 +32,9 @@ inline void do_randen_iteration()
                                  buff[i] = eng_randen();
                              }
                          });
-        fmt::print(cerr, "result = {:016x}\n", all_xor(buff));
+        if (check_random_bits(buff)) {
+            fmt::print(cerr, "WARNING: Outside statistics.\n");
+        }
         current <<= 1;
     }
 }
