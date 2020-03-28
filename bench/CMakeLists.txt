@@ -4,9 +4,11 @@ message("Found benchmark source files = ${bench_srcs}")
 foreach(filename IN ITEMS ${bench_srcs})
     get_filename_component(basename "${filename}" NAME_WE)
     add_executable("${basename}" "${basename}.cpp")
-    target_link_libraries("${basename}" aes-ni fmt::fmt-header-only randen)
+    target_link_libraries("${basename}" aes-ni fmt::fmt-header-only)
     add_dependencies(benchmarks "${basename}")
 endforeach()
+
+target_link_libraries(bench_randen randen)
 
 add_custom_target(run_benchmarks
     bash "${CMAKE_SOURCE_DIR}/bench/run_benchmarks.sh"

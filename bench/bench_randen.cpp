@@ -10,22 +10,26 @@ using namespace clt::bench;
 
 inline void do_randen_iteration()
 {
-    static_assert((start_byte_size % sizeof(uint64_t)) == 0);
-    static_assert((stop_byte_size % sizeof(uint64_t)) == 0);
-    constexpr size_t start_uint64_size = start_byte_size / sizeof(uint64_t);
-    constexpr size_t stop_uint64_size = stop_byte_size / sizeof(uint64_t);
+    using randen_result_t = uint64_t;
+    static_assert((start_byte_size % sizeof(randen_result_t)) == 0);
+    static_assert((stop_byte_size % sizeof(randen_result_t)) == 0);
+    constexpr size_t start_uint64_size =
+        start_byte_size / sizeof(randen_result_t);
+    constexpr size_t stop_uint64_size =
+        stop_byte_size / sizeof(randen_result_t);
     // NOTE: The constructor without argument initializes as all-zero-state.
-    randen::Randen<uint64_t> eng_randen;
+    randen::Randen<randen_result_t> eng_randen;
     size_t current = start_uint64_size;
-    vector<uint64_t> buff;
+    vector<randen_result_t> buff;
     buff.reserve(stop_uint64_size);
     while (current <= stop_uint64_size) {
         buff.resize(current);
-        print_throughput("randen", buff.size() * sizeof(uint64_t), [&]() {
-            for (size_t i = 0; i < current; i++) {
-                buff[i] = eng_randen();
-            }
-        });
+        print_throughput("randen", buff.size() * sizeof(randen_result_t),
+                         [&]() {
+                             for (size_t i = 0; i < current; i++) {
+                                 buff[i] = eng_randen();
+                             }
+                         });
         current <<= 1;
     }
 }
