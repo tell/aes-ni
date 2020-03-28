@@ -7,5 +7,5 @@ echo "${bench_marks}"
 echo "Running..."
 for bench in ${bench_marks}; do
     echo "Execute: ${bench}"
-    ./${bench}
+    ./${bench} > ./${bench}_result.txt
 done

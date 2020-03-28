@@ -1,13 +1,8 @@
 add_custom_target(benchmarks)
-foreach(basename
-        bench_shuffle_fy
-        bench_rng
-        bench_aes_encdec
-        bench_aes_ctr
-        bench_aesmmo
-        bench_aesprf
-        bench_aesprf_ctr
-    )
+file(GLOB bench_srcs RELATIVE "${CMAKE_SOURCE_DIR}/bench" "bench_*.cpp")
+message("Found benchmark source files = ${bench_srcs}")
+foreach(filename IN ITEMS ${bench_srcs})
+    get_filename_component(basename "${filename}" NAME_WE)
     add_executable("${basename}" "${basename}.cpp")
     target_link_libraries("${basename}" aes-ni fmt::fmt-header-only)
     add_dependencies(benchmarks "${basename}")
