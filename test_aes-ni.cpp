@@ -7,6 +7,7 @@
 
 #include <clt/aes-ni.hpp>
 #include <clt/rng.hpp>
+#include <clt/statistics.hpp>
 
 #include <gtest/gtest.h>
 
@@ -16,19 +17,25 @@ using namespace clt::rng;
 
 class BasicTest : public ::testing::Test {
 protected:
-    vector<uint8_t> key_;
-    void set_key()
+    static vector<uint8_t> sample_key_;
+    vector<uint8_t> random_key_;
+    static void set_sample_key()
     {
         const uint8_t sample_key[aes128::key_bytes] = {
             // 2b7e151628aed2a6abf7158809cf4f3c
             0x2b, 0x7e, 0x15, 0x16, 0x28, 0xae, 0xd2, 0xa6,
             0xab, 0xf7, 0x15, 0x88, 0x09, 0xcf, 0x4f, 0x3c,
         };
-        key_.resize(size(sample_key));
-        copy(begin(sample_key), end(sample_key), begin(key_));
+        sample_key_.resize(size(sample_key));
+        copy(begin(sample_key), end(sample_key), begin(sample_key_));
     }
-    vector<uint8_t> plaintexts_;
-    void set_plaintexts()
+    void set_random_key()
+    {
+        random_key_.resize(aes128::key_bytes);
+        init(random_key_);
+    }
+    static vector<uint8_t> plaintexts_;
+    static void set_plaintexts()
     {
         const uint8_t sample_plaintexts[] = {
             // 6bc1bee22e409f96e93d7e117393172a
@@ -49,8 +56,8 @@ protected:
         copy(begin(sample_plaintexts), end(sample_plaintexts),
              begin(plaintexts_));
     }
-    vector<uint8_t> ciphertexts_;
-    void set_ciphertexts()
+    static vector<uint8_t> ciphertexts_;
+    static void set_ciphertexts()
     {
         const uint8_t sample_ciphertexts[] = {
             // 3ad77bb40d7a3660a89ecaf32466ef97
@@ -71,21 +78,46 @@ protected:
         copy(begin(sample_ciphertexts), end(sample_ciphertexts),
              begin(ciphertexts_));
     }
-    void SetUp() override
+    static void SetUpTestCase()
     {
         // Set test vectors.
-        set_key();
+        set_sample_key();
         set_plaintexts();
         set_ciphertexts();
-        ASSERT_EQ(size(key_) % aes128::block_bytes, 0);
+        ASSERT_EQ(size(sample_key_) % aes128::block_bytes, 0);
         ASSERT_EQ(size(plaintexts_), size(ciphertexts_));
         ASSERT_EQ(size(plaintexts_) % aes128::block_bytes, 0);
+        {
+            const auto bins = binomial_statistics(size(sample_key_) * CHAR_BIT);
+            const auto popcnt_key = popcnt(sample_key_);
+            EXPECT_LE(get<2>(bins), popcnt_key);
+            EXPECT_GE(get<3>(bins), popcnt_key);
+        }
+        {
+            const auto bins =
+                binomial_statistics(size(ciphertexts_) * CHAR_BIT);
+            const auto popcnt_ct = popcnt(ciphertexts_);
+            EXPECT_LE(get<2>(bins), popcnt_ct);
+            EXPECT_GE(get<3>(bins), popcnt_ct);
+        }
+    }
+    void SetUp()
+    {
+        set_random_key();
+        const auto bins = binomial_statistics(size(random_key_) * CHAR_BIT);
+        const auto popcnt_key = popcnt(random_key_);
+        EXPECT_LE(get<2>(bins), popcnt_key);
+        EXPECT_GE(get<3>(bins), popcnt_key);
     }
 };
 
-TEST_F(BasicTest, simple_use_aes_ni)
+vector<uint8_t> BasicTest::sample_key_;
+vector<uint8_t> BasicTest::plaintexts_;
+vector<uint8_t> BasicTest::ciphertexts_;
+
+TEST_F(BasicTest, simple_use_aes_ni_with_sample_key_and_texts)
 {
-    AES128 cipher(key_.data());
+    AES128 cipher(sample_key_.data());
     const auto num_blocks = size(plaintexts_) / aes128::block_bytes;
     vector<uint8_t> out(size(plaintexts_));
     cipher.enc(out.data(), plaintexts_.data(), num_blocks);
@@ -94,9 +126,21 @@ TEST_F(BasicTest, simple_use_aes_ni)
     ASSERT_EQ(out, plaintexts_);
 }
 
-TEST_F(BasicTest, mmo)
+TEST_F(BasicTest, simple_use_aes_ni)
 {
-    MMO128 crh(key_.data());
+    AES128 cipher(random_key_.data());
+    const auto num_blocks = 1 << 10;
+    const auto num_bytes = num_blocks * aes128::block_bytes;
+    vector<uint8_t> pt(num_bytes), ct(num_bytes), dec_ct(num_bytes);
+    init(pt);
+    cipher.enc(ct.data(), pt.data(), num_blocks);
+    cipher.dec(dec_ct.data(), ct.data(), num_blocks);
+    ASSERT_EQ(pt, dec_ct);
+}
+
+TEST_F(BasicTest, mmo_with_sample_key_and_texts)
+{
+    MMO128 crh(sample_key_.data());
     const auto num_blocks = size(plaintexts_) / clt::aes128::block_bytes;
     vector<uint8_t> out(size(plaintexts_));
     crh(out.data(), plaintexts_.data(), num_blocks);
@@ -109,7 +153,7 @@ TEST_F(BasicTest, mmo)
 
 TEST_F(BasicTest, aes_ctr_stream)
 {
-    AES128 cipher(key_.data());
+    AES128 cipher(random_key_.data());
     vector<uint64_t> buff, enc_buff, dec_buff, str_buff;
     constexpr size_t num_blocks = 1 << 10;
     static_assert((aes128::block_bytes % sizeof(uint64_t)) == 0);
@@ -125,14 +169,12 @@ TEST_F(BasicTest, aes_ctr_stream)
 
 TEST_F(BasicTest, shuffle_FY)
 {
-    vector<uint32_t> perm(10);
+    vector<uint32_t> perm(1 << 10);
     iota(begin(perm), end(perm), 0);
     shuffle(perm, rng_global);
     for (size_t i = 0; i < size(perm); i++) {
         const auto at_v = find(begin(perm), end(perm), i);
-        if (at_v == end(perm)) {
-            throw runtime_error(fmt::format("Not found index: {}", i));
-        }
+        ASSERT_NE(at_v, end(perm));
     }
     const auto inv_perm = inverse_permutation(perm);
     vector<uint64_t> buff(size(perm));

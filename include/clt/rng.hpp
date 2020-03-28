@@ -50,14 +50,9 @@ template <class T> inline void init(T *buff, const size_t num_elems)
     }
 }
 
-template <class T> inline void init(std::vector<T> &buff)
+template <class T> inline void init(T &buff)
 {
-    init(buff.data(), buff.size());
-}
-
-template <class T, size_t N> inline void init(std::array<T, N> &buff)
-{
-    init(buff.data(), N);
+    init(buff.data(), std::size(buff));
 }
 
 inline void getrandom([[maybe_unused]] void *out,

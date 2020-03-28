@@ -16,6 +16,15 @@ constexpr size_t block_bytes = 16;
 constexpr size_t key_bytes = 16;
 constexpr uint8_t zero_key[key_bytes] = {0};
 constexpr size_t num_rounds = 10;
+inline auto bytes_to_blocks(const size_t num_bytes)
+{
+    size_t num_blocks = num_bytes / block_bytes;
+    if ((num_bytes % block_bytes) == 0) {
+        return num_blocks;
+    } else {
+        return num_blocks + 1;
+    }
+}
 } // namespace aes128
 
 class AES128 {
