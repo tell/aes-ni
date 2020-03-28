@@ -17,6 +17,18 @@
             "MIMode": "lldb"
         },
         {
+            "name": "(lldb) 起動 bench_aesprf_ctr",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/bench/bench_aesprf_ctr",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build/bench",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
+        {
             "name": "(lldb) 起動 test_aes-ni",
             "type": "cppdbg",
             "request": "launch",

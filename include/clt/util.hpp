@@ -97,4 +97,14 @@ void init_iota(T &out, const size_t n, const size_t elem_per_block = 2)
         }
     }
 }
+
+template <class T> auto all_xor(T &vec)
+{
+    using value_t = typename T::value_type;
+    value_t v = 0;
+    for (auto &&x : vec) {
+        v ^= x;
+    }
+    return v;
+}
 } // namespace clt

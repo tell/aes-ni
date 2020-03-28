@@ -30,6 +30,7 @@ inline void do_randen_iteration()
                                  buff[i] = eng_randen();
                              }
                          });
+        fmt::print(cerr, "result = {:016x}\n", all_xor(buff));
         current <<= 1;
     }
 }

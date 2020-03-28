@@ -16,6 +16,7 @@ template <class T> inline void do_aesprf_ctr_iteration(const T &prf)
         const size_t num_blocks = buff.size() / clt::aes128::block_bytes;
         print_throughput("aes128prf_ctr", buff.size(),
                          [&]() { prf.ctr_stream(buff.data(), num_blocks, 0); });
+        fmt::print(cerr, "result = {:02x}\n", all_xor(buff));
         current <<= 1;
     }
 }

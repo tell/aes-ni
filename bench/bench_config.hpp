@@ -26,7 +26,7 @@ template <class Func> inline auto measure_walltime(Func &&f)
     constexpr double time_scale = 1e-6;
 
     const auto start = std::chrono::system_clock::now();
-    f();
+    (void)f();
     const auto stop = std::chrono::system_clock::now();
     return std::chrono::duration_cast<sec_spec>(stop - start).count() *
            time_scale;
@@ -35,7 +35,7 @@ template <class Func> inline auto measure_walltime(Func &&f)
 template <class Func> inline auto measure_cputime(Func &&f)
 {
     const double start = clock();
-    f();
+    (void)f();
     const double stop = clock();
     return (stop - start) / CLOCKS_PER_SEC;
 }
@@ -48,7 +48,7 @@ inline void print_diagnosis()
 
 template <class Func> inline auto measure(Func &&func)
 {
-    return internal::measure_cputime(std::forward<Func>(func));
+    return internal::measure_walltime(std::forward<Func>(func));
 }
 
 inline bool print_throughput_call_once()
