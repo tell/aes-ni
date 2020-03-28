@@ -23,7 +23,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Ofast -DNDEBUG")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-Ofast -g -fsanitize=address")
 set(CMAKE_CXX_FLAGS_MINSIZEREL "-Os -s -DNDEBUG")
 
-include("${CMAKE_SOURCE_DIR}/third_party.cmake")
+include("${CMAKE_SOURCE_DIR}/search_module.cmake")
 
 include_directories("${CMAKE_SOURCE_DIR}/include")
 add_subdirectory("${CMAKE_SOURCE_DIR}/src")
