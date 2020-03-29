@@ -36,7 +36,7 @@ template <class T> inline auto popcnt(const T &vec)
 }
 
 template <class T, class U = std::enable_if_t<std::is_integral_v<T>>>
-inline auto check_random_bits(const T v)
+inline auto check_random_bytes(const T v)
 {
     /**
      * NOTE: Very rough statistical check, not believe this.
@@ -52,7 +52,7 @@ inline auto check_random_bits(const T v)
 }
 
 template <class T, class U = std::enable_if_t<!std::is_integral_v<T>>>
-inline auto check_random_bits(const T &vec)
+inline auto check_random_bytes(const T &vec)
 {
     /**
      * NOTE: Very rough statistical check, not believe this.
