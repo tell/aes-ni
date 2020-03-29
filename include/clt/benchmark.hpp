@@ -1,6 +1,10 @@
 #pragma once
 
+#include <iostream>
 #include <chrono>
+
+#include <fmt/format.h>
+#include <fmt/ostream.h>
 
 namespace clt {
 namespace bench {
@@ -8,50 +12,12 @@ namespace bench {
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
-template <class T>
-inline bool eq_check(const std::vector<T> &buff0, const std::vector<T> &buff1)
-{
-    assert(buff0.size() == buff1.size());
-    const size_t num_elems = buff0.size();
-    for (size_t i = 0; i < num_elems; i++) {
-        if (buff0[i] != buff1[i]) {
-            return false;
-        }
-    }
-    return true;
-}
-
-namespace internal {
-template <class Func> inline auto measure_walltime(Func &&f)
-{
-    using sec_spec = std::chrono::microseconds;
-    constexpr double time_scale = 1e-6;
-
-    const auto start = std::chrono::system_clock::now();
-    (void)f();
-    const auto stop = std::chrono::system_clock::now();
-    return std::chrono::duration_cast<sec_spec>(stop - start).count() *
-           time_scale;
-}
-
-template <class Func> inline auto measure_cputime(Func &&f)
-{
-    const double start = clock();
-    (void)f();
-    const double stop = clock();
-    return (stop - start) / CLOCKS_PER_SEC;
-}
-} // namespace internal
-
 inline void print_diagnosis()
 {
     fmt::print(std::cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
 }
 
-template <class Func> inline auto measure(Func &&func)
-{
-    return internal::measure_cputime(std::forward<Func>(func));
-}
+double measure_static(const std::function<void()> &func);
 
 inline bool print_throughput_call_once()
 {
@@ -70,7 +36,7 @@ inline void print_throughput(const std::string &label, const size_t num_bytes,
         ([]() { return print_throughput_call_once(); })();
     while (true) {
         const std::string format = label + ",{},{:e},{:e}\n";
-        const auto elapsed_time = measure(std::forward<Func>(func));
+        const auto elapsed_time = measure_static(std::function<void()>(func));
         const auto bytes_per_sec = num_bytes / elapsed_time;
         if (std::isinf(bytes_per_sec)) {
             fmt::print(std::cerr,

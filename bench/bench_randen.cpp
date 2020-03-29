@@ -2,10 +2,9 @@
 
 #include <clt/aes-ni.hpp>
 #include <clt/statistics.hpp>
+#include <clt/benchmark.hpp>
 
 #include <randen.h>
-
-#include "bench_config.hpp"
 
 using namespace std;
 using namespace clt;

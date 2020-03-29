@@ -1,7 +1,6 @@
 #include <clt/aes-ni.hpp>
 #include <clt/statistics.hpp>
-
-#include "bench_config.hpp"
+#include <clt/benchmark.hpp>
 
 using namespace std;
 using namespace clt;
