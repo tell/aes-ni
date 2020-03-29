@@ -1,6 +1,5 @@
 #!/bin/bash
 set -ev
-alias docw="docker exec -ti ${MY_NAME} bash -c"
 docker exec -ti ${MY_NAME} bash -c "apt update" > /dev/null
 docker exec -ti ${MY_NAME} bash -c "apt upgrade -y" > /dev/null
 docker exec -ti ${MY_NAME} bash -c "apt install -y build-essential git cmake" > /dev/null
