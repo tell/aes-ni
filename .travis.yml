@@ -20,13 +20,13 @@ matrix:
 #    - MY_CXX=clang++
 before_install:
 - if [[ ! -z "$MY_CXX" ]]; then export CXX=$MY_CXX; fi
-- ./travis-ci/before_install_$TRAVIS_OS_NAME.bash
+- bash ./travis-ci/before_install_$TRAVIS_OS_NAME.bash
 install:
-- ./travis-ci/install_$TRAVIS_OS_NAME.bash
+- bash ./travis-ci/install_$TRAVIS_OS_NAME.bash
 before_script:
-- ./travis-ci/before_script_$TRAVIS_OS_NAME.bash
+- bash ./travis-ci/before_script_$TRAVIS_OS_NAME.bash
 script:
-- ./travis-ci/script_$TRAVIS_OS_NAME.bash
+- bash ./travis-ci/script_$TRAVIS_OS_NAME.bash
 after_failure:
 - tail -n 1000 make.log
 notifications:
