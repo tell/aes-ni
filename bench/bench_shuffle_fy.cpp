@@ -1,6 +1,7 @@
 #include <numeric>
 
 #include <clt/aes-ni.hpp>
+#include <clt/shuffle.hpp>
 #include <clt/benchmark.hpp>
 
 using namespace std;

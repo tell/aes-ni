@@ -7,8 +7,6 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
-#include <clt/rng.hpp>
-
 namespace clt {
 inline std::string join(const uint64_t *in, const size_t &n)
 {

@@ -7,6 +7,7 @@
 
 #include <clt/aes-ni.hpp>
 #include <clt/rng.hpp>
+#include <clt/shuffle.hpp>
 #include <clt/statistics.hpp>
 
 #include <gtest/gtest.h>
