@@ -3,7 +3,7 @@ set -ev
 alias docw="docker exec -ti ${MY_NAME} bash -c"
 docker exec -ti ${MY_NAME} bash -c "apt update" > /dev/null
 docker exec -ti ${MY_NAME} bash -c "apt upgrade -y" > /dev/null
-docker exec -ti ${MY_NAME} bash -c "apt install -y build-essential git cmake libfmt-dev libgtest-dev" > /dev/null
+docker exec -ti ${MY_NAME} bash -c "apt install -y build-essential git cmake" > /dev/null
 
 docker exec -ti ${MY_NAME} bash -c "git clone https://github.com/fmtlib/fmt.git"
 docker exec -ti ${MY_NAME} bash -c "cd fmt; mkdir -p build; cd build; cmake ..; make -j; make install"
