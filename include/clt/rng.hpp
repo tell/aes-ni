@@ -3,7 +3,13 @@
 #include <iostream>
 #include <vector>
 
-#if defined(__linux__)
+#if defined(__linux__) && (__GLIBC__ > 2 || __GLIBC_MINOR__ > 24)
+#define IS_SYSCALL_GETRANDOM_ENABLED 1
+#else
+#define IS_SYSCALL_GETRANDOM_ENABLED 0
+#endif
+
+#if IS_SYSCALL_GETRANDOM_ENABLED
 #include <string.h>
 #include <sys/random.h>
 #endif
@@ -58,7 +64,7 @@ template <class T> inline void init(T &buff)
 inline void getrandom([[maybe_unused]] void *out,
                       [[maybe_unused]] const size_t num_bytes)
 {
-#if defined(__linux__)
+#if IS_SYSCALL_GETRANDOM_ENABLED
     auto *p_out = reinterpret_cast<uint8_t *>(out);
     size_t gened_bytes = 0;
     errno = 0;
