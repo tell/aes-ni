@@ -32,7 +32,7 @@
             "name": "(lldb) 起動 test_aes-ni",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/test_aes-ni",
+            "program": "${workspaceFolder}/build/test/test_aes-ni",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}/build",

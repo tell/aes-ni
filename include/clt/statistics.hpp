@@ -35,36 +35,36 @@ template <class T> inline auto popcnt(const T &vec)
     return result;
 }
 
+namespace internal {
+
 template <class T, class U = std::enable_if_t<std::is_integral_v<T>>>
-inline auto check_random_bytes(const T v)
+inline auto bytes_popcnt(const T v)
 {
-    /**
-     * NOTE: Very rough statistical check, not believe this.
-     */
     using value_t = T;
     const size_t num_bytes = sizeof(value_t);
-    const size_t num_bits = num_bytes * CHAR_BIT;
-    const auto stats = binomial_statistics(num_bits);
-    const auto low = std::get<2>(stats);
-    const auto high = std::get<3>(stats);
     const auto popcnt_v = _mm_popcnt_u64(v);
-    return (low <= popcnt_v) || (popcnt_v <= high);
+    return std::make_tuple(num_bytes, popcnt_v);
 }
 
 template <class T, class U = std::enable_if_t<!std::is_integral_v<T>>>
-inline auto check_random_bytes(const T &vec)
+inline auto bytes_popcnt(const T &vec)
+{
+    using value_t = typename T::value_type;
+    const size_t num_bytes = std::size(vec) * sizeof(value_t);
+    const auto popcnt_vec = popcnt(vec);
+    return std::make_tuple(num_bytes, popcnt_vec);
+}
+} // namespace internal
+
+template <class T> inline auto check_random_bytes(T &&v)
 {
     /**
      * NOTE: Very rough statistical check, not believe this.
      */
-    using value_t = typename T::value_type;
-    const size_t num_bytes = std::size(vec) * sizeof(value_t);
-    const size_t num_bits = num_bytes * CHAR_BIT;
-    const auto stats = binomial_statistics(num_bits);
-    const auto low = std::get<2>(stats);
-    const auto high = std::get<3>(stats);
-    const auto popcnt_vec = popcnt(vec);
-    return (low <= popcnt_vec) && (popcnt_vec <= high);
+    const auto [num_bytes, popcnt_v] = internal::bytes_popcnt(v);
+    const auto num_bits = num_bytes * CHAR_BIT;
+    const auto [mean, stdv, low, high] = binomial_statistics(num_bits);
+    return (low <= popcnt_v) && (popcnt_v <= high);
 }
 
 } // namespace clt

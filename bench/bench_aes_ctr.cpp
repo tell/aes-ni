@@ -21,7 +21,7 @@ inline void do_aesprf_ctr_iteration()
         buff.resize(current);
         assert((buff.size() % clt::aes128::block_bytes) == 0);
         const size_t num_blocks = buff.size() / clt::aes128::block_bytes;
-        print_throughput("aesprf128_ctr", buff.size(), [&]() {
+        print_throughput("aes128_ctr", buff.size(), [&]() {
             cipher.ctr_stream(buff.data(), num_blocks, 0);
         });
         current <<= 1;

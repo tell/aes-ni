@@ -125,6 +125,8 @@ TEST_F(BasicTest, simple_use_aes_ni)
     cipher.enc(ct.data(), pt.data(), num_blocks);
     cipher.dec(dec_ct.data(), ct.data(), num_blocks);
     ASSERT_EQ(pt, dec_ct);
+    EXPECT_TRUE(check_random_bytes(ct))
+        << "Statistical check failed, but not fatal.";
 }
 
 TEST_F(BasicTest, mmo_with_sample_key_and_texts)
@@ -138,6 +140,8 @@ TEST_F(BasicTest, mmo_with_sample_key_and_texts)
         expected_out[i] = plaintexts_[i] ^ ciphertexts_[i];
     }
     ASSERT_EQ(out, expected_out);
+    EXPECT_TRUE(check_random_bytes(out))
+        << "Statistical check failed, but not fatal.";
 }
 
 TEST_F(BasicTest, aes_ctr_stream)
@@ -155,6 +159,10 @@ TEST_F(BasicTest, aes_ctr_stream)
     const auto counter = cipher.ctr_stream(str_buff.data(), num_blocks, 0);
     ASSERT_EQ(str_buff, enc_buff);
     ASSERT_EQ(counter, num_blocks);
+    EXPECT_TRUE(check_random_bytes(enc_buff))
+        << "Statistical check failed, but not fatal.";
+    EXPECT_TRUE(check_random_bytes(str_buff))
+        << "Statistical check failed, but not fatal.";
 }
 
 TEST_F(BasicTest, aesprf_ctr_stream)
@@ -171,6 +179,8 @@ TEST_F(BasicTest, aesprf_ctr_stream)
     const auto counter = prf.ctr_stream(str_buff.data(), num_blocks, 0);
     ASSERT_EQ(prf_buff, str_buff);
     ASSERT_EQ(counter, num_blocks);
+    EXPECT_TRUE(check_random_bytes(str_buff))
+        << "Statistical check failed, but not fatal.";
 }
 
 TEST_F(BasicTest, shuffle_FY)

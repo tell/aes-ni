@@ -27,7 +27,7 @@ namespace {
 
 double measure_static(const std::function<void()> &func)
 {
-    return measure_cputime(func);
+    return measure_walltime(func);
 }
 
 } // namespace bench

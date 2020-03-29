@@ -12,6 +12,20 @@ namespace bench {
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
+template <class T> inline bool eq_check(T &&lvec, T &&rvec)
+{
+    if (std::size(lvec) != std::size(rvec)) {
+        return false;
+    }
+    const auto vec_size = std::size(lvec);
+    for (size_t i = 0; i < vec_size; i++) {
+        if (lvec[i] != rvec[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 inline void print_diagnosis()
 {
     fmt::print(std::cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);

@@ -4,7 +4,6 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/include/**",
-                "${workspaceFolder}/bench/**",
                 "${workspaceFolder}/third_party/randen/**"
             ],
             "defines": [],
