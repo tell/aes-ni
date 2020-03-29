@@ -50,7 +50,7 @@ inline void print_diagnosis()
 
 template <class Func> inline auto measure(Func &&func)
 {
-    return internal::measure_walltime(std::forward<Func>(func));
+    return internal::measure_cputime(std::forward<Func>(func));
 }
 
 inline bool print_throughput_call_once()
