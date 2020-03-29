@@ -97,8 +97,10 @@ protected:
             const auto bins =
                 binomial_statistics(size(ciphertexts_) * CHAR_BIT);
             const auto popcnt_ct = popcnt(ciphertexts_);
-            EXPECT_LE(get<2>(bins), popcnt_ct);
-            EXPECT_GE(get<3>(bins), popcnt_ct);
+            EXPECT_LE(get<2>(bins), popcnt_ct)
+                << "Statistical check failed, not fatal.";
+            EXPECT_GE(get<3>(bins), popcnt_ct)
+                << "Statistical check failed, not fatal.";
         }
     }
     void SetUp()
@@ -106,8 +108,10 @@ protected:
         set_random_key();
         const auto bins = binomial_statistics(size(random_key_) * CHAR_BIT);
         const auto popcnt_key = popcnt(random_key_);
-        EXPECT_LE(get<2>(bins), popcnt_key);
-        EXPECT_GE(get<3>(bins), popcnt_key);
+        EXPECT_LE(get<2>(bins), popcnt_key)
+            << "Statistical check failed, not fatal.";
+        EXPECT_GE(get<3>(bins), popcnt_key)
+            << "Statistical check failed, not fatal.";
     }
 };
 

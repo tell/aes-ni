@@ -12,7 +12,7 @@ inline auto binomial_statistics(const size_t n)
 {
     const double exp = n / 2.0;
     const double stdv = std::sqrt(n) / 2.0;
-    constexpr double conf_scale = 3.0;
+    constexpr double conf_scale = 4.0;
     return std::make_tuple(exp, stdv, exp - conf_scale * stdv,
                            exp + conf_scale * stdv);
 }
