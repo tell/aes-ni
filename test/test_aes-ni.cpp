@@ -87,31 +87,16 @@ protected:
         ASSERT_EQ(size(sample_key_) % aes128::block_bytes, 0);
         ASSERT_EQ(size(plaintexts_), size(ciphertexts_));
         ASSERT_EQ(size(plaintexts_) % aes128::block_bytes, 0);
-        {
-            const auto bins = binomial_statistics(size(sample_key_) * CHAR_BIT);
-            const auto popcnt_key = popcnt(sample_key_);
-            EXPECT_LE(get<2>(bins), popcnt_key);
-            EXPECT_GE(get<3>(bins), popcnt_key);
-        }
-        {
-            const auto bins =
-                binomial_statistics(size(ciphertexts_) * CHAR_BIT);
-            const auto popcnt_ct = popcnt(ciphertexts_);
-            EXPECT_LE(get<2>(bins), popcnt_ct)
-                << "Statistical check failed, not fatal.";
-            EXPECT_GE(get<3>(bins), popcnt_ct)
-                << "Statistical check failed, not fatal.";
-        }
+        EXPECT_TRUE(check_random_bytes(sample_key_))
+            << "Statistical check failed, but not fatal.";
+        EXPECT_TRUE(check_random_bytes(ciphertexts_))
+            << "Statistical check failed, but not fatal.";
     }
     void SetUp()
     {
         set_random_key();
-        const auto bins = binomial_statistics(size(random_key_) * CHAR_BIT);
-        const auto popcnt_key = popcnt(random_key_);
-        EXPECT_LE(get<2>(bins), popcnt_key)
-            << "Statistical check failed, not fatal.";
-        EXPECT_GE(get<3>(bins), popcnt_key)
-            << "Statistical check failed, not fatal.";
+        EXPECT_TRUE(check_random_bytes(random_key_))
+            << "Statistical check failed, but not fatal.";
     }
 };
 
@@ -167,8 +152,25 @@ TEST_F(BasicTest, aes_ctr_stream)
     str_buff.resize(buff.size());
     init_iota(buff, num_blocks, 2);
     cipher.enc(enc_buff.data(), buff.data(), num_blocks);
-    cipher.ctr_stream(str_buff.data(), num_blocks, 0);
+    const auto counter = cipher.ctr_stream(str_buff.data(), num_blocks, 0);
     ASSERT_EQ(str_buff, enc_buff);
+    ASSERT_EQ(counter, num_blocks);
+}
+
+TEST_F(BasicTest, aesprf_ctr_stream)
+{
+    AESPRF128 prf(random_key_.data());
+    vector<uint64_t> buff, prf_buff, str_buff;
+    constexpr size_t num_blocks = 1 << 10;
+    static_assert((aes128::block_bytes % sizeof(uint64_t)) == 0);
+    buff.resize(num_blocks * aes128::block_bytes / sizeof(uint64_t));
+    prf_buff.resize(buff.size());
+    str_buff.resize(buff.size());
+    init_iota(buff, num_blocks, 2);
+    prf(prf_buff.data(), buff.data(), num_blocks);
+    const auto counter = prf.ctr_stream(str_buff.data(), num_blocks, 0);
+    ASSERT_EQ(prf_buff, str_buff);
+    ASSERT_EQ(counter, num_blocks);
 }
 
 TEST_F(BasicTest, shuffle_FY)

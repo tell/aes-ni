@@ -47,8 +47,8 @@ inline auto check_random_bytes(const T v)
     const auto stats = binomial_statistics(num_bits);
     const auto low = std::get<2>(stats);
     const auto high = std::get<3>(stats);
-    const auto popcnt_vec = _mm_popcnt_u64(v);
-    return (popcnt_vec < low) || (high < popcnt_vec);
+    const auto popcnt_v = _mm_popcnt_u64(v);
+    return (low <= popcnt_v) || (popcnt_v <= high);
 }
 
 template <class T, class U = std::enable_if_t<!std::is_integral_v<T>>>
@@ -64,7 +64,7 @@ inline auto check_random_bytes(const T &vec)
     const auto low = std::get<2>(stats);
     const auto high = std::get<3>(stats);
     const auto popcnt_vec = popcnt(vec);
-    return (popcnt_vec < low) || (high < popcnt_vec);
+    return (low <= popcnt_vec) && (popcnt_vec <= high);
 }
 
 } // namespace clt

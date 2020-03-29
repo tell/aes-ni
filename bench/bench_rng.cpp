@@ -17,7 +17,7 @@ inline void do_rng_iteration()
         print_throughput("/dev/urandom", buff.size(), [&]() {
             clt::rng::rng_global(buff.data(), size(buff));
         });
-        if (check_random_bytes(buff)) {
+        if (!check_random_bytes(buff)) {
             fmt::print(cerr, "WARNING: Outside statistics.\n");
         }
         current <<= 1;

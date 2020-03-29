@@ -25,7 +25,7 @@ inline void do_randen_iteration()
     // NOTE: The constructor without argument initializes as all-zero-state.
     const randen_result_t seed = dist(rdev);
     fmt::print(cerr, "seed = {:016x}\n", seed);
-    if (check_random_bytes(seed)) {
+    if (!check_random_bytes(seed)) {
         fmt::print(cerr, "WARNING: Skew seed, not fatal.\n");
     }
     randen::Randen<randen_result_t> eng_randen(seed);
@@ -41,7 +41,7 @@ inline void do_randen_iteration()
                                  buff[i] = eng_randen();
                              }
                          });
-        if (check_random_bytes(buff)) {
+        if (!check_random_bytes(buff)) {
             fmt::print(cerr, "WARNING: Outside statistics.\n");
         }
         current <<= 1;

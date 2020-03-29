@@ -10,7 +10,7 @@ inline void do_aesprf_ctr_iteration()
 {
     const AES128::key_t key = gen_key();
     fmt::print(cerr, "key = {}\n", join(key));
-    if (check_random_bytes(key)) {
+    if (!check_random_bytes(key)) {
         fmt::print(cerr, "WARNING: Skew key.\n");
     }
     AES128 cipher(key);
