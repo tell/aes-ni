@@ -19,7 +19,7 @@ matrix:
 #    env:
 #    - MY_CXX=clang++
 before_install:
-- if [[ ! -z "${MY_CXX}" ]]; then export CXX="${MY_CXX}""; fi
+- if [[ ! -z "${MY_CXX}" ]]; then export CXX="${MY_CXX}"; fi
 - bash "./travis-ci/before_install_${TRAVIS_OS_NAME}.bash"
 install:
 - bash "./travis-ci/install_${TRAVIS_OS_NAME}.bash"
