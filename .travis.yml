@@ -1,0 +1,35 @@
+language: cpp
+sudo: required
+service:
+- docker
+env:
+  global:
+  - MY_NAME=travis-ci
+  - MY_TARGET_MOUNT=/tell/aesni
+matrix:
+  include:
+  - os: linux
+    dist: xenial
+    compiler: gcc
+    env:
+    - MY_TARGET_DIST=ubuntu:18.04
+  - os: osx
+    osx_image: xcode11.0
+    compiler: clang
+    env:
+    - MY_CXX=clang++
+before_install:
+- if [[ ! -z "$MY_CXX" ]]; then export CXX=$MY_CXX; fi
+- ./travis-ci/before_install_$TRAVIS_OS_NAME.bash
+install:
+- ./travis-ci/install_$TRAVIS_OS_NAME.bash
+before_script:
+- ./travis-ci/before_script_$TRAVIS_OS_NAME.bash
+script:
+- ./travis-ci/script_$TRAVIS_OS_NAME.bash
+after_failure:
+- tail -n 1000 make.log
+notifications:
+  on_success: change
+  on_failure: always
+# vim: set expandtab shiftwidth=2 softtabstop=2 :
