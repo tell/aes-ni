@@ -28,7 +28,7 @@ before_script:
 script:
 - bash "./travis-ci/script_${TRAVIS_OS_NAME}.bash"
 after_failure:
-- tail -n 1000 "${TRAVIS_BUILD_DIR}/build/CMakeFiles/CMakeOutput.log"
+- tail -n 10 "${TRAVIS_BUILD_DIR}/build/CMakeFiles/CMakeOutput.log"
 notifications:
   on_success: change
   on_failure: always
