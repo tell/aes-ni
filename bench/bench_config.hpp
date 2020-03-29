@@ -56,7 +56,7 @@ template <class Func> inline auto measure(Func &&func)
 inline bool print_throughput_call_once()
 {
     [[maybe_unused]] static bool call_once__ = ([]() {
-        fmt::print("mode,bytes,bytes/s\n");
+        fmt::print("mode,bytes,sec,bytes/sec\n");
         return true;
     })();
     return true;
@@ -69,14 +69,14 @@ inline void print_throughput(const std::string &label, const size_t num_bytes,
     [[maybe_unused]] static bool call_once__ =
         ([]() { return print_throughput_call_once(); })();
     while (true) {
-        const std::string format = label + ",{},{:.5e}\n";
+        const std::string format = label + ",{},{:e},{:e}\n";
         const auto elapsed_time = measure(std::forward<Func>(func));
         const auto bytes_per_sec = num_bytes / elapsed_time;
         if (std::isinf(bytes_per_sec)) {
             fmt::print(std::cerr,
                        "Obtained throughput is the infinity, try again...\n");
         } else {
-            fmt::print(format, num_bytes, bytes_per_sec);
+            fmt::print(format, num_bytes, elapsed_time, bytes_per_sec);
             break;
         }
     }
