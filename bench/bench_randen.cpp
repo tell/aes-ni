@@ -27,7 +27,7 @@ inline void do_randen_iteration()
     const randen_result_t seed = dist(rdev);
     fmt::print(cerr, "seed = {:016x}\n", seed);
     if (check_random_bytes(seed)) {
-        fmt::print(cerr, "WARNING: Skew key.\n");
+        fmt::print(cerr, "WARNING: Skew seed, not fatal.\n");
     }
     randen::Randen<randen_result_t> eng_randen(seed);
     size_t current = start_uint64_size;

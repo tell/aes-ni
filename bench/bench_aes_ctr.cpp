@@ -1,4 +1,5 @@
 #include <clt/aes-ni.hpp>
+#include <clt/statistics.hpp>
 
 #include "bench_config.hpp"
 
@@ -6,8 +7,14 @@ using namespace std;
 using namespace clt;
 using namespace clt::bench;
 
-template <class T> inline void do_aesprf_ctr_iteration(const T &cipher)
+inline void do_aesprf_ctr_iteration()
 {
+    const AES128::key_t key = gen_key();
+    fmt::print(cerr, "key = {}\n", join(key));
+    if (check_random_bytes(key)) {
+        fmt::print(cerr, "WARNING: Skew key.\n");
+    }
+    AES128 cipher(key);
     size_t current = start_byte_size;
     vector<uint8_t> buff;
     buff.reserve(stop_byte_size);
@@ -25,9 +32,6 @@ template <class T> inline void do_aesprf_ctr_iteration(const T &cipher)
 int main()
 {
     print_diagnosis();
-    const AES128::key_t key = gen_key();
-    fmt::print(cerr, "key = {}\n", join(key));
-    AES128 cipher(key);
-    do_aesprf_ctr_iteration(cipher);
+    do_aesprf_ctr_iteration();
     return 0;
 }
