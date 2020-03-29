@@ -1,3 +1,5 @@
+#include <random>
+
 #include <clt/aes-ni.hpp>
 #include <clt/statistics.hpp>
 
@@ -12,7 +14,9 @@ using namespace clt::bench;
 
 inline void do_randen_iteration()
 {
+    std::random_device rdev;
     using randen_result_t = uint64_t;
+    std::uniform_int_distribution<randen_result_t> dist;
     static_assert((start_byte_size % sizeof(randen_result_t)) == 0);
     static_assert((stop_byte_size % sizeof(randen_result_t)) == 0);
     constexpr size_t start_uint64_size =
@@ -20,7 +24,11 @@ inline void do_randen_iteration()
     constexpr size_t stop_uint64_size =
         stop_byte_size / sizeof(randen_result_t);
     // NOTE: The constructor without argument initializes as all-zero-state.
-    randen::Randen<randen_result_t> eng_randen;
+    const randen_result_t seed = dist(rdev);
+    if (check_random_bits(seed)) {
+        fmt::print(cerr, "WARNING: Skew key.\n");
+    }
+    randen::Randen<randen_result_t> eng_randen(seed);
     size_t current = start_uint64_size;
     vector<randen_result_t> buff;
     buff.reserve(stop_uint64_size);
@@ -28,7 +36,8 @@ inline void do_randen_iteration()
         buff.resize(current);
         print_throughput("randen", buff.size() * sizeof(randen_result_t),
                          [&]() {
-                             for (size_t i = 0; i < current; i++) {
+                             const size_t buff_size = buff.size();
+                             for (size_t i = 0; i < buff_size; i++) {
                                  buff[i] = eng_randen();
                              }
                          });
