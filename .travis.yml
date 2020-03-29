@@ -19,16 +19,16 @@ matrix:
 #    env:
 #    - MY_CXX=clang++
 before_install:
-- if [[ ! -z "$MY_CXX" ]]; then export CXX=$MY_CXX; fi
-- bash ./travis-ci/before_install_$TRAVIS_OS_NAME.bash
+- if [[ ! -z "${MY_CXX}" ]]; then export CXX=${MY_CXX}; fi
+- bash ./travis-ci/before_install_${TRAVIS_OS_NAME}.bash
 install:
-- bash ./travis-ci/install_$TRAVIS_OS_NAME.bash
+- bash ./travis-ci/install_${TRAVIS_OS_NAME}.bash
 before_script:
-- bash ./travis-ci/before_script_$TRAVIS_OS_NAME.bash
+- bash ./travis-ci/before_script_${TRAVIS_OS_NAME}.bash
 script:
-- bash ./travis-ci/script_$TRAVIS_OS_NAME.bash
+- bash ./travis-ci/script_${TRAVIS_OS_NAME}.bash
 after_failure:
-- tail -n 1000 make.log
+- tail -n 1000 "${TRAVIS_BUILD_DIR}/build/CMakeFiles/CMakeOutput.log"
 notifications:
   on_success: change
   on_failure: always
