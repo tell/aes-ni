@@ -33,10 +33,10 @@ inline void print_diagnosis()
 
 double measure_static(const std::function<void()> &func);
 
-inline bool print_throughput_call_once()
+inline bool print_throughput_call_once(const std::string &unit_label = "bytes")
 {
-    [[maybe_unused]] static bool call_once__ = ([]() {
-        fmt::print("mode,bytes,sec,bytes/sec\n");
+    [[maybe_unused]] static bool call_once__ = ([&]() {
+        fmt::print("mode,{0},sec,{0}/sec\n", unit_label);
         return true;
     })();
     return true;
@@ -44,10 +44,11 @@ inline bool print_throughput_call_once()
 
 template <class Func>
 inline void print_throughput(const std::string &label, const size_t num_bytes,
-                             Func &&func)
+                             Func &&func,
+                             const std::string &unit_label = "bytes")
 {
     [[maybe_unused]] static bool call_once__ =
-        ([]() { return print_throughput_call_once(); })();
+        ([&]() { return print_throughput_call_once(unit_label); })();
     while (true) {
         const std::string format = label + ",{},{:e},{:e}\n";
         const auto elapsed_time = measure_static(std::function<void()>(func));

@@ -13,13 +13,13 @@ inline void do_shuffle_ys_iteration()
     size_t current = start_byte_size;
     vector<uint32_t> buff;
     buff.reserve(stop_byte_size);
-    fmt::print("mode,num,sec\n");
     while (current <= stop_byte_size) {
         buff.resize(current);
         iota(begin(buff), end(buff), 0);
-        print_throughput("shuffle_ys_dev-urandom", size(buff), [&]() {
-            shuffle(buff.data(), size(buff), rng_global);
-        });
+        print_throughput(
+            "shuffle_ys_dev-urandom", size(buff),
+            [&]() { shuffle(buff.data(), size(buff), rng_global); },
+            "32bit_elems");
         current <<= 1;
     }
 }
