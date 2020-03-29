@@ -51,8 +51,7 @@ template <class T> inline void init(T *buff, const size_t num_elems)
     const size_t num_bytes = sizeof(T) * num_elems;
     const auto status = rng_global(buff, num_bytes);
     if (!status) {
-        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
-        abort();
+        throw std::runtime_error("Randomness generation failed.");
     }
 }
 
@@ -79,7 +78,7 @@ inline void getrandom([[maybe_unused]] void *out,
         gened_bytes += ret_bytes;
     } while (gened_bytes < num_bytes);
 #else
-    throw std::runtime_error("not implemented yet");
+    throw std::runtime_error("Not implemented yet.");
 #endif
 }
 

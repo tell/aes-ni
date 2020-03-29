@@ -25,6 +25,7 @@ inline void do_randen_iteration()
         stop_byte_size / sizeof(randen_result_t);
     // NOTE: The constructor without argument initializes as all-zero-state.
     const randen_result_t seed = dist(rdev);
+    fmt::print(cerr, "seed = {:016x}\n", seed);
     if (check_random_bytes(seed)) {
         fmt::print(cerr, "WARNING: Skew key.\n");
     }
