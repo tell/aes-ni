@@ -1,4 +1,5 @@
 #include <clt/aes-ni.hpp>
+#include <clt/rng.hpp>
 #include <clt/benchmark.hpp>
 
 using namespace std;

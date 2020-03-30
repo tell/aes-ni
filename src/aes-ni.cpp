@@ -1,6 +1,7 @@
 #include <x86intrin.h>
 
 #include <clt/aes-ni.hpp>
+#include <clt/rng.hpp>
 
 /**
  * NOTE: According to
@@ -21,6 +22,15 @@ static_assert(aes128::key_bytes == sizeof(__m128i));
 #include "clt/aes-ni_key-exp_impl.hpp"
 
 namespace clt {
+AES128::key_t gen_key()
+{
+    AES128::key_t key;
+    if (!clt::rng::rng_global(key.data(), aes128::key_bytes)) {
+        throw std::runtime_error("Random bytes generation is failed.");
+    }
+    return key;
+}
+
 inline void aes128_key_expansion(__m128i *keys)
 {
     internal::aes128_key_expansion_impl<0>(keys);

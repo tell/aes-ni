@@ -8,8 +8,6 @@
 
 #include <fmt/format.h>
 
-#include <clt/rng.hpp>
-
 namespace clt {
 namespace aes128 {
 constexpr size_t block_bytes = 16;
@@ -46,14 +44,7 @@ public:
         -> decltype(num_blocks + start_count);
 };
 
-inline auto gen_key()
-{
-    AES128::key_t key;
-    if (!clt::rng::rng_global(key.data(), aes128::key_bytes)) {
-        fmt::print(std::cerr, "ERROR!! failed: {}\n", __func__);
-    }
-    return key;
-}
+AES128::key_t gen_key();
 
 class MMO128 {
     /**
