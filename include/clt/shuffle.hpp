@@ -50,15 +50,17 @@ inline auto apply_permutation(const std::vector<T> &in,
 template <class T>
 inline void inverse_permutation(T *out, const T *in, const size_t n)
 {
-    assert(out != in);
-    const auto end_iter = std::next(in, n);
+    using tuple_t = std::tuple<T, uint32_t>;
+    std::vector<tuple_t> t_vec(n);
     for (size_t i = 0; i < n; i++) {
-        const auto at_v = std::find(in, end_iter, i);
-        if (at_v == end_iter) {
-            throw std::runtime_error(fmt::format("Not found index: {}", i));
-        }
-        const auto index = std::distance(in, at_v);
-        out[i] = index;
+        t_vec[i] = std::forward_as_tuple(in[i], i);
+    }
+    std::sort(t_vec.begin(), t_vec.end(),
+              [](const tuple_t &lhs, const tuple_t &rhs) {
+                  return std::get<0>(lhs) < std::get<0>(rhs);
+              });
+    for (size_t i = 0; i < n; i++) {
+        out[i] = std::get<1>(t_vec[i]);
     }
 }
 
