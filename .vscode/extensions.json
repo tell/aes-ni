@@ -4,6 +4,7 @@
     "recommendations": [
         // Extension identifier format: ${publisher}.${name}. Example: vscode.csharp
         "ms-vscode.cpptools",
-        "ms-vscode.cmake-tools"
+        "ms-vscode.cmake-tools",
+        "twxs.cmake"
     ]
 }
