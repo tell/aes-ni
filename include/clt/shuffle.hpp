@@ -24,7 +24,7 @@ inline void shuffle(T *inplace, const size_t n, Func &&rng)
 template <class T, class Func>
 inline void shuffle(std::vector<T> &inplace, Func &&rng)
 {
-    shuffle(inplace.data(), size(inplace), std::forward<Func>(rng));
+    shuffle(inplace.data(), std::size(inplace), std::forward<Func>(rng));
 }
 
 template <class T, class U>
@@ -41,9 +41,9 @@ template <class T, class U>
 inline auto apply_permutation(const std::vector<T> &in,
                               const std::vector<U> &perm)
 {
-    assert(size(in) == size(perm));
-    std::vector<T> out(size(in));
-    apply_permutation(out.data(), in.data(), perm.data(), size(in));
+    assert(std::size(in) == std::size(perm));
+    std::vector<T> out(std::size(in));
+    apply_permutation(out.data(), in.data(), perm.data(), std::size(in));
     return out;
 }
 
@@ -51,9 +51,10 @@ template <class T>
 inline void inverse_permutation(T *out, const T *in, const size_t n)
 {
     using tuple_t = std::tuple<T, uint32_t>;
-    std::vector<tuple_t> t_vec(n);
+    std::vector<tuple_t> t_vec;
+    t_vec.reserve(n);
     for (size_t i = 0; i < n; i++) {
-        t_vec[i] = std::forward_as_tuple(in[i], i);
+        t_vec.emplace_back(in[i], i);
     }
     std::sort(t_vec.begin(), t_vec.end(),
               [](const tuple_t &lhs, const tuple_t &rhs) {
@@ -66,8 +67,8 @@ inline void inverse_permutation(T *out, const T *in, const size_t n)
 
 template <class T> inline auto inverse_permutation(const std::vector<T> &in)
 {
-    std::vector<T> out(size(in));
-    inverse_permutation(out.data(), in.data(), size(in));
+    std::vector<T> out(std::size(in));
+    inverse_permutation(out.data(), in.data(), std::size(in));
     return out;
 }
 } // namespace rng
