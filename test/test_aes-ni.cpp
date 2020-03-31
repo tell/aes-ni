@@ -7,6 +7,7 @@
 
 #include <clt/aes-ni.hpp>
 #include <clt/rng.hpp>
+#include <clt/rdrand.hpp>
 #include <clt/shuffle.hpp>
 #include <clt/statistics.hpp>
 
@@ -104,6 +105,25 @@ protected:
 vector<uint8_t> BasicTest::sample_key_;
 vector<uint8_t> BasicTest::plaintexts_;
 vector<uint8_t> BasicTest::ciphertexts_;
+
+TEST_F(BasicTest, dev_random)
+{
+    const size_t num_bytes = 1 << 10;
+    vector<uint8_t> out(num_bytes);
+    rng_global(out.data(), num_bytes);
+    EXPECT_TRUE(check_random_bytes(out))
+        << "Statistical check failed, but not fatal.";
+}
+
+TEST_F(BasicTest, rdrand)
+{
+    const size_t num_bytes = 1 << 10;
+    vector<uint8_t> out(num_bytes);
+    ASSERT_EQ(out.size() % sizeof(generic_rdrand_t), 0);
+    rdrand(out.data(), num_bytes / sizeof(generic_rdrand_t));
+    EXPECT_TRUE(check_random_bytes(out))
+        << "Statistical check failed, but not fatal.";
+}
 
 TEST_F(BasicTest, simple_use_aes_ni_with_sample_key_and_texts)
 {
