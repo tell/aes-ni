@@ -32,19 +32,15 @@ using path = std::string;
 
 namespace clt {
 namespace rng {
-class RNG {
+class RandomDevice {
     std::ifstream fst_rdev_;
 
 public:
-    RNG(const path &dev_random = "/dev/urandom")
-        : fst_rdev_(dev_random, std::ios_base::in | std::ios_base::binary)
-    {
-    }
-
+    explicit RandomDevice(const path &dev_random = "/dev/urandom");
     bool operator()(void *buff, const size_t byte_size);
 };
 
-extern RNG rng_global;
+extern RandomDevice rng_global;
 
 template <class T> inline void init(T *buff, const size_t num_elems)
 {
@@ -84,3 +80,5 @@ inline void getrandom([[maybe_unused]] void *out,
 
 } // namespace rng
 } // namespace clt
+
+#include "rng_inline.hpp"

@@ -8,7 +8,7 @@ using namespace clt;
 using namespace clt::rng;
 using namespace clt::bench;
 
-inline void do_rng_iteration()
+inline void do_dev_urandom_iteration()
 {
     size_t current = start_byte_size;
     vector<uint8_t> buff;
@@ -28,6 +28,6 @@ inline void do_rng_iteration()
 int main()
 {
     print_diagnosis();
-    do_rng_iteration();
+    do_dev_urandom_iteration();
     return 0;
 }
