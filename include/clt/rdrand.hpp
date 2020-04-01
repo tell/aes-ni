@@ -5,6 +5,7 @@
 namespace clt {
 namespace rng {
 // NOTE: https://software.intel.com/sites/landingpage/IntrinsicsGuide/#expand=4546,4539,4539&text=rdrand
+
 void rdrand(uint16_t *out, const size_t num_elems) noexcept;
 void rdrand(uint32_t *out, const size_t num_elems) noexcept;
 void rdrand(uint64_t *out, const size_t num_elems) noexcept;
