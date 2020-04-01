@@ -12,6 +12,7 @@ target_link_libraries(bench_randen randen)
 
 add_custom_target(run_benchmarks
     ln -s -f "${CMAKE_SOURCE_DIR}/bench/run_benchmarks.sh"
-    COMMAND     ln -s "${CMAKE_SOURCE_DIR}/bench/benchmark.plot"
+    COMMAND ln -s -f "${CMAKE_SOURCE_DIR}/bench/benchmark.plot"
+    COMMAND ln -s -f "${CMAKE_SOURCE_DIR}/bench/run_plotting.sh"
     DEPENDS benchmarks
 )
