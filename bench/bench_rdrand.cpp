@@ -10,6 +10,7 @@ using namespace clt::bench;
 
 inline void do_rdrand_iteration()
 {
+#if !defined(_MSC_VER) || __has_feature(modules) || defined(__RDRND__)
     assert((start_byte_size % sizeof(generic_rdrand_t)) == 0);
     assert((stop_byte_size % sizeof(generic_rdrand_t)) == 0);
     size_t current = start_byte_size;
@@ -25,6 +26,7 @@ inline void do_rdrand_iteration()
         }
         current <<= 1;
     }
+#endif
 }
 
 int main()

@@ -115,6 +115,7 @@ TEST_F(BasicTest, dev_random)
         << "Statistical check failed, but not fatal.";
 }
 
+#if !defined(_MSC_VER) || __has_feature(modules) || defined(__RDRND__)
 TEST_F(BasicTest, rdrand)
 {
     const size_t num_bytes = 1 << 10;
@@ -124,6 +125,7 @@ TEST_F(BasicTest, rdrand)
     EXPECT_TRUE(check_random_bytes(out))
         << "Statistical check failed, but not fatal.";
 }
+#endif
 
 TEST_F(BasicTest, simple_use_aes_ni_with_sample_key_and_texts)
 {
