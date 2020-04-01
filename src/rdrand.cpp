@@ -23,6 +23,8 @@ void rdrand(uint64_t *out, const size_t num_elems) noexcept
 {
     using rdrand_arg_type =
         typename arg_type<0, decltype(&_rdrand64_step)>::type;
+    static_assert(sizeof(uint64_t) ==
+                  sizeof(std::remove_pointer_t<rdrand_arg_type>));
     for (size_t i = 0; i < num_elems;
          i += _rdrand64_step(reinterpret_cast<rdrand_arg_type>(out) + i)) {
     }
