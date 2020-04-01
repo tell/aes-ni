@@ -17,3 +17,6 @@ for bench in ${bench_marks}; do
     ${bench} > ./${bench}_result.csv
     echo "\"${bench}_result.csv\" using (column(2)):(valid(4) ? column(4) : NaN) with linespoints title \"${bench}\" noenhanced, \\" >> ${plotfile}
 done
+
+gnuplot benchmark.plot
+cp benchmark.pdf ../../
