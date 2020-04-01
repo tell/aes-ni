@@ -115,7 +115,7 @@ TEST_F(BasicTest, dev_random)
         << "Statistical check failed, but not fatal.";
 }
 
-#if defined(__RDRND__)
+#if defined(__RDRND__) || defined(__APPLE__)
 TEST_F(BasicTest, rdrand)
 {
     const size_t num_bytes = 1 << 10;
