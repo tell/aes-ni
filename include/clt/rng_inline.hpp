@@ -1,6 +1,6 @@
 #pragma once
 
-#include <clt/rng.hpp>
+#include "rng.hpp"
 
 namespace clt {
 namespace rng {

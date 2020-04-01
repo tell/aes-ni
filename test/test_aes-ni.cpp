@@ -223,6 +223,37 @@ TEST_F(BasicTest, shuffle_FY)
     ASSERT_EQ(buff, inv_perm_buff);
 }
 
+TEST_F(BasicTest, permutation_rank)
+{
+    const size_t degree = 11;
+    vector<uint32_t> perm(degree);
+    iota(begin(perm), end(perm), 0);
+    shuffle(perm, rng_global);
+
+    const auto rank_pi = clt::rng::rank(perm);
+    const auto pi = clt::rng::unrank(rank_pi, perm.size());
+    ASSERT_EQ(pi, perm);
+    const auto rank_pi2 = clt::rng::rank(pi);
+    ASSERT_EQ(rank_pi, rank_pi2);
+}
+
+TEST_F(BasicTest, shuffle_FY_statistics)
+{
+    const size_t degree = 5;
+    vector<uint32_t> perm(degree);
+    iota(begin(perm), end(perm), 0);
+
+    vector<uint32_t> counter(1 * 2 * 3 * 4 * 5, 0);
+
+    const size_t num_loop = 10000;
+    for (size_t i = 0; i < num_loop; i++) {
+        shuffle(perm, rng_global);
+        const auto rank_perm = clt::rng::rank(perm);
+        counter[rank_perm]++;
+    }
+    fmt::print("counter = {}\n", join(counter));
+}
+
 int main(int argc, char **argv)
 {
     ::testing::InitGoogleTest(&argc, argv);

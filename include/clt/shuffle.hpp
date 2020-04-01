@@ -71,5 +71,48 @@ template <class T> inline auto inverse_permutation(const std::vector<T> &in)
     inverse_permutation(out.data(), in.data(), std::size(in));
     return out;
 }
+
+namespace internal {
+template <class T>
+inline size_t rank_impl(const size_t n, std::vector<T> &pi,
+                        std::vector<T> &inv_pi)
+{
+    if (n == 1) {
+        return 0;
+    }
+    const auto s = pi[n - 1];
+    std::swap(pi[n - 1], pi[inv_pi[n - 1]]);
+    std::swap(inv_pi[s], inv_pi[n - 1]);
+    return s + n * rank_impl(n - 1, pi, inv_pi);
+}
+} // namespace internal
+
+template <class T> inline auto rank(const std::vector<T> &pi)
+{
+    const auto degree = pi.size();
+    assert(pi.size() < 13);
+    auto pi_ = pi;
+    auto inv_pi = inverse_permutation(pi);
+    return internal::rank_impl(degree, pi_, inv_pi);
+}
+
+namespace internal {
+inline void unrank_impl(size_t n, size_t r, std::vector<uint32_t> &pi)
+{
+    while (n > 0) {
+        std::swap(pi[n - 1], pi[r % n]);
+        r /= n;
+        n--;
+    }
+}
+} // namespace internal
+
+inline auto unrank(const size_t r, const size_t degree)
+{
+    std::vector<uint32_t> pi(degree);
+    std::iota(pi.begin(), pi.end(), 0);
+    internal::unrank_impl(degree, r, pi);
+    return pi;
+}
 } // namespace rng
 } // namespace clt
