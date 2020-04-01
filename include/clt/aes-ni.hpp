@@ -86,6 +86,8 @@ public:
 };
 } // namespace clt
 
-#include "aes-ni_inline.hpp"
+#include "detail/aes-ni_inline.hpp"
+#include "detail/aen-ni_encdec_impl.hpp"
+#include "detail/aes-ni_key-exp_impl.hpp"
 
 // vim: set expandtab :

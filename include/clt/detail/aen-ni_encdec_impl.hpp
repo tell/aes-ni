@@ -2,8 +2,6 @@
 
 #include <x86intrin.h>
 
-#include "aes-ni.hpp"
-
 namespace clt {
 namespace internal {
 inline void aes128_load_expkey_for_enc(__m128i *keys,

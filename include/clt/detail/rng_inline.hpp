@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rng.hpp"
-
 namespace clt {
 namespace rng {
 

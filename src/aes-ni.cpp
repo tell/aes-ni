@@ -12,16 +12,9 @@
  */
 
 namespace clt {
-
 static_assert(aes128::block_bytes == sizeof(__m128i));
 static_assert(aes128::key_bytes == sizeof(__m128i));
 
-} // namespace clt
-
-#include "clt/aen-ni_encdec_impl.hpp"
-#include "clt/aes-ni_key-exp_impl.hpp"
-
-namespace clt {
 AES128::key_t gen_key()
 {
     AES128::key_t key;

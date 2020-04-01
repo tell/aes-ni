@@ -81,4 +81,4 @@ inline void getrandom([[maybe_unused]] void *out,
 } // namespace rng
 } // namespace clt
 
-#include "rng_inline.hpp"
+#include "detail/rng_inline.hpp"
