@@ -19,4 +19,3 @@ for bench in ${bench_marks}; do
 done
 
 gnuplot benchmark.plot
-cp benchmark.pdf ../../
