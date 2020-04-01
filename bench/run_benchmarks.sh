@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 echo "Current directory = $(pwd)"
-bench_marks=$(find . -maxdepth 1 -iname "bench_*" -not -iname "bench_shuffle_*" -perm -100)
+bench_marks=$(find . -maxdepth 1 -iname "bench_*" -not -iname "bench_shuffle_*" -perm -100 | sort)
 echo "Current benchmarks:"
 echo "${bench_marks}"
 echo "Running..."
