@@ -225,7 +225,7 @@ TEST_F(BasicTest, shuffle_FY)
 
 TEST_F(BasicTest, permutation_rank)
 {
-    const size_t degree = 11;
+    const size_t degree = 15;
     vector<uint32_t> perm(degree);
     iota(begin(perm), end(perm), 0);
     shuffle(perm, rng_global);
@@ -243,15 +243,19 @@ TEST_F(BasicTest, shuffle_FY_statistics)
     vector<uint32_t> perm(degree);
     iota(begin(perm), end(perm), 0);
 
-    vector<uint32_t> counter(1 * 2 * 3 * 4 * 5, 0);
+    const mpz_class perm_space_size = mpz_class::factorial(degree);
+    EXPECT_TRUE(perm_space_size.fits_ulong_p())
+        << "Given permutation space is too large.";
+    vector<uint32_t> counter(perm_space_size.get_ui(), 0);
 
-    const size_t num_loop = 10000;
+    const mpz_class num_loop = 1000 * perm_space_size;
+    EXPECT_TRUE(num_loop.fits_ulong_p())
+        << "Given permutation space is too large.";
     for (size_t i = 0; i < num_loop; i++) {
         shuffle(perm, rng_global);
         const auto rank_perm = clt::rng::rank(perm);
-        counter[rank_perm]++;
+        counter[rank_perm.get_ui()]++;
     }
-    fmt::print("counter = {}\n", join(counter));
 }
 
 int main(int argc, char **argv)

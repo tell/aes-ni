@@ -3,6 +3,8 @@
 #include <numeric>
 #include <vector>
 
+#include <gmpxx.h>
+
 namespace clt {
 namespace rng {
 template <class T, class Func>
@@ -73,8 +75,8 @@ template <class T> inline auto inverse_permutation(const std::vector<T> &in)
     return out;
 }
 
-using perm_t = std::vector<uint32_t>;
-size_t rank(const perm_t &pi);
-perm_t unrank(const size_t r, const size_t degree);
+using permutation_t = std::vector<uint32_t>;
+mpz_class rank(const permutation_t &pi);
+permutation_t unrank(const mpz_class &r, const size_t degree);
 } // namespace rng
 } // namespace clt

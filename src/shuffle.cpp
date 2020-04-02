@@ -1,11 +1,13 @@
 #include <gmpxx.h>
+static_assert(sizeof(uint64_t) == sizeof(unsigned long int));
 
 #include <clt/shuffle.hpp>
 
 namespace clt {
 namespace rng {
 namespace internal {
-inline size_t rank_impl(const size_t n, perm_t &pi, perm_t &inv_pi)
+inline mpz_class rank_impl(const size_t n, permutation_t &pi,
+                           permutation_t &inv_pi)
 {
     if (n == 1) {
         return 0;
@@ -17,7 +19,7 @@ inline size_t rank_impl(const size_t n, perm_t &pi, perm_t &inv_pi)
 }
 } // namespace internal
 
-size_t rank(const perm_t &pi)
+mpz_class rank(const permutation_t &pi)
 {
     const auto degree = pi.size();
     assert(pi.size() < 13);
@@ -27,21 +29,25 @@ size_t rank(const perm_t &pi)
 }
 
 namespace internal {
-inline void unrank_impl(size_t n, size_t r, perm_t &pi)
+inline void unrank_impl(size_t n, mpz_class &r, permutation_t &pi)
 {
     while (n > 0) {
-        std::swap(pi[n - 1], pi[r % n]);
+        mpz_class r_mod_n;
+        mpz_mod_ui(r_mod_n.get_mpz_t(), r.get_mpz_t(), n);
+        assert(r_mod_n.fits_ulong_p());
+        std::swap(pi[n - 1], pi[r_mod_n.get_ui()]);
         r /= n;
         n--;
     }
 }
 } // namespace internal
 
-perm_t unrank(const size_t r, const size_t degree)
+permutation_t unrank(const mpz_class &r, const size_t degree)
 {
-    perm_t pi(degree);
+    permutation_t pi(degree);
     std::iota(pi.begin(), pi.end(), 0);
-    internal::unrank_impl(degree, r, pi);
+    auto r_ = r;
+    internal::unrank_impl(degree, r_, pi);
     return pi;
 }
 } // namespace rng
