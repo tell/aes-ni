@@ -3,6 +3,7 @@
 #include <cassert>
 #include <numeric>
 #include <vector>
+#include <tuple>
 
 #include <gmpxx.h>
 
