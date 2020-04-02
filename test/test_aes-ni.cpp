@@ -225,7 +225,7 @@ TEST_F(BasicTest, shuffle_FY)
 
 TEST_F(BasicTest, permutation_rank)
 {
-    const size_t degree = 15;
+    const size_t degree = 1 << 10;
     vector<uint32_t> perm(degree);
     iota(begin(perm), end(perm), 0);
     shuffle(perm, rng_global);
