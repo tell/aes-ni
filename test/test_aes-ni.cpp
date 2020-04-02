@@ -248,7 +248,8 @@ TEST_F(BasicTest, shuffle_FY_statistics)
         << "Given permutation space is too large.";
     vector<uint32_t> counter(perm_space_size.get_ui(), 0);
 
-    const mpz_class num_loop = 1000 * perm_space_size;
+    const size_t expectation = 1000;
+    const mpz_class num_loop = expectation * perm_space_size;
     EXPECT_TRUE(num_loop.fits_ulong_p())
         << "Given permutation space is too large.";
     for (size_t i = 0; i < num_loop; i++) {
