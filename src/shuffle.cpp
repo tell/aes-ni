@@ -22,7 +22,6 @@ inline mpz_class rank_impl(const size_t n, permutation_t &pi,
 mpz_class rank(const permutation_t &pi)
 {
     const auto degree = pi.size();
-    assert(pi.size() < 13);
     auto pi_ = pi;
     auto inv_pi = inverse_permutation(pi);
     return internal::rank_impl(degree, pi_, inv_pi);
