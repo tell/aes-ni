@@ -8,6 +8,15 @@
 #include <gmpxx.h>
 
 namespace clt {
+inline mpz_class factorial(const uint64_t n)
+{
+    mpz_class fact = 1;
+    for (mpz_class i = 2; mpz_cmp_ui(i.get_mpz_t(), n) <= 0; i++) {
+        fact *= i;
+    }
+    return fact;
+}
+
 namespace rng {
 template <class T, class Func>
 inline void shuffle(T *inplace, const size_t n, Func &&rng)
