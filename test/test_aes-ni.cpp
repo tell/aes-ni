@@ -243,7 +243,7 @@ TEST_F(BasicTest, shuffle_FY_statistics)
     vector<uint32_t> perm(degree);
     iota(begin(perm), end(perm), 0);
 
-    const mpz_class perm_space_size = factorial(mpz_class(degree));
+    const mpz_class perm_space_size = clt::factorial(degree);
     EXPECT_TRUE(perm_space_size.fits_ulong_p())
         << "Given permutation space is too large.";
     vector<uint32_t> counter(perm_space_size.get_ui(), 0);
