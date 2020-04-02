@@ -89,6 +89,11 @@ inline auto check_udist_by_chisq(const std::vector<T> &counter,
     /**
      * NOTE: Very rough statistical check, not believe this.
      */
+    if (expectation < 100) {
+        fmt::print(
+            cerr,
+            "Given expectation is small, this is not suitable for the chi-square statistics.\n");
+    }
     const auto [chisq, df, stdv, low, high] =
         chisquare_for_udist(counter, expectation);
     return (low <= chisq) && (chisq <= high);
