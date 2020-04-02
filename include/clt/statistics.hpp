@@ -36,7 +36,6 @@ template <class T> inline auto popcnt(const T &vec)
 }
 
 namespace internal {
-
 template <class T, class U = std::enable_if_t<std::is_integral_v<T>>>
 inline auto bytes_popcnt(const T v)
 {
@@ -65,6 +64,34 @@ template <class T> inline auto check_random_bytes(T &&v)
     const auto num_bits = num_bytes * CHAR_BIT;
     const auto [mean, stdv, low, high] = binomial_statistics(num_bits);
     return (low <= popcnt_v) && (popcnt_v <= high);
+}
+
+template <class T>
+inline auto chisquare_for_udist(const std::vector<T> &counter,
+                                const double expectation)
+{
+    const auto df = counter.size() - 1;
+    double chisq = 0;
+    for (auto &&x : counter) {
+        chisq += (x - expectation) * (x - expectation) / expectation;
+    }
+    const auto stdv = std::sqrt(2 * df);
+    constexpr double conf_scale = 4.0;
+    const auto low = df - conf_scale * stdv;
+    const auto high = df + conf_scale * stdv;
+    return std::make_tuple(chisq, df, stdv, low, high);
+}
+
+template <class T>
+inline auto check_udist_by_chisq(const std::vector<T> &counter,
+                                 const size_t expectation)
+{
+    /**
+     * NOTE: Very rough statistical check, not believe this.
+     */
+    const auto [chisq, df, stdv, low, high] =
+        chisquare_for_udist(counter, expectation);
+    return (low <= chisq) && (chisq <= high);
 }
 
 } // namespace clt

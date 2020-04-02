@@ -257,6 +257,8 @@ TEST_F(BasicTest, shuffle_FY_statistics)
         const auto rank_perm = clt::rng::rank(perm);
         counter[rank_perm.get_ui()]++;
     }
+    EXPECT_TRUE(check_udist_by_chisq(counter, expectation))
+        << "Statistical check failed, but not fatal.";
 }
 
 int main(int argc, char **argv)
