@@ -7,6 +7,8 @@ function(add_unit_test testname)
         GTest::GTest
         aes-ni
         randen
+        -lgmpxx
+        -lgmp
     )
     add_test(NAME ${testname}
         COMMAND ${testname}
