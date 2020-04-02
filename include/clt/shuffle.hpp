@@ -61,7 +61,7 @@ inline void inverse_permutation(T *out, const T *in, const size_t n)
         t_vec.emplace_back(in[i], i);
     }
     std::sort(t_vec.begin(), t_vec.end(),
-              [](const tuple_t &lhs, const tuple_t &rhs) {
+              [](const tuple_t &lhs, const tuple_t &rhs) -> bool {
                   return std::get<0>(lhs) < std::get<0>(rhs);
               });
     for (size_t i = 0; i < n; i++) {
