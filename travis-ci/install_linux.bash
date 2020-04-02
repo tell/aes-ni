@@ -2,7 +2,7 @@
 set -ev
 docker exec -ti ${MY_NAME} bash -c "apt update" > /dev/null
 docker exec -ti ${MY_NAME} bash -c "apt upgrade -y" > /dev/null
-docker exec -ti ${MY_NAME} bash -c "apt install -y build-essential git cmake" > /dev/null
+docker exec -ti ${MY_NAME} bash -c "apt install -y build-essential git cmake libgmp-dev" > /dev/null
 
 docker exec -ti ${MY_NAME} bash -c "git clone --depth 1 https://github.com/fmtlib/fmt.git"
 docker exec -ti ${MY_NAME} bash -c "cd fmt; mkdir -p build; cd build; cmake ..; make -j; make install" > /dev/null
