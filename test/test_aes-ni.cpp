@@ -230,10 +230,10 @@ TEST_F(BasicTest, permutation_rank)
     iota(begin(perm), end(perm), 0);
     shuffle(perm, rng_global);
 
-    const auto rank_pi = clt::rng::rank(perm);
-    const auto pi = clt::rng::unrank(rank_pi, perm.size());
+    const auto rank_pi = clt::rank(perm);
+    const auto pi = clt::unrank(rank_pi, perm.size());
     ASSERT_EQ(pi, perm);
-    const auto rank_pi2 = clt::rng::rank(pi);
+    const auto rank_pi2 = clt::rank(pi);
     ASSERT_EQ(rank_pi, rank_pi2);
 }
 
@@ -254,7 +254,7 @@ TEST_F(BasicTest, shuffle_FY_statistics)
         << "Given permutation space is too large.";
     for (size_t i = 0; i < num_loop; i++) {
         shuffle(perm, rng_global);
-        const auto rank_perm = clt::rng::rank(perm);
+        const auto rank_perm = clt::rank(perm);
         counter[rank_perm.get_ui()]++;
     }
     EXPECT_TRUE(check_udist_by_chisq(counter, expectation))

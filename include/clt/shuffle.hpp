@@ -40,6 +40,7 @@ inline void shuffle(std::vector<T> &inplace, Func &&rng)
 {
     shuffle(inplace.data(), std::size(inplace), std::forward<Func>(rng));
 }
+} // namespace rng
 
 template <class T, class U>
 inline void apply_permutation(T *out, const T *in, const U *perm,
@@ -89,5 +90,4 @@ template <class T> inline auto inverse_permutation(const std::vector<T> &in)
 using permutation_t = std::vector<uint32_t>;
 mpz_class rank(const permutation_t &pi);
 permutation_t unrank(const mpz_class &r, const size_t degree);
-} // namespace rng
 } // namespace clt

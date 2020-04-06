@@ -4,7 +4,6 @@ static_assert(sizeof(uint64_t) == sizeof(unsigned long int));
 #include <clt/shuffle.hpp>
 
 namespace clt {
-namespace rng {
 namespace internal {
 inline mpz_class rank_impl(const size_t n, permutation_t &pi,
                            permutation_t &inv_pi)
@@ -49,5 +48,4 @@ permutation_t unrank(const mpz_class &r, const size_t degree)
     internal::unrank_impl(degree, r_, pi);
     return pi;
 }
-} // namespace rng
 } // namespace clt
