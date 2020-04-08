@@ -4,6 +4,7 @@
 #include <numeric>
 #include <vector>
 #include <tuple>
+#include <functional>
 
 #include <gmpxx.h>
 
@@ -90,4 +91,72 @@ template <class T> inline auto inverse_permutation(const std::vector<T> &in)
 using permutation_t = std::vector<uint32_t>;
 mpz_class rank(const permutation_t &pi);
 permutation_t unrank(const mpz_class &r, const size_t degree);
+
+namespace internal {
+inline auto int_ceiling(const size_t n, const size_t d)
+{
+    const auto q = n / d;
+    const auto r = n % d;
+    if (r == 0) {
+        return q;
+    } else {
+        return q + 1;
+    }
+}
+
+template <class T> inline auto bit_at(const std::vector<T> &in, const size_t at)
+{
+    const size_t elem_bit_size = sizeof(T) * CHAR_BIT;
+    const size_t position = at / elem_bit_size;
+    const size_t bit_position = at % elem_bit_size;
+    const auto data = in[position];
+    const auto mask = T(1) << bit_position;
+    return data & mask;
+}
+} // namespace internal
+
+template <class T, class RngFunc>
+inline void shuffle_RS(std::vector<T> &inplace, RngFunc &&rng)
+{
+    const size_t n = inplace.size();
+    assert(n > 0);
+    if (n == 1) {
+        return;
+    } else if (n == 2) {
+        uint8_t r;
+        rng(&r, sizeof(decltype(r)));
+        if (r & 0x1ull) {
+            return;
+        } else {
+            std::swap(inplace[0], inplace[1]);
+        }
+    } else {
+        std::vector<T> lhs, rhs;
+        lhs.reserve(n);
+        rhs.reserve(n);
+        const size_t num_bytes = internal::int_ceiling(n, CHAR_BIT);
+        const size_t num_elems =
+            internal::int_ceiling(n, sizeof(uint64_t) * CHAR_BIT);
+        std::vector<uint64_t> rs(num_elems);
+        assert((rs.size() * sizeof(uint64_t) * CHAR_BIT) >= n);
+        rng(rs.data(), num_bytes);
+        for (size_t i = 0; i < n; i++) {
+            if (internal::bit_at(rs, i)) {
+                lhs.emplace_back(inplace[i]);
+            } else {
+                rhs.emplace_back(inplace[i]);
+            }
+        }
+        if (lhs.size() > 0) {
+            shuffle_RS(lhs, rng);
+        }
+        if (rhs.size() > 0) {
+            shuffle_RS(rhs, rng);
+        }
+        auto inplace_iter = inplace.begin();
+        std::copy(lhs.begin(), lhs.end(), inplace_iter);
+        std::advance(inplace_iter, lhs.size());
+        std::copy(rhs.begin(), rhs.end(), inplace_iter);
+    }
+} // namespace clt
 } // namespace clt

@@ -7,14 +7,16 @@
 #include <x86intrin.h>
 
 namespace clt {
+namespace statistics {
+constexpr double confidence_scale = 3.5;
+}
 
 inline auto binomial_statistics(const size_t n)
 {
     const double exp = n / 2.0;
     const double stdv = std::sqrt(n) / 2.0;
-    constexpr double conf_scale = 4.0;
-    return std::make_tuple(exp, stdv, exp - conf_scale * stdv,
-                           exp + conf_scale * stdv);
+    return std::make_tuple(exp, stdv, exp - statistics::confidence_scale * stdv,
+                           exp + statistics::confidence_scale * stdv);
 }
 
 template <class T> inline auto popcnt(const T *vec, const size_t num_elems)
@@ -76,9 +78,8 @@ inline auto chisquare_for_udist(const std::vector<T> &counter,
         chisq += (x - expectation) * (x - expectation) / expectation;
     }
     const auto stdv = std::sqrt(2 * df);
-    constexpr double conf_scale = 4.0;
-    const auto low = df - conf_scale * stdv;
-    const auto high = df + conf_scale * stdv;
+    const auto low = df - statistics::confidence_scale * stdv;
+    const auto high = df + statistics::confidence_scale * stdv;
     return std::make_tuple(chisq, df, stdv, low, high);
 }
 
