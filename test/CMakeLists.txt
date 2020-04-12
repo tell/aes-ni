@@ -17,3 +17,4 @@ endfunction()
 
 add_unit_test(test_aes-ni)
 add_unit_test(test_util)
+add_unit_test(test_shuffle)

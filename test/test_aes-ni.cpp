@@ -17,7 +17,7 @@ using namespace std;
 using namespace clt;
 using namespace clt::rng;
 
-class BasicTest : public ::testing::Test {
+class AESNITest : public ::testing::Test {
 protected:
     static vector<uint8_t> sample_key_;
     vector<uint8_t> random_key_;
@@ -102,11 +102,11 @@ protected:
     }
 };
 
-vector<uint8_t> BasicTest::sample_key_;
-vector<uint8_t> BasicTest::plaintexts_;
-vector<uint8_t> BasicTest::ciphertexts_;
+vector<uint8_t> AESNITest::sample_key_;
+vector<uint8_t> AESNITest::plaintexts_;
+vector<uint8_t> AESNITest::ciphertexts_;
 
-TEST_F(BasicTest, dev_random)
+TEST_F(AESNITest, dev_random)
 {
     const size_t num_bytes = 1 << 10;
     vector<uint8_t> out(num_bytes);
@@ -116,7 +116,7 @@ TEST_F(BasicTest, dev_random)
 }
 
 #if defined(__RDRND__) || defined(__APPLE__)
-TEST_F(BasicTest, rdrand)
+TEST_F(AESNITest, rdrand)
 {
     const size_t num_bytes = 1 << 10;
     vector<uint8_t> out(num_bytes);
@@ -127,7 +127,7 @@ TEST_F(BasicTest, rdrand)
 }
 #endif
 
-TEST_F(BasicTest, simple_use_aes_ni_with_sample_key_and_texts)
+TEST_F(AESNITest, simple_use_aes_ni_with_sample_key_and_texts)
 {
     AES128 cipher(sample_key_.data());
     const auto num_blocks = size(plaintexts_) / aes128::block_bytes;
@@ -138,7 +138,7 @@ TEST_F(BasicTest, simple_use_aes_ni_with_sample_key_and_texts)
     ASSERT_EQ(out, plaintexts_);
 }
 
-TEST_F(BasicTest, simple_use_aes_ni)
+TEST_F(AESNITest, simple_use_aes_ni)
 {
     AES128 cipher(random_key_.data());
     const auto num_blocks = 1 << 10;
@@ -152,7 +152,7 @@ TEST_F(BasicTest, simple_use_aes_ni)
         << "Statistical check failed, but not fatal.";
 }
 
-TEST_F(BasicTest, mmo_with_sample_key_and_texts)
+TEST_F(AESNITest, mmo_with_sample_key_and_texts)
 {
     MMO128 crh(sample_key_.data());
     const auto num_blocks = size(plaintexts_) / clt::aes128::block_bytes;
@@ -167,7 +167,7 @@ TEST_F(BasicTest, mmo_with_sample_key_and_texts)
         << "Statistical check failed, but not fatal.";
 }
 
-TEST_F(BasicTest, aes_ctr_stream)
+TEST_F(AESNITest, aes_ctr_stream)
 {
     AES128 cipher(random_key_.data());
     vector<uint64_t> buff, enc_buff, dec_buff, str_buff;
@@ -188,7 +188,7 @@ TEST_F(BasicTest, aes_ctr_stream)
         << "Statistical check failed, but not fatal.";
 }
 
-TEST_F(BasicTest, aesprf_ctr_stream)
+TEST_F(AESNITest, aesprf_ctr_stream)
 {
     AESPRF128 prf(random_key_.data());
     vector<uint64_t> buff, prf_buff, str_buff;
@@ -206,100 +206,21 @@ TEST_F(BasicTest, aesprf_ctr_stream)
         << "Statistical check failed, but not fatal.";
 }
 
-TEST_F(BasicTest, shuffle_FY)
+TEST_F(AESNITest, aesprf_ctr_byte_stream)
 {
-    vector<uint32_t> perm(1 << 10);
-    iota(begin(perm), end(perm), 0);
-    shuffle(perm, rng_global);
-    for (size_t i = 0; i < size(perm); i++) {
-        const auto at_v = find(begin(perm), end(perm), i);
-        ASSERT_NE(at_v, end(perm));
+    AESPRF128 prf(random_key_.data());
+    vector<uint8_t> buff;
+    const size_t max_bytes = 2048;
+    buff.reserve(max_bytes);
+    for (size_t i = 1; i < max_bytes; i++) {
+        buff.resize(i);
+        const auto num_blocks = aes128::bytes_to_blocks(i);
+        const auto counter = prf.ctr_byte_stream(buff.data(), buff.size(), i);
+        ASSERT_GE(counter, i);
+        ASSERT_EQ(counter - i, num_blocks);
+        EXPECT_TRUE(check_random_bytes(buff))
+            << "Statistical check failed, but not fatal.";
     }
-    const auto inv_perm = inverse_permutation(perm);
-    vector<uint64_t> buff(size(perm));
-    iota(begin(buff), end(buff), 100);
-    const auto perm_buff = apply_permutation(buff, perm);
-    const auto inv_perm_buff = apply_permutation(perm_buff, inv_perm);
-    ASSERT_EQ(buff, inv_perm_buff);
-}
-
-TEST_F(BasicTest, permutation_rank)
-{
-    const size_t degree = 1 << 10;
-    vector<uint32_t> perm(degree);
-    iota(begin(perm), end(perm), 0);
-    shuffle(perm, rng_global);
-
-    const auto rank_pi = clt::rank(perm);
-    const auto pi = clt::unrank(rank_pi, perm.size());
-    ASSERT_EQ(pi, perm);
-    const auto rank_pi2 = clt::rank(pi);
-    ASSERT_EQ(rank_pi, rank_pi2);
-}
-
-TEST_F(BasicTest, shuffle_FY_statistics)
-{
-    const size_t degree = 5;
-    vector<uint32_t> perm(degree);
-    iota(begin(perm), end(perm), 0);
-
-    const mpz_class perm_space_size = clt::factorial(degree);
-    EXPECT_TRUE(perm_space_size.fits_ulong_p())
-        << "Given permutation space is too large.";
-    vector<uint32_t> counter(perm_space_size.get_ui(), 0);
-
-    const size_t expectation = 1000;
-    const mpz_class num_loop = expectation * perm_space_size;
-    EXPECT_TRUE(num_loop.fits_ulong_p())
-        << "Given permutation space is too large.";
-    for (size_t i = 0; i < num_loop; i++) {
-        shuffle(perm, rng_global);
-        const auto rank_perm = clt::rank(perm);
-        counter[rank_perm.get_ui()]++;
-    }
-    EXPECT_TRUE(check_udist_by_chisq(counter, expectation))
-        << "Statistical check failed, but not fatal.";
-}
-
-TEST_F(BasicTest, shuffle_RS)
-{
-    vector<uint32_t> perm(1 << 10);
-    iota(begin(perm), end(perm), 0);
-    shuffle_RS(perm, rng_global);
-    for (size_t i = 0; i < size(perm); i++) {
-        const auto at_v = find(begin(perm), end(perm), i);
-        ASSERT_NE(at_v, end(perm));
-    }
-    const auto inv_perm = inverse_permutation(perm);
-    vector<uint64_t> buff(size(perm));
-    iota(begin(buff), end(buff), 100);
-    const auto perm_buff = apply_permutation(buff, perm);
-    const auto inv_perm_buff = apply_permutation(perm_buff, inv_perm);
-    ASSERT_EQ(buff, inv_perm_buff);
-}
-
-TEST_F(BasicTest, shuffle_RS_statistics)
-{
-    const size_t degree = 5;
-    vector<uint32_t> perm(degree);
-    iota(begin(perm), end(perm), 0);
-
-    const mpz_class perm_space_size = clt::factorial(degree);
-    EXPECT_TRUE(perm_space_size.fits_ulong_p())
-        << "Given permutation space is too large.";
-    vector<uint32_t> counter(perm_space_size.get_ui(), 0);
-
-    const size_t expectation = 1000;
-    const mpz_class num_loop = expectation * perm_space_size;
-    EXPECT_TRUE(num_loop.fits_ulong_p())
-        << "Given permutation space is too large.";
-    for (size_t i = 0; i < num_loop; i++) {
-        shuffle_RS(perm, rng_global);
-        const auto rank_perm = clt::rank(perm);
-        counter[rank_perm.get_ui()]++;
-    }
-    EXPECT_TRUE(check_udist_by_chisq(counter, expectation))
-        << "Statistical check failed, but not fatal.";
 }
 
 int main(int argc, char **argv)

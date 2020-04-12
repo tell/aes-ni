@@ -89,6 +89,9 @@ public:
     auto ctr_stream(void *out, const uint64_t num_blocks,
                     const uint64_t start_count) const noexcept
         -> decltype(num_blocks + start_count);
+    auto ctr_byte_stream(void *out, const uint64_t num_bytes,
+                         const uint64_t start_count) const noexcept
+        -> decltype(num_bytes + start_count);
 };
 
 class AESPRF128_CTR {
