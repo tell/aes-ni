@@ -6,6 +6,8 @@
 #include <tuple>
 #include <functional>
 
+#include <clt/util.hpp>
+
 #include <gmpxx.h>
 
 namespace clt {
@@ -93,17 +95,6 @@ mpz_class rank(const permutation_t &pi);
 permutation_t unrank(const mpz_class &r, const size_t degree);
 
 namespace internal {
-inline auto int_ceiling(const size_t n, const size_t d)
-{
-    const auto q = n / d;
-    const auto r = n % d;
-    if (r == 0) {
-        return q;
-    } else {
-        return q + 1;
-    }
-}
-
 template <class T> inline auto bit_at(const std::vector<T> &in, const size_t at)
 {
     const size_t elem_bit_size = sizeof(T) * CHAR_BIT;
@@ -134,9 +125,9 @@ inline void shuffle_RS(std::vector<T> &inplace, RngFunc &&rng)
         std::vector<T> lhs, rhs;
         lhs.reserve(n);
         rhs.reserve(n);
-        const size_t num_bytes = internal::int_ceiling(n, CHAR_BIT);
+        const size_t num_bytes = clt::int_ceiling(n, CHAR_BIT);
         const size_t num_elems =
-            internal::int_ceiling(n, sizeof(uint64_t) * CHAR_BIT);
+            clt::int_ceiling(n, sizeof(uint64_t) * CHAR_BIT);
         std::vector<uint64_t> rs(num_elems);
         assert((rs.size() * sizeof(uint64_t) * CHAR_BIT) >= n);
         rng(rs.data(), num_bytes);

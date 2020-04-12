@@ -3,6 +3,7 @@
 #include <cstdint>
 #include <sstream>
 #include <array>
+#include <type_traits>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
@@ -27,43 +28,11 @@ public:
     static const std::string value;
 };
 
+template <class IntType,
+          class T = std::enable_if_t<!std::is_same_v<uint8_t, IntType>>>
 inline std::string
-join(const uint64_t *in, const size_t &n,
-     const std::string &format = default_format_str<uint64_t>::value)
-{
-    std::stringstream sst;
-    if (n == 0) {
-        return "";
-    }
-    sst << fmt::format(format, uint_fast64_t(in[0]));
-    if (n > 1) {
-        for (size_t i = 1; i < n; i++) {
-            sst << ":" << fmt::format(format, uint_fast64_t(in[i]));
-        }
-    }
-    return sst.str();
-}
-
-inline std::string
-join(const uint32_t *in, const size_t &n,
-     const std::string &format = default_format_str<uint32_t>::value)
-{
-    std::stringstream sst;
-    if (n == 0) {
-        return "";
-    }
-    sst << fmt::format(format, uint_fast64_t(in[0]));
-    if (n > 1) {
-        for (size_t i = 1; i < n; i++) {
-            sst << ":" << fmt::format(format, uint_fast64_t(in[i]));
-        }
-    }
-    return sst.str();
-}
-
-inline std::string
-join(const uint16_t *in, const size_t &n,
-     const std::string &format = default_format_str<uint16_t>::value)
+join(const IntType *in, const size_t &n,
+     const std::string &format = default_format_str<IntType>::value)
 {
     std::stringstream sst;
     if (n == 0) {
@@ -137,5 +106,16 @@ template <class T> auto all_xor(T &vec)
         v ^= x;
     }
     return v;
+}
+
+inline auto int_ceiling(const size_t n, const size_t d)
+{
+    const auto q = n / d;
+    const auto r = n % d;
+    if (r == 0) {
+        return q;
+    } else {
+        return q + 1;
+    }
 }
 } // namespace clt
