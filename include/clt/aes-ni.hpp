@@ -23,6 +23,10 @@ inline auto bytes_to_blocks(const size_t num_bytes)
         return num_blocks + 1;
     }
 }
+inline auto allocate_byte_size(const size_t num_bytes)
+{
+    return bytes_to_blocks(num_bytes) * block_bytes;
+}
 } // namespace aes128
 
 class AES128 {
@@ -32,7 +36,7 @@ public:
     using block_t = std::array<uint8_t, aes128::block_bytes>;
     using key_t = std::array<uint8_t, aes128::key_bytes>;
     explicit AES128(const void *key) noexcept;
-    explicit AES128(const key_t &key) : AES128(key.data()) {}
+    explicit AES128(const key_t &key) noexcept : AES128(key.data()) {}
     explicit AES128() : AES128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AES128 &x);
     void enc(void *out, const void *in) const noexcept;
@@ -57,13 +61,14 @@ class MMO128 {
 
 public:
     explicit MMO128(const void *key) noexcept;
-    explicit MMO128() : MMO128(aes128::zero_key) {}
+    explicit MMO128() noexcept : MMO128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const MMO128 &x);
     void operator()(void *out, const void *in) const noexcept;
     void operator()(void *out, const void *in, const size_t num_blocks) const
         noexcept;
 };
 
+class AESPRF128_CTR;
 class AESPRF128 {
     /**
      * PRF based on AES128 (AES-PRF).
@@ -75,14 +80,26 @@ class AESPRF128 {
 
 public:
     explicit AESPRF128(const void *key) noexcept;
-    explicit AESPRF128() : AESPRF128(aes128::zero_key) {}
+    explicit AESPRF128() noexcept : AESPRF128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128 &x);
+    friend std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x);
     void operator()(void *out, const void *in) const noexcept;
     void operator()(void *out, const void *in, const size_t num_blocks) const
         noexcept;
     auto ctr_stream(void *out, const uint64_t num_blocks,
                     const uint64_t start_count) const noexcept
         -> decltype(num_blocks + start_count);
+};
+
+class AESPRF128_CTR {
+    AESPRF128 prf_;
+    uint64_t counter_;
+
+public:
+    explicit AESPRF128_CTR(const void *key) noexcept;
+    explicit AESPRF128_CTR() noexcept : AESPRF128_CTR(aes128::zero_key) {}
+    friend std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x);
+    void operator()(void *out, const size_t num_blocks) noexcept;
 };
 } // namespace clt
 

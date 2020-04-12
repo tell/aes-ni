@@ -149,5 +149,5 @@ inline void shuffle_RS(std::vector<T> &inplace, RngFunc &&rng)
         std::advance(inplace_iter, lhs.size());
         std::copy(rhs.begin(), rhs.end(), inplace_iter);
     }
-} // namespace clt
+}
 } // namespace clt

@@ -13,10 +13,10 @@ inline void do_aesprf_ctr_iteration()
     AESPRF128 prf(key.data());
     size_t current = start_byte_size;
     vector<uint8_t> buff;
-    buff.reserve(stop_byte_size);
+    buff.reserve(aes128::allocate_byte_size(stop_byte_size));
     while (current <= stop_byte_size) {
-        buff.resize(current);
-        const size_t num_blocks = buff.size() / clt::aes128::block_bytes;
+        const size_t num_blocks = aes128::bytes_to_blocks(current);
+        buff.resize(aes128::allocate_byte_size(current));
         print_throughput("aes128prf_ctr", buff.size(),
                          [&]() { prf.ctr_stream(buff.data(), num_blocks, 0); });
         if (!check_random_bytes(buff)) {
