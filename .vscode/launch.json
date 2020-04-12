@@ -40,5 +40,17 @@
             "externalConsole": false,
             "MIMode": "lldb"
         },
+        {
+            "name": "(lldb) 起動 test_shuffle",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/test/test_shuffle",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/build",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "lldb"
+        },
     ]
 }

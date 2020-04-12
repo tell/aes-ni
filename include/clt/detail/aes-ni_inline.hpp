@@ -73,8 +73,8 @@ inline std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x)
     return ost;
 }
 inline void AESPRF128_CTR::operator()(void *out,
-                                      const size_t num_blocks) noexcept
+                                      const size_t num_bytes) noexcept
 {
-    counter_ = prf_.ctr_stream(out, num_blocks, counter_);
+    counter_ = prf_.ctr_byte_stream(out, num_bytes, counter_);
 }
 } // namespace clt

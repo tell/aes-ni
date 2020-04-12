@@ -102,7 +102,7 @@ public:
     explicit AESPRF128_CTR(const void *key) noexcept;
     explicit AESPRF128_CTR() noexcept : AESPRF128_CTR(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x);
-    void operator()(void *out, const size_t num_blocks) noexcept;
+    void operator()(void *out, const size_t num_bytes) noexcept;
 };
 } // namespace clt
 

@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 #include <clt/shuffle.hpp>
-#include <clt/rng.hpp>
+#include <clt/aes-ni.hpp>
 #include <clt/statistics.hpp>
 
 using namespace std;
@@ -12,13 +12,18 @@ using namespace clt;
 using namespace clt::rng;
 
 class ShuffleTest : public ::testing::Test {
+protected:
+    AES128::key_t random_key_;
+    void set_random_key() { random_key_ = gen_key(); }
+    void SetUp() { set_random_key(); }
 };
 
 TEST_F(ShuffleTest, shuffle_FY)
 {
+    AESPRF128_CTR prf(random_key_.data());
     vector<uint32_t> perm(1 << 10);
     iota(begin(perm), end(perm), 0);
-    shuffle(perm, rng_global);
+    shuffle(perm, prf);
     for (size_t i = 0; i < size(perm); i++) {
         const auto at_v = find(begin(perm), end(perm), i);
         ASSERT_NE(at_v, end(perm));
@@ -33,10 +38,11 @@ TEST_F(ShuffleTest, shuffle_FY)
 
 TEST_F(ShuffleTest, permutation_rank)
 {
+    AESPRF128_CTR prf(random_key_.data());
     const size_t degree = 1 << 10;
     vector<uint32_t> perm(degree);
     iota(begin(perm), end(perm), 0);
-    shuffle(perm, rng_global);
+    shuffle(perm, prf);
 
     const auto rank_pi = clt::rank(perm);
     const auto pi = clt::unrank(rank_pi, perm.size());
@@ -47,6 +53,7 @@ TEST_F(ShuffleTest, permutation_rank)
 
 TEST_F(ShuffleTest, shuffle_FY_statistics)
 {
+    AESPRF128_CTR prf(random_key_.data());
     const size_t degree = 5;
     vector<uint32_t> perm(degree);
     iota(begin(perm), end(perm), 0);
@@ -61,7 +68,7 @@ TEST_F(ShuffleTest, shuffle_FY_statistics)
     EXPECT_TRUE(num_loop.fits_ulong_p())
         << "Given permutation space is too large.";
     for (size_t i = 0; i < num_loop; i++) {
-        shuffle(perm, rng_global);
+        shuffle(perm, prf);
         const auto rank_perm = clt::rank(perm);
         counter[rank_perm.get_ui()]++;
     }
@@ -71,9 +78,10 @@ TEST_F(ShuffleTest, shuffle_FY_statistics)
 
 TEST_F(ShuffleTest, shuffle_RS)
 {
+    AESPRF128_CTR prf(random_key_.data());
     vector<uint32_t> perm(1 << 10);
     iota(begin(perm), end(perm), 0);
-    shuffle_RS(perm, rng_global);
+    shuffle_RS(perm, prf);
     for (size_t i = 0; i < size(perm); i++) {
         const auto at_v = find(begin(perm), end(perm), i);
         ASSERT_NE(at_v, end(perm));
@@ -88,6 +96,7 @@ TEST_F(ShuffleTest, shuffle_RS)
 
 TEST_F(ShuffleTest, shuffle_RS_statistics)
 {
+    AESPRF128_CTR prf(random_key_.data());
     const size_t degree = 5;
     vector<uint32_t> perm(degree);
     iota(begin(perm), end(perm), 0);
@@ -102,7 +111,7 @@ TEST_F(ShuffleTest, shuffle_RS_statistics)
     EXPECT_TRUE(num_loop.fits_ulong_p())
         << "Given permutation space is too large.";
     for (size_t i = 0; i < num_loop; i++) {
-        shuffle_RS(perm, rng_global);
+        shuffle_RS(perm, prf);
         const auto rank_perm = clt::rank(perm);
         counter[rank_perm.get_ui()]++;
     }
