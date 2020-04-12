@@ -1,7 +1,6 @@
 #include <numeric>
 
 #include <clt/aes-ni.hpp>
-#include <clt/rng.hpp>
 #include <clt/shuffle.hpp>
 #include <clt/benchmark.hpp>
 
@@ -12,6 +11,8 @@ using namespace clt::bench;
 
 inline void do_shuffle_ys_iteration()
 {
+    AES128::key_t key = gen_key();
+    AESPRF128_CTR prf(key.data());
     size_t current = start_byte_size;
     vector<uint32_t> buff;
     buff.reserve(stop_byte_size);
@@ -19,9 +20,8 @@ inline void do_shuffle_ys_iteration()
         buff.resize(current);
         iota(begin(buff), end(buff), 0);
         print_throughput(
-            "shuffle_ys_dev-urandom", size(buff),
-            [&]() { shuffle(buff.data(), size(buff), rng_global); },
-            "32bit_elems");
+            "shuffle_ys_aesprf128", size(buff),
+            [&]() { shuffle(buff.data(), size(buff), prf); }, "32bit_elems");
         current <<= 1;
     }
 }
