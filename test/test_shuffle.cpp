@@ -21,18 +21,17 @@ protected:
 TEST_F(ShuffleTest, shuffle_FY)
 {
     AESPRF128_CTR prf(random_key_.data());
-    vector<uint32_t> perm(1 << 10);
-    iota(begin(perm), end(perm), 0);
-    shuffle(perm, prf);
-    for (size_t i = 0; i < size(perm); i++) {
-        const auto at_v = find(begin(perm), end(perm), i);
-        ASSERT_NE(at_v, end(perm));
+    Permutation perm(1 << 10);
+    perm.shuffle(prf);
+    for (size_t i = 0; i < perm.indices_.size(); i++) {
+        const auto at_v = find(perm.indices_.begin(), perm.indices_.end(), i);
+        ASSERT_NE(at_v, perm.indices_.end());
     }
-    const auto inv_perm = inverse_permutation(perm);
-    vector<uint64_t> buff(size(perm));
+    const auto inv_perm = perm.inverse();
+    vector<uint64_t> buff(perm.indices_.size());
     iota(begin(buff), end(buff), 100);
-    const auto perm_buff = apply_permutation(buff, perm);
-    const auto inv_perm_buff = apply_permutation(perm_buff, inv_perm);
+    const auto perm_buff = perm.apply(buff);
+    const auto inv_perm_buff = inv_perm.apply(perm_buff);
     ASSERT_EQ(buff, inv_perm_buff);
 }
 
@@ -40,13 +39,12 @@ TEST_F(ShuffleTest, permutation_rank)
 {
     AESPRF128_CTR prf(random_key_.data());
     const size_t degree = 1 << 10;
-    vector<uint32_t> perm(degree);
-    iota(begin(perm), end(perm), 0);
-    shuffle(perm, prf);
+    Permutation perm(degree);
+    perm.shuffle(prf);
 
-    const auto rank_pi = clt::rank(perm);
-    const auto pi = clt::unrank(rank_pi, perm.size());
-    ASSERT_EQ(pi, perm);
+    const auto rank_pi = clt::rank(perm.indices_);
+    const auto pi = clt::unrank(rank_pi, perm.indices_.size());
+    ASSERT_EQ(pi, perm.indices_);
     const auto rank_pi2 = clt::rank(pi);
     ASSERT_EQ(rank_pi, rank_pi2);
 }
@@ -55,8 +53,7 @@ TEST_F(ShuffleTest, shuffle_FY_statistics)
 {
     AESPRF128_CTR prf(random_key_.data());
     const size_t degree = 5;
-    vector<uint32_t> perm(degree);
-    iota(begin(perm), end(perm), 0);
+    Permutation perm(degree);
 
     const mpz_class perm_space_size = clt::factorial(degree);
     EXPECT_TRUE(perm_space_size.fits_ulong_p())
@@ -68,8 +65,8 @@ TEST_F(ShuffleTest, shuffle_FY_statistics)
     EXPECT_TRUE(num_loop.fits_ulong_p())
         << "Given permutation space is too large.";
     for (size_t i = 0; i < num_loop; i++) {
-        shuffle(perm, prf);
-        const auto rank_perm = clt::rank(perm);
+        perm.shuffle(prf);
+        const auto rank_perm = clt::rank(perm.indices_);
         counter[rank_perm.get_ui()]++;
     }
     EXPECT_TRUE(check_udist_by_chisq(counter, expectation))

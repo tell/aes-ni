@@ -30,7 +30,7 @@ struct Permutation {
         indices_.resize(degree);
         std::iota(indices_.begin(), indices_.end(), 0);
     }
-    friend bool operator==(const Permutation &lhs, const Permutation &rhs)
+    friend auto operator==(const Permutation &lhs, const Permutation &rhs)
     {
         if (&lhs == &rhs) {
             return true;
@@ -38,11 +38,11 @@ struct Permutation {
         return std::equal(lhs.indices_.begin(), lhs.indices_.end(),
                           rhs.indices_.begin());
     }
-    friend bool operator!=(const Permutation &lhs, const Permutation &rhs)
+    friend auto operator!=(const Permutation &lhs, const Permutation &rhs)
     {
         return !(lhs == rhs);
     }
-    friend std::ostream &operator<<(std::ostream &ost, const Permutation &x)
+    friend auto &operator<<(std::ostream &ost, const Permutation &x)
     {
         const auto n = x.indices_.size();
         ost << "[";
@@ -57,9 +57,9 @@ struct Permutation {
         ost << "]";
         return ost;
     }
-    index_t &operator[](const index_t i) { return indices_[i]; }
-    index_t operator[](const index_t i) const { return indices_[i]; }
-    Permutation apply(const Permutation &in) const
+    auto &operator[](const index_t i) { return indices_[i]; }
+    auto operator[](const index_t i) const { return indices_[i]; }
+    auto apply(const Permutation &in) const
     {
         const size_t n = indices_.size();
         Permutation out;
@@ -69,13 +69,22 @@ struct Permutation {
         }
         return out;
     }
-    friend Permutation operator*(const Permutation &lhs, const Permutation &rhs)
+    template <class T> auto apply(const T &in) const
+    {
+        const size_t n = indices_.size();
+        T out(in);
+        for (size_t i = 0; i < n; i++) {
+            out[i] = in[indices_[i]];
+        }
+        return out;
+    }
+    friend auto operator*(const Permutation &lhs, const Permutation &rhs)
     {
         assert(lhs.indices_.size() == rhs.indices_.size());
         Permutation out = lhs.apply(rhs);
         return out;
     }
-    Permutation inverse() const
+    auto inverse() const
     {
         const size_t n = indices_.size();
         using tuple_t = std::tuple<index_t, index_t>;
