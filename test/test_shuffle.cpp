@@ -15,7 +15,11 @@ class ShuffleTest : public ::testing::Test {
 protected:
     AES128::key_t random_key_;
     void set_random_key() { random_key_ = gen_key(); }
-    void SetUp() { set_random_key(); }
+    void SetUp()
+    {
+        set_random_key();
+        fmt::print("random_key_ = {}\n", join(random_key_));
+    }
 };
 
 TEST_F(ShuffleTest, permutation_rank_identity)

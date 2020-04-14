@@ -25,12 +25,12 @@ template <class T, class Func>
 inline void shuffle(T *inplace, const size_t n, Func &&rng)
 {
     // NOTE: FY shuffle.
-    using index_t = uint64_t;
-    assert(n < (index_t(1) << 32));
-    static_assert((2 * sizeof(T)) <= sizeof(index_t));
-    constexpr auto elem_bytes = sizeof(index_t);
+    using index_internal_t = uint64_t;
+    assert(n < (index_internal_t(1) << 32));
+    static_assert((2 * sizeof(T)) <= sizeof(index_internal_t));
+    constexpr auto elem_bytes = sizeof(index_internal_t);
     const auto random_bytes = n * elem_bytes;
-    std::vector<index_t> random_indices(n);
+    std::vector<index_internal_t> random_indices(n);
     rng(random_indices.data(), random_bytes);
     for (size_t i = 1; i < n; i++) {
         const auto j = random_indices[n - i] % (n - i + 1);
