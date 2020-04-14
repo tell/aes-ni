@@ -23,7 +23,7 @@ mpz_class rank(const permutation_t &pi)
     const auto degree = pi.size();
     auto pi_ = pi;
     auto inv_pi = inverse_permutation(pi);
-    return internal::rank_impl(degree, pi_, inv_pi);
+    return factorial(degree) - internal::rank_impl(degree, pi_, inv_pi) - 1;
 }
 
 namespace internal {
@@ -44,7 +44,7 @@ permutation_t unrank(const mpz_class &r, const size_t degree)
 {
     permutation_t pi(degree);
     std::iota(pi.begin(), pi.end(), 0);
-    auto r_ = r;
+    mpz_class r_ = factorial(degree) - r - 1;
     internal::unrank_impl(degree, r_, pi);
     return pi;
 }

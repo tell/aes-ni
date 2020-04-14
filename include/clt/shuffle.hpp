@@ -195,7 +195,7 @@ template <class T> inline auto inverse_permutation(const std::vector<T> &in)
     return out;
 }
 
-using permutation_t = std::vector<uint32_t>;
+using permutation_t = Permutation::perm_t;
 mpz_class rank(const permutation_t &pi);
 permutation_t unrank(const mpz_class &r, const size_t degree);
 

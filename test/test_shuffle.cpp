@@ -18,6 +18,15 @@ protected:
     void SetUp() { set_random_key(); }
 };
 
+TEST_F(ShuffleTest, permutation)
+{
+    for (size_t i = 1; i < 20; i++) {
+        Permutation perm(i);
+        mpz_class r = clt::rank(perm.indices_);
+        ASSERT_EQ(0, r);
+    }
+}
+
 TEST_F(ShuffleTest, shuffle_FY)
 {
     AESPRF128_CTR prf(random_key_.data());
@@ -30,6 +39,18 @@ TEST_F(ShuffleTest, shuffle_FY)
     const auto inv_perm = perm.inverse();
     vector<uint64_t> buff(perm.indices_.size());
     iota(begin(buff), end(buff), 100);
+    const auto perm_buff = perm.apply(buff);
+    const auto inv_perm_buff = inv_perm.apply(perm_buff);
+    ASSERT_EQ(buff, inv_perm_buff);
+}
+
+TEST_F(ShuffleTest, shuffle_FY_various)
+{
+    vector<string> buff{"abc", "def", "ghi", "jkl"};
+    AESPRF128_CTR prf(random_key_.data());
+    Permutation perm(buff.size());
+    perm.shuffle(prf);
+    const auto inv_perm = perm.inverse();
     const auto perm_buff = perm.apply(buff);
     const auto inv_perm_buff = inv_perm.apply(perm_buff);
     ASSERT_EQ(buff, inv_perm_buff);
