@@ -55,6 +55,7 @@ struct Permutation {
         indices_.resize(degree);
         std::iota(indices_.begin(), indices_.end(), 0);
     }
+    auto size() const { return indices_.size(); }
     friend auto operator==(const Permutation &lhs, const Permutation &rhs)
     {
         if (&lhs == &rhs) {
