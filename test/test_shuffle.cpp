@@ -18,13 +18,55 @@ protected:
     void SetUp() { set_random_key(); }
 };
 
-TEST_F(ShuffleTest, permutation)
+TEST_F(ShuffleTest, permutation_rank_identity)
 {
     for (size_t i = 1; i < 20; i++) {
         Permutation perm(i);
         mpz_class r = clt::rank(perm.indices_);
         ASSERT_EQ(0, r);
     }
+}
+
+TEST_F(ShuffleTest, permutation_rank)
+{
+    AESPRF128_CTR prf(random_key_.data());
+    const size_t degree = 1 << 10;
+    Permutation perm(degree);
+    perm.shuffle(prf);
+
+    const auto rank_pi = clt::rank(perm.indices_);
+    const auto pi = clt::unrank(rank_pi, perm.indices_.size());
+    ASSERT_EQ(pi, perm.indices_);
+    const auto rank_pi2 = clt::rank(pi);
+    ASSERT_EQ(rank_pi, rank_pi2);
+}
+
+TEST_F(ShuffleTest, permutation_composite)
+{
+    AESPRF128_CTR prf(random_key_.data());
+    const size_t degree = 1 << 10;
+    Permutation perm0(degree), perm1(degree);
+    perm0.shuffle(prf);
+    perm1.shuffle(prf);
+    Permutation perm_comp0 = perm0 * perm1;
+    Permutation perm_comp1 = perm0.apply(perm1);
+    ASSERT_EQ(perm_comp0.indices_, perm_comp1.indices_);
+}
+
+TEST_F(ShuffleTest, permutation_inverse)
+{
+    AESPRF128_CTR prf(random_key_.data());
+    const size_t degree = 1 << 10;
+    Permutation perm(degree);
+    perm.shuffle(prf);
+
+    const auto inv_perm = perm.inverse();
+    if (0 != clt::rank(perm.indices_)) {
+        ASSERT_NE(perm.indices_, inv_perm.indices_);
+    }
+    const auto id = perm * inv_perm;
+    const auto id_rank = clt::rank(id.indices_);
+    ASSERT_EQ(0, id_rank);
 }
 
 TEST_F(ShuffleTest, shuffle_FY)
@@ -54,20 +96,6 @@ TEST_F(ShuffleTest, shuffle_FY_various)
     const auto perm_buff = perm.apply(buff);
     const auto inv_perm_buff = inv_perm.apply(perm_buff);
     ASSERT_EQ(buff, inv_perm_buff);
-}
-
-TEST_F(ShuffleTest, permutation_rank)
-{
-    AESPRF128_CTR prf(random_key_.data());
-    const size_t degree = 1 << 10;
-    Permutation perm(degree);
-    perm.shuffle(prf);
-
-    const auto rank_pi = clt::rank(perm.indices_);
-    const auto pi = clt::unrank(rank_pi, perm.indices_.size());
-    ASSERT_EQ(pi, perm.indices_);
-    const auto rank_pi2 = clt::rank(pi);
-    ASSERT_EQ(rank_pi, rank_pi2);
 }
 
 TEST_F(ShuffleTest, shuffle_FY_statistics)
