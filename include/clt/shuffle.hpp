@@ -20,6 +20,31 @@ inline mpz_class factorial(const uint64_t n)
     return fact;
 }
 
+namespace rng {
+template <class T, class Func>
+inline void shuffle(T *inplace, const size_t n, Func &&rng)
+{
+    // NOTE: FY shuffle.
+    using index_t = uint64_t;
+    assert(n < (index_t(1) << 32));
+    static_assert((2 * sizeof(T)) <= sizeof(index_t));
+    constexpr auto elem_bytes = sizeof(index_t);
+    const auto random_bytes = n * elem_bytes;
+    std::vector<index_t> random_indices(n);
+    rng(random_indices.data(), random_bytes);
+    for (size_t i = 1; i < n; i++) {
+        const auto j = random_indices[n - i] % (n - i + 1);
+        std::swap(inplace[j], inplace[n - i]);
+    }
+}
+
+template <class T, class Func>
+inline void shuffle(std::vector<T> &inplace, Func &&rng)
+{
+    shuffle(inplace.data(), std::size(inplace), std::forward<Func>(rng));
+}
+} // namespace rng
+
 struct Permutation {
     using index_t = uint32_t;
     using perm_t = std::vector<index_t>;
@@ -109,46 +134,10 @@ struct Permutation {
     }
     template <class Func> void shuffle(Func &&rng)
     {
-        // NOTE: FY shuffle.
-        using index_temp_t = uint64_t;
-        const auto n = indices_.size();
-        assert(n < (index_temp_t(1) << 32));
-        static_assert((2 * sizeof(index_t)) <= sizeof(index_temp_t));
-        constexpr auto elem_bytes = sizeof(index_temp_t);
-        const auto random_bytes = n * elem_bytes;
-        std::vector<index_temp_t> random_indices(n);
-        rng(random_indices.data(), random_bytes);
-        for (size_t i = 1; i < (n - 1); i++) {
-            const auto j = random_indices[n - i] % (n - i);
-            std::swap(indices_[j], indices_[n - i]);
-        }
+        clt::rng::shuffle(indices_.data(), indices_.size(),
+                          std::forward<Func>(rng));
     }
 };
-
-namespace rng {
-template <class T, class Func>
-inline void shuffle(T *inplace, const size_t n, Func &&rng)
-{
-    // NOTE: FY shuffle.
-    using index_t = uint64_t;
-    assert(n < (index_t(1) << 32));
-    static_assert((2 * sizeof(T)) <= sizeof(index_t));
-    constexpr auto elem_bytes = sizeof(index_t);
-    const auto random_bytes = n * elem_bytes;
-    std::vector<index_t> random_indices(n);
-    rng(random_indices.data(), random_bytes);
-    for (size_t i = 1; i < (n - 1); i++) {
-        const auto j = random_indices[n - i] % (n - i);
-        std::swap(inplace[j], inplace[n - i]);
-    }
-}
-
-template <class T, class Func>
-inline void shuffle(std::vector<T> &inplace, Func &&rng)
-{
-    shuffle(inplace.data(), std::size(inplace), std::forward<Func>(rng));
-}
-} // namespace rng
 
 template <class T, class U>
 inline void apply_permutation(T *out, const T *in, const U *perm,

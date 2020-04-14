@@ -25,6 +25,14 @@ TEST_F(ShuffleTest, permutation_rank_identity)
         mpz_class r = clt::rank(perm.indices_);
         ASSERT_EQ(0, r);
     }
+    AESPRF128_CTR prf(random_key_.data());
+    for (size_t degree = 1; degree < 10; degree++) {
+        Permutation perm(degree);
+        for (size_t i = 0; i < 10; i++) {
+            perm.shuffle(prf);
+            cout << perm << endl;
+        }
+    }
 }
 
 TEST_F(ShuffleTest, permutation_rank)
@@ -109,7 +117,7 @@ TEST_F(ShuffleTest, shuffle_FY_statistics)
         << "Given permutation space is too large.";
     vector<uint32_t> counter(perm_space_size.get_ui(), 0);
 
-    const size_t expectation = 1000;
+    const size_t expectation = 2000;
     const mpz_class num_loop = expectation * perm_space_size;
     EXPECT_TRUE(num_loop.fits_ulong_p())
         << "Given permutation space is too large.";
