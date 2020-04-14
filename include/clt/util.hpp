@@ -39,10 +39,8 @@ join(const IntType *in, const size_t &n,
         return "";
     }
     sst << fmt::format(format, uint_fast64_t(in[0]));
-    if (n > 1) {
-        for (size_t i = 1; i < n; i++) {
-            sst << ":" << fmt::format(format, uint_fast64_t(in[i]));
-        }
+    for (size_t i = 1; i < n; i++) {
+        sst << ":" << fmt::format(format, uint_fast64_t(in[i]));
     }
     return sst.str();
 }
@@ -56,10 +54,8 @@ join(const uint8_t *in, const size_t &n,
         return "";
     }
     sst << fmt::format(format, (uint_fast64_t(in[0]) & 0xffull));
-    if (n > 1) {
-        for (size_t i = 1; i < n; i++) {
-            sst << ":" << fmt::format(format, (uint_fast64_t(in[i]) & 0xffull));
-        }
+    for (size_t i = 1; i < n; i++) {
+        sst << ":" << fmt::format(format, (uint_fast64_t(in[i]) & 0xffull));
     }
     return sst.str();
 }
