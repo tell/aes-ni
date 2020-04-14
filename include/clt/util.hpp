@@ -28,8 +28,7 @@ public:
     static const std::string value;
 };
 
-template <class IntType,
-          class T = std::enable_if_t<!std::is_same_v<uint8_t, IntType>>>
+template <class IntType>
 inline std::string
 join(const IntType *in, const size_t &n,
      const std::string &format = default_format_str<IntType>::value)
@@ -41,21 +40,6 @@ join(const IntType *in, const size_t &n,
     sst << fmt::format(format, uint_fast64_t(in[0]));
     for (size_t i = 1; i < n; i++) {
         sst << ":" << fmt::format(format, uint_fast64_t(in[i]));
-    }
-    return sst.str();
-}
-
-inline std::string
-join(const uint8_t *in, const size_t &n,
-     const std::string &format = default_format_str<uint8_t>::value)
-{
-    std::stringstream sst;
-    if (n == 0) {
-        return "";
-    }
-    sst << fmt::format(format, (uint_fast64_t(in[0]) & 0xffull));
-    for (size_t i = 1; i < n; i++) {
-        sst << ":" << fmt::format(format, (uint_fast64_t(in[i]) & 0xffull));
     }
     return sst.str();
 }

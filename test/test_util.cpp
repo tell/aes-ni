@@ -23,9 +23,14 @@ TEST_F(CLTUtilTest, join_uint8_t)
         ASSERT_EQ(elevenstr, "0b");
     }
     {
-        const array<uint8_t, 3> ary{0, 1, 2};
+        const uint8_t none = -1;
+        const auto str = join(&none, 1);
+        ASSERT_EQ(str, "ff");
+    }
+    {
+        const array<uint8_t, 4> ary{0, 1, 2, static_cast<uint8_t>(-1)};
         const auto str = join(ary);
-        ASSERT_EQ(str, "00:01:02");
+        ASSERT_EQ(str, "00:01:02:ff");
     }
 }
 
