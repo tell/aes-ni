@@ -20,6 +20,101 @@ inline mpz_class factorial(const uint64_t n)
     return fact;
 }
 
+struct Permutation {
+    using index_t = uint32_t;
+    using perm_t = std::vector<index_t>;
+    perm_t indices_;
+    explicit Permutation() = default;
+    explicit Permutation(const size_t degree)
+    {
+        indices_.resize(degree);
+        std::iota(indices_.begin(), indices_.end(), 0);
+    }
+    friend bool operator==(const Permutation &lhs, const Permutation &rhs)
+    {
+        if (&lhs == &rhs) {
+            return true;
+        }
+        return std::equal(lhs.indices_.begin(), lhs.indices_.end(),
+                          rhs.indices_.begin());
+    }
+    friend bool operator!=(const Permutation &lhs, const Permutation &rhs)
+    {
+        return !(lhs == rhs);
+    }
+    friend std::ostream &operator<<(std::ostream &ost, const Permutation &x)
+    {
+        const auto n = x.indices_.size();
+        ost << "[";
+        if (n > 0) {
+            auto iter = x.indices_.begin();
+            ost << *iter++;
+            const auto eiter = x.indices_.end();
+            while (iter != eiter) {
+                ost << "," << *iter++;
+            }
+        }
+        ost << "]";
+        return ost;
+    }
+    index_t &operator[](const index_t i) { return indices_[i]; }
+    index_t operator[](const index_t i) const { return indices_[i]; }
+    Permutation apply(const Permutation &in) const
+    {
+        const size_t n = indices_.size();
+        Permutation out;
+        out.indices_.reserve(n);
+        for (size_t i = 0; i < n; i++) {
+            out.indices_.emplace_back(in[indices_[i]]);
+        }
+        return out;
+    }
+    friend Permutation operator*(const Permutation &lhs, const Permutation &rhs)
+    {
+        assert(lhs.indices_.size() == rhs.indices_.size());
+        Permutation out = lhs.apply(rhs);
+        return out;
+    }
+    Permutation inverse() const
+    {
+        const size_t n = indices_.size();
+        using tuple_t = std::tuple<index_t, index_t>;
+        std::vector<tuple_t> t_vec;
+        t_vec.reserve(n);
+        for (size_t i = 0; i < n; i++) {
+            t_vec.emplace_back(indices_[i], i);
+        }
+        std::sort(t_vec.begin(), t_vec.end(),
+                  [](const tuple_t &lhs, const tuple_t &rhs) -> bool {
+                      return std::get<0>(lhs) < std::get<0>(rhs);
+                  });
+        Permutation out;
+        for (size_t i = 0; i < n; i++) {
+            out.indices_.emplace_back(std::get<1>(t_vec[i]));
+        }
+        return out;
+    }
+    void pivot(const index_t i, const index_t j)
+    {
+        std::swap(indices_[i], indices_[j]);
+    }
+    template <class Func> void shuffle(Func &&rng)
+    {
+        // NOTE: FY shuffle.
+        using index_t = uint64_t;
+        assert(n < (index_t(1) << 32));
+        static_assert((2 * sizeof(T)) <= sizeof(index_t));
+        constexpr auto elem_bytes = sizeof(index_t);
+        const auto random_bytes = n * elem_bytes;
+        std::vector<index_t> random_indices(n);
+        rng(random_indices.data(), random_bytes);
+        for (size_t i = 1; i < (n - 1); i++) {
+            const auto j = random_indices[n - i] % (n - i);
+            std::swap(inplace[j], inplace[n - i]);
+        }
+    }
+};
+
 namespace rng {
 template <class T, class Func>
 inline void shuffle(T *inplace, const size_t n, Func &&rng)
