@@ -20,9 +20,52 @@ inline mpz_class factorial(const uint64_t n)
     return fact;
 }
 
+template <class IntType> inline auto least2pow(IntType n) -> decltype(n + 1)
+{
+    static_assert(std::is_integral_v<IntType>);
+    static_assert(std::is_unsigned_v<IntType>);
+    constexpr auto bit_size = sizeof(IntType) * CHAR_BIT;
+    if (n == 0) {
+        return 0;
+    }
+    n -= 1;
+    for (size_t i = 1; i < bit_size; i <<= 1) {
+        n |= n >> i;
+    }
+    return n + 1;
+}
+
+template <class IntType, class Func>
+inline auto random_int_mod_n(const IntType mod, Func &&rng)
+{
+    static_assert(std::is_integral_v<IntType>);
+    static_assert(std::is_unsigned_v<IntType>);
+    const auto byte_size = sizeof(IntType);
+    assert(mod > 1);
+    const auto mask = least2pow(mod) - 1;
+    IntType out;
+    rng(&out, byte_size);
+    out &= mask;
+    while (out >= mod) {
+        rng(&out, byte_size);
+        out &= mask;
+    }
+    return out;
+}
+
 namespace rng {
 template <class T, class Func>
-inline void shuffle(T *inplace, const size_t n, Func &&rng)
+inline void shuffle_rejection(T *inplace, const size_t n, Func &&rng)
+{
+    // NOTE: FY shuffle.
+    for (size_t i = 1; i < n; i++) {
+        const auto j = random_int_mod_n(n - i + 1, rng);
+        std::swap(inplace[j], inplace[n - i]);
+    }
+}
+
+template <class T, class Func>
+inline void shuffle_rounding(T *inplace, const size_t n, Func &&rng)
 {
     // NOTE: FY shuffle.
     using index_internal_t = uint64_t;
@@ -36,6 +79,12 @@ inline void shuffle(T *inplace, const size_t n, Func &&rng)
         const auto j = random_indices[n - i] % (n - i + 1);
         std::swap(inplace[j], inplace[n - i]);
     }
+}
+
+template <class T, class Func>
+inline void shuffle(T *inplace, const size_t n, Func &&rng)
+{
+    shuffle_rejection(inplace, n, std::forward<Func>(rng));
 }
 
 template <class T, class Func>
