@@ -1,3 +1,5 @@
+#include <spdlog/spdlog.h>
+
 #include <clt/aes-ni.hpp>
 #include <clt/rdrand.hpp>
 #include <clt/statistics.hpp>
@@ -22,7 +24,7 @@ inline void do_rdrand_iteration()
             rdrand(buff.data(), buff.size() / sizeof(generic_rdrand_t));
         });
         if (!check_random_bytes(buff)) {
-            fmt::print(cerr, "WARNING: Outside statistics.\n");
+            spdlog::warn("Outside statistics.");
         }
         current <<= 1;
     }

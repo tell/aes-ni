@@ -1,5 +1,7 @@
 #include <random>
 
+#include <spdlog/spdlog.h>
+
 #include <clt/aes-ni.hpp>
 #include <clt/rng.hpp>
 #include <clt/statistics.hpp>
@@ -27,7 +29,7 @@ inline void do_randen_iteration()
     const randen_result_t seed = dist(rdev);
     fmt::print(cerr, "seed = {:016x}\n", seed);
     if (!check_random_bytes(seed)) {
-        fmt::print(cerr, "WARNING: Skew seed, not fatal.\n");
+        spdlog::warn("Skew seed, not fatal.");
     }
     randen::Randen<randen_result_t> eng_randen(seed);
     size_t current = start_uint64_size;
@@ -43,7 +45,7 @@ inline void do_randen_iteration()
                              }
                          });
         if (!check_random_bytes(buff)) {
-            fmt::print(cerr, "WARNING: Outside statistics.\n");
+            spdlog::warn("Outside statistics.");
         }
         current <<= 1;
     }

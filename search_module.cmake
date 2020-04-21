@@ -14,6 +14,8 @@ else()
   find_package(fmt REQUIRED)
 endif()
 
+find_package(spdlog REQUIRED)
+
 #if(NOT (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen"))
 #  make_directory("${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen")
 #endif()

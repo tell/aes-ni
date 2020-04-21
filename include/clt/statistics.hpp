@@ -8,7 +8,7 @@
 
 namespace clt {
 namespace statistics {
-constexpr double confidence_scale = 3.5;
+constexpr double confidence_scale = 1.0;
 }
 
 inline auto binomial_statistics(const size_t n)

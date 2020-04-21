@@ -1,3 +1,5 @@
+#include <spdlog/spdlog.h>
+
 #include <clt/aes-ni.hpp>
 #include <clt/rng.hpp>
 #include <clt/statistics.hpp>
@@ -19,7 +21,7 @@ inline void do_dev_urandom_iteration()
             clt::rng::rng_global(buff.data(), size(buff));
         });
         if (!check_random_bytes(buff)) {
-            fmt::print(cerr, "WARNING: Outside statistics.\n");
+            spdlog::warn("Outside statistics.");
         }
         current <<= 1;
     }

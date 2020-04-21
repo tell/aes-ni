@@ -4,14 +4,14 @@
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
+#include <spdlog/spdlog.h>
+#include <gtest/gtest.h>
 
 #include <clt/aes-ni.hpp>
 #include <clt/rng.hpp>
 #include <clt/rdrand.hpp>
 #include <clt/shuffle.hpp>
 #include <clt/statistics.hpp>
-
-#include <gtest/gtest.h>
 
 using namespace std;
 using namespace clt;
@@ -89,16 +89,19 @@ protected:
         ASSERT_EQ(size(sample_key_) % aes128::block_bytes, 0);
         ASSERT_EQ(size(plaintexts_), size(ciphertexts_));
         ASSERT_EQ(size(plaintexts_) % aes128::block_bytes, 0);
-        EXPECT_TRUE(check_random_bytes(sample_key_))
-            << "Statistical check failed, but not fatal.";
-        EXPECT_TRUE(check_random_bytes(ciphertexts_))
-            << "Statistical check failed, but not fatal.";
+        if (!check_random_bytes(sample_key_)) {
+            spdlog::warn("Statistical check failed, but not fatal.");
+        }
+        if (!check_random_bytes(ciphertexts_)) {
+            spdlog::warn("Statistical check failed, but not fatal.");
+        }
     }
     void SetUp()
     {
         set_random_key();
-        EXPECT_TRUE(check_random_bytes(random_key_))
-            << "Statistical check failed, but not fatal.";
+        if (!check_random_bytes(random_key_)) {
+            spdlog::warn("Statistical check failed, but not fatal.");
+        }
     }
 };
 
@@ -111,8 +114,9 @@ TEST_F(AESNITest, dev_random)
     const size_t num_bytes = 1 << 10;
     vector<uint8_t> out(num_bytes);
     rng_global(out.data(), num_bytes);
-    EXPECT_TRUE(check_random_bytes(out))
-        << "Statistical check failed, but not fatal.";
+    if (!check_random_bytes(out)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
 }
 
 #if defined(__RDRND__) || defined(__APPLE__)
@@ -122,8 +126,9 @@ TEST_F(AESNITest, rdrand)
     vector<uint8_t> out(num_bytes);
     ASSERT_EQ(out.size() % sizeof(generic_rdrand_t), 0);
     rdrand(out.data(), num_bytes / sizeof(generic_rdrand_t));
-    EXPECT_TRUE(check_random_bytes(out))
-        << "Statistical check failed, but not fatal.";
+    if (!check_random_bytes(out)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
 }
 #endif
 
@@ -148,8 +153,9 @@ TEST_F(AESNITest, simple_use_aes_ni)
     cipher.enc(ct.data(), pt.data(), num_blocks);
     cipher.dec(dec_ct.data(), ct.data(), num_blocks);
     ASSERT_EQ(pt, dec_ct);
-    EXPECT_TRUE(check_random_bytes(ct))
-        << "Statistical check failed, but not fatal.";
+    if (!check_random_bytes(ct)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
 }
 
 TEST_F(AESNITest, mmo_with_sample_key_and_texts)
@@ -163,8 +169,9 @@ TEST_F(AESNITest, mmo_with_sample_key_and_texts)
         expected_out[i] = plaintexts_[i] ^ ciphertexts_[i];
     }
     ASSERT_EQ(out, expected_out);
-    EXPECT_TRUE(check_random_bytes(out))
-        << "Statistical check failed, but not fatal.";
+    if (!check_random_bytes(out)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
 }
 
 TEST_F(AESNITest, aes_ctr_stream)
@@ -182,10 +189,12 @@ TEST_F(AESNITest, aes_ctr_stream)
     const auto counter = cipher.ctr_stream(str_buff.data(), num_blocks, 0);
     ASSERT_EQ(str_buff, enc_buff);
     ASSERT_EQ(counter, num_blocks);
-    EXPECT_TRUE(check_random_bytes(enc_buff))
-        << "Statistical check failed, but not fatal.";
-    EXPECT_TRUE(check_random_bytes(str_buff))
-        << "Statistical check failed, but not fatal.";
+    if (!check_random_bytes(enc_buff)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
+    if (!check_random_bytes(str_buff)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
 }
 
 TEST_F(AESNITest, aesprf_ctr_stream)
@@ -202,8 +211,9 @@ TEST_F(AESNITest, aesprf_ctr_stream)
     const auto counter = prf.ctr_stream(str_buff.data(), num_blocks, 0);
     ASSERT_EQ(prf_buff, str_buff);
     ASSERT_EQ(counter, num_blocks);
-    EXPECT_TRUE(check_random_bytes(str_buff))
-        << "Statistical check failed, but not fatal.";
+    if (!check_random_bytes(str_buff)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
 }
 
 TEST_F(AESNITest, aesprf_ctr_byte_stream)
@@ -218,8 +228,9 @@ TEST_F(AESNITest, aesprf_ctr_byte_stream)
         const auto counter = prf.ctr_byte_stream(buff.data(), buff.size(), i);
         ASSERT_GE(counter, i);
         ASSERT_EQ(counter - i, num_blocks);
-        EXPECT_TRUE(check_random_bytes(buff))
-            << "Statistical check failed, but not fatal.";
+        if (!check_random_bytes(buff)) {
+            spdlog::warn("Statistical check failed, but not fatal.");
+        }
     }
 }
 
