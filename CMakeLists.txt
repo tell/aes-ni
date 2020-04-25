@@ -20,7 +20,7 @@ if(CMAKE_HOST_APPLE AND ROOT_PROJECT)
 endif()
 
 enable_language(CXX)
-project(aesni VERSION 0.1.0)
+project(aes-ni VERSION 0.1.0)
 
 if (ROOT_PROJECT)
   message(STATUS "Modify compiler flags.")
