@@ -1,7 +1,7 @@
 Experimental implementations using AES-NI
 ====
 
-[![Build Status](https://travis-ci.org/tell/aesni.svg?branch=master)](https://travis-ci.org/tell/aesni)
+[![Build Status](https://travis-ci.org/tell/aes-ni.svg?branch=master)](https://travis-ci.org/tell/aes-ni)
 
 # Note
 
