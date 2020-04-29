@@ -2,8 +2,8 @@
 set -ev
 docker exec -ti ${MY_NAME} bash -c "apt update -q"
 docker exec -ti ${MY_NAME} bash -c "apt upgrade -q -y"
-docker exec -ti ${MY_NAME} bash -c "apt install -q -y build-essential"
-docker exec -ti ${MY_NAME} bash -c "apt install -q -y git cmake libgmp-dev"
+docker exec -ti ${MY_NAME} bash -c "DEBIAN_FRONTEND=noninteractive apt install -q -y build-essential"
+docker exec -ti ${MY_NAME} bash -c "DEBIAN_FRONTEND=noninteractive apt install -q -y git cmake libgmp-dev"
 
 #docker exec -ti ${MY_NAME} bash -c "git clone --depth 1 https://github.com/fmtlib/fmt.git"
 #docker exec -ti ${MY_NAME} bash -c "cd fmt; mkdir -p build; cd build; cmake ..; make -j; make install"
