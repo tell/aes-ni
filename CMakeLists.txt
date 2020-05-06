@@ -13,12 +13,6 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   message(STATUS "This is the root project.")
 endif()
 
-if(CMAKE_HOST_APPLE AND ROOT_PROJECT)
-  message(STATUS "This is macOS platform, therefore clang and clang++ are used.")
-  set(CMAKE_C_COMPILER "clang")
-  set(CMAKE_CXX_COMPILER "clang++")
-endif()
-
 enable_language(CXX)
 project(aes-ni VERSION 0.1.0)
 
