@@ -107,15 +107,19 @@ struct Permutation {
     auto size() const { return indices_.size(); }
     friend auto operator==(const Permutation &lhs, const Permutation &rhs)
     {
-        if (&lhs == &rhs) {
-            return true;
+        if (lhs.size() != rhs.size()) {
+            return false;
         }
         return std::equal(lhs.indices_.begin(), lhs.indices_.end(),
                           rhs.indices_.begin());
     }
     friend auto operator!=(const Permutation &lhs, const Permutation &rhs)
     {
-        return !(lhs == rhs);
+        if (lhs.size() == rhs.size()) {
+            return false;
+        }
+        return !std::equal(lhs.indices_.begin(), lhs.indices_.end(),
+                           rhs.indices_.begin());
     }
     friend auto &operator<<(std::ostream &ost, const Permutation &x)
     {
