@@ -14,7 +14,9 @@ inline mpz_class rank_impl(const size_t n, permutation_t &pi,
     const auto s = pi[n - 1];
     std::swap(pi[n - 1], pi[inv_pi[n - 1]]);
     std::swap(inv_pi[s], inv_pi[n - 1]);
-    return s + n * rank_impl(n - 1, pi, inv_pi);
+    mpz_class mpz_s;
+    mpz_set_ui64(mpz_s, s);
+    return mpz_s + n * rank_impl(n - 1, pi, inv_pi);
 }
 } // namespace internal
 

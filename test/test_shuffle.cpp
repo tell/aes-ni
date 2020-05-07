@@ -151,7 +151,8 @@ TEST_F(ShuffleTest, shuffle_RS_statistics)
 {
     AESPRF128_CTR prf(random_key_.data());
     const size_t degree = 5;
-    vector<uint32_t> perm(degree);
+    using perm_t = Permutation::perm_t;
+    perm_t perm(degree);
     iota(begin(perm), end(perm), 0);
 
     const mpz_class perm_space_size = clt::factorial(degree);

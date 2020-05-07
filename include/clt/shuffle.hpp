@@ -11,6 +11,11 @@
 #include <gmpxx.h>
 
 namespace clt {
+
+inline void mpz_set_ui64(mpz_class & out, const uint64_t in) {
+    mpz_import(out.get_mpz_t(), 1, 1, sizeof(in), 0, 0, &in);
+}
+
 inline mpz_class factorial(const uint64_t n)
 {
     mpz_class fact = 1;
@@ -95,7 +100,7 @@ inline void shuffle(std::vector<T> &inplace, Func &&rng)
 } // namespace rng
 
 struct Permutation {
-    using index_t = uint32_t;
+    using index_t = uint64_t;
     using perm_t = std::vector<index_t>;
     perm_t indices_;
     explicit Permutation() = default;
