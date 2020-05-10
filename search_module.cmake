@@ -9,7 +9,7 @@ if(NOT (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party"))
 endif()
 
 if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/fmt")
-  message("Found a directory ${CMAKE_CURRENT_SOURCE_DIR}/third_party/fmt")
+  message("Found a directory fmt at ${CMAKE_CURRENT_SOURCE_DIR}/third_party/fmt")
   add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/third_party/fmt")
 else()
   find_package(fmt REQUIRED)

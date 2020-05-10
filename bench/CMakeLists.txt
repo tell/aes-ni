@@ -1,5 +1,5 @@
 add_custom_target(benchmarks)
-file(GLOB bench_srcs RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/bench" "bench_*.cpp")
+file(GLOB bench_srcs RELATIVE "${aes-ni_SOURCE_DIR}/bench" "bench_*.cpp")
 message("Found benchmark source files = ${bench_srcs}")
 foreach(filename IN ITEMS ${bench_srcs})
     get_filename_component(basename "${filename}" NAME_WE)
@@ -11,8 +11,8 @@ endforeach()
 target_link_libraries(bench_randen randen)
 
 add_custom_target(run_benchmarks
-    ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/bench/run_benchmarks.sh"
-    COMMAND ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/bench/benchmark.plot"
-    COMMAND ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/bench/run_plotting.sh"
+    ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/run_benchmarks.sh"
+    COMMAND ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/benchmark.plot"
+    COMMAND ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/run_plotting.sh"
     DEPENDS benchmarks
 )

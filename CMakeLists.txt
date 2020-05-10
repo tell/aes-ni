@@ -16,17 +16,21 @@ endif()
 enable_language(CXX)
 project(aes-ni VERSION 0.1.0)
 
+message("CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
+message("CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
+
 if (ROOT_PROJECT)
   message(STATUS "Modify compiler flags.")
-
-  message("CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
-  message("CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
-
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -march=native")
+  message("CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -fsanitize=address -fno-omit-frame-pointer -UNDEBUG")
+  message("CMAKE_CXX_FLAGS_DEBUG = ${CMAKE_CXX_FLAGS_DEBUG}")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -Ofast -DNDEBUG")
+  message("CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}")
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -Ofast -g -fsanitize=address -UNDEBUG")
+  message("CMAKE_CXX_FLAGS_RELWITHDEBINFO = ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
   set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -Os -s -DNDEBUG")
+  message("CMAKE_CXX_FLAGS_MINSIZEREL = ${CMAKE_CXX_FLAGS_MINSIZEREL}")
 endif()
 
 include("${CMAKE_CURRENT_SOURCE_DIR}/search_module.cmake")
