@@ -1,6 +1,20 @@
 {
     "configurations": [
         {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/include/**",
+                "${workspaceFolder}/third_party/fmt/**",
+                "${workspaceFolder}/third_party/randen/**"
+            ],
+            "defines": [],
+            "cStandard": "c18",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "${default}",
+            "compileCommands": "${workspaceFolder}/build/compile_commands.json",
+            "configurationProvider": "vector-of-bool.cmake-tools"
+        },
+        {
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/include/**",
