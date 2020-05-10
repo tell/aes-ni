@@ -6,13 +6,14 @@
 #include <tuple>
 #include <functional>
 
-#include <clt/util.hpp>
-
 #include <gmpxx.h>
+
+#include "util.hpp"
 
 namespace clt {
 
-inline void mpz_set_ui64(mpz_class & out, const uint64_t in) {
+inline void mpz_set_ui64(mpz_class &out, const uint64_t in)
+{
     mpz_import(out.get_mpz_t(), 1, 1, sizeof(in), 0, 0, &in);
 }
 
@@ -48,6 +49,7 @@ inline auto random_int_mod_n(const IntType mod, Func &&rng)
     const auto byte_size = sizeof(IntType);
     assert(mod > 1);
     const auto mask = least2pow(mod) - 1;
+    assert((mask + 1) >= mod);
     IntType out;
     rng(&out, byte_size);
     out &= mask;
