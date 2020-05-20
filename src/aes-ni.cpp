@@ -111,6 +111,29 @@ auto AES128::ctr_stream(void *out, const uint64_t num_blocks,
     return num_blocks + start_count;
 }
 
+auto AES128::ctr_byte_stream(void *out, const uint64_t num_bytes,
+                             const uint64_t start_count) const noexcept
+    -> decltype(num_bytes + start_count)
+{
+    const auto num_blocks = num_bytes / aes128::block_bytes;
+    const auto rem_bytes = num_bytes % aes128::block_bytes;
+    const auto counter = ctr_stream(out, num_blocks, start_count);
+    if (rem_bytes > 0) {
+        std::array<uint8_t, aes128::block_bytes> m;
+#ifndef NDEBUG
+        const auto counter_ =
+#endif
+            ctr_stream(m.data(), 1, counter);
+        assert(counter_ == counter + 1);
+        auto *const ptr_rem_out =
+            reinterpret_cast<uint8_t *>(out) + num_blocks * aes128::block_bytes;
+        std::copy(m.begin(), m.begin() + rem_bytes, ptr_rem_out);
+        return counter + 1;
+    } else {
+        return counter;
+    }
+}
+
 namespace internal {
 inline void aes128_load_expkey_for_dec(__m128i *keys, const uint8_t *in,
                                        const uint8_t *last)

@@ -177,6 +177,7 @@ TEST_F(AESNITest, mmo_with_sample_key_and_texts)
 TEST_F(AESNITest, aes_ctr_stream)
 {
     AES128 cipher(random_key_.data());
+    AES128_CTR ctr(random_key_.data());
     vector<uint64_t> buff, enc_buff, dec_buff, str_buff;
     constexpr size_t num_blocks = 1 << 10;
     static_assert((aes128::block_bytes % sizeof(uint64_t)) == 0);
@@ -184,15 +185,17 @@ TEST_F(AESNITest, aes_ctr_stream)
     enc_buff.resize(buff.size());
     dec_buff.resize(buff.size());
     str_buff.resize(buff.size());
+
     init_iota(buff, num_blocks, 2);
     cipher.enc(enc_buff.data(), buff.data(), num_blocks);
     const auto counter = cipher.ctr_stream(str_buff.data(), num_blocks, 0);
     ASSERT_EQ(str_buff, enc_buff);
     ASSERT_EQ(counter, num_blocks);
+
+    ctr(str_buff.data(), num_blocks);
+    ASSERT_EQ(str_buff, enc_buff);
+
     if (!check_random_bytes(enc_buff)) {
-        spdlog::warn("Statistical check failed, but not fatal.");
-    }
-    if (!check_random_bytes(str_buff)) {
         spdlog::warn("Statistical check failed, but not fatal.");
     }
 }
