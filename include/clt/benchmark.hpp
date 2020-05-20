@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <chrono>
+#include <functional>
 
 #include <fmt/format.h>
 #include <fmt/ostream.h>
