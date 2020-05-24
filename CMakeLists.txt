@@ -14,7 +14,7 @@ if (CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
 endif()
 
 enable_language(CXX)
-project(aes-ni VERSION 0.1.0)
+project(aes-ni VERSION 0.0.1)
 
 message("CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
 message("CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
