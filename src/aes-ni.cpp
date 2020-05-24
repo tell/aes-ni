@@ -42,6 +42,17 @@ AES128::AES128(const void *key) noexcept
     }
 }
 
+namespace internal {
+inline void aes128_load_expkey_for_enc(__m128i *keys,
+                                       const uint8_t *in) noexcept
+{
+    const auto *p_in = reinterpret_cast<const __m128i *>(in);
+    for (size_t i = 0; i < (aes128::num_rounds + 1); i++) {
+        keys[i] = _mm_loadu_si128(p_in + i);
+    }
+}
+} // namespace internal
+
 void AES128::enc(void *out, const void *in) const noexcept
 {
     using internal::single::aes128_enc_impl;

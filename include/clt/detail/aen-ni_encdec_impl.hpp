@@ -4,15 +4,6 @@
 
 namespace clt {
 namespace internal {
-inline void aes128_load_expkey_for_enc(__m128i *keys,
-                                       const uint8_t *in) noexcept
-{
-    const auto *p_in = reinterpret_cast<const __m128i *>(in);
-    for (size_t i = 0; i < (aes128::num_rounds + 1); i++) {
-        keys[i] = _mm_loadu_si128(p_in + i);
-    }
-}
-
 namespace single {
 template <size_t N> inline void aes128_enc_impl(__m128i &m, const __m128i *keys)
 {
@@ -216,11 +207,11 @@ inline void aes128_enc_impl(const round_t<0> &, const __m128i *keys,
 }
 } // namespace variadic
 inline void hash_impl(uint8_t *out, const uint8_t *in, const size_t num_blocks,
-                      const uint8_t *exp_keys) noexcept
+                      const __m128i *keys) noexcept
 {
     _mm256_zeroall();
-    __m128i keys[11];
-    aes128_load_expkey_for_enc(keys, exp_keys);
+    // __m128i keys[11];
+    // aes128_load_expkey_for_enc(keys, exp_keys);
     constexpr size_t grain_size = 4;
     const size_t num_blocks_q = num_blocks / grain_size;
     const size_t num_blocks_r = num_blocks % grain_size;
