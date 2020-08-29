@@ -63,5 +63,24 @@ inline void print_throughput(const std::string &label, const size_t num_bytes,
         }
     }
 }
+
+template <class Func>
+inline void print_benchmark(Func &&func, const std::string &fmt_str,
+                            const size_t num)
+{
+    while (true) {
+        const auto elapsed_time = measure_static(std::function<void()>(func));
+        const auto num_per_sec = num / elapsed_time;
+        if (std::isinf(num_per_sec)) {
+#pragma omp critical
+            fmt::print(std::cerr,
+                       "Obtained throughput is the infinity, try again...\n");
+        } else {
+#pragma omp critical
+            fmt::print(fmt_str, num, elapsed_time, num_per_sec);
+            break;
+        }
+    }
+}
 } // namespace bench
 } // namespace clt
