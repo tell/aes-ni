@@ -1,5 +1,7 @@
 #include <thread>
+#ifdef _OPENMP
 #include <omp.h>
+#endif
 
 #include <fmt/format.h>
 
@@ -34,8 +36,12 @@ int main()
     print_diagnosis();
     const auto ncpu = thread::hardware_concurrency();
     fmt::print("hardware_concurrency = {}\n", ncpu);
+#ifdef _OPENMP
     const auto omp_max_threads = omp_get_max_threads();
     fmt::print("omp_max_threads = {} (OMP_NUM_THREADS)\n", omp_max_threads);
+#else
+    fmt::print("OpenMP is disabled.");
+#endif
     do_shuffle_ys_iteration();
     return 0;
 }
