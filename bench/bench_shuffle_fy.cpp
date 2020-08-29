@@ -18,7 +18,7 @@ inline void do_shuffle_ys_iteration()
 {
     const std::string fmt_str = "shuffle_ys_aesprf128,{},{:e},{:e}\n";
     constexpr size_t step = 1;
-    constexpr size_t num_loop = 23;
+    constexpr size_t num_loop = 13;
 #pragma omp parallel for
     for (size_t i = 0; i < num_loop; i++) {
         AES128::key_t key = gen_key();
