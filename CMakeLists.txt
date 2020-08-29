@@ -19,6 +19,8 @@ project(aes-ni VERSION 0.0.1)
 message("CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
 message("CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
 
+include("${CMAKE_CURRENT_SOURCE_DIR}/search_module.cmake")
+
 if (ROOT_PROJECT)
   message(STATUS "Modify compiler flags.")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -march=native")
@@ -32,8 +34,6 @@ if (ROOT_PROJECT)
   set(CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} -Os -s -DNDEBUG")
   message("CMAKE_CXX_FLAGS_MINSIZEREL = ${CMAKE_CXX_FLAGS_MINSIZEREL}")
 endif()
-
-include("${CMAKE_CURRENT_SOURCE_DIR}/search_module.cmake")
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
