@@ -13,6 +13,8 @@ namespace bench {
 constexpr size_t start_byte_size = 1 << 10;
 constexpr size_t stop_byte_size = 1 << 30;
 
+void dummy_call(void *);
+
 template <class T> inline bool eq_check(T &&lvec, T &&rvec)
 {
     if (std::size(lvec) != std::size(rvec)) {

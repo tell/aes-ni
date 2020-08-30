@@ -34,6 +34,7 @@ inline void do_shuffle_ys_iteration()
             iota(begin(buff), end(buff), 0);
             print_benchmark([&]() { shuffle(buff.data(), size(buff), prf); },
                             fmt_str, size(buff));
+            dummy_call(reinterpret_cast<void *>(buff.data()));
         }
     }
 }

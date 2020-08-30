@@ -3,6 +3,8 @@
 namespace clt {
 namespace bench {
 
+void dummy_call(void *x) { (void)x; }
+
 namespace {
 [[maybe_unused]] inline auto measure_walltime(const std::function<void()> &func)
 {
