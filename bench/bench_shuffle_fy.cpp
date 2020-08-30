@@ -7,6 +7,7 @@
 
 #include <clt/aes-ni.hpp>
 #include <clt/shuffle.hpp>
+#include <clt/util_omp.hpp>
 #include <clt/benchmark.hpp>
 
 using namespace std;
@@ -40,14 +41,7 @@ inline void do_shuffle_ys_iteration()
 int main()
 {
     print_diagnosis();
-    const auto ncpu = thread::hardware_concurrency();
-    fmt::print("hardware_concurrency = {}\n", ncpu);
-#ifdef _OPENMP
-    const auto omp_max_threads = omp_get_max_threads();
-    fmt::print("omp_max_threads = {} (OMP_NUM_THREADS)\n", omp_max_threads);
-#else
-    fmt::print("OpenMP is disabled.");
-#endif
+    print_omp_diagnosis();
     do_shuffle_ys_iteration();
     return 0;
 }
