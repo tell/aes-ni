@@ -84,5 +84,23 @@ inline void print_benchmark(Func &&func, const std::string &fmt_str,
         }
     }
 }
+
+template <class T> double median(T &vs)
+{
+    using std::begin;
+    using std::end;
+    using std::size;
+    using std::sort;
+
+    sort(begin(vs), end(vs));
+    const auto n = size(vs);
+    const auto n2 = n / 2;
+    if ((n % 2) == 0) {
+        return (vs[n2] + vs[n2 + 1]) / 2;
+    } else {
+        return vs[n2 + 1];
+    }
+}
+
 } // namespace bench
 } // namespace clt
