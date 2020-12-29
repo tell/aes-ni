@@ -31,25 +31,24 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Package settings
+      - name: Install packages
         run: |
           sudo apt-get update -q -y
-          # sudo apt-get upgrade -q -y
           sudo apt-get install -q -y build-essential cmake libgmp-dev
-          sudo apt-get install -q -y libfmt-dev libspdlog-dev libgtest-dev
+          sudo apt-get install -q -y libspdlog-dev libgtest-dev
 
-#      - name: Install libfmt
-#        run: |
-#          cd $GITHUB_WORKSPACE/..
-#          git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1
-#          cd fmt
-#          mkdir -p build
-#          cd build
-#          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-#            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
-#            ..
-#          make
-#          make install
+      - name: Install libfmt
+        run: |
+          cd $GITHUB_WORKSPACE/..
+          git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1
+          cd fmt
+          mkdir -p build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
+            ..
+          make
+          make install
 
 #      - name: Install libspdlog
 #        run: |
