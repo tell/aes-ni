@@ -3,7 +3,7 @@
 name: Linux CI
 
 env:
-  MODULE_PREFIX: third_party/module
+  MODULE_PREFIX: $GITHUB_WORKSPACE/third_party/module
 
 # Controls when the action will run. 
 on:
@@ -31,15 +31,9 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Show enviroments
+      - name: Install libfmt
         run: |
-          pwd
-          ls -l
-          mkdir -p "$MODULE_PREFIX"
-
-      - name: Install tools
-        run: |
+          cd $GITHUB_WORKSPACE/..
           git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1
           cd fmt
           mkdir -p build
