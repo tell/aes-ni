@@ -10,7 +10,7 @@ if(CMAKE_HOST_APPLE)
   set(OpenMP_CXX_FLAGS "-Xpreprocessor -fopenmp -Wno-unused-command-line-argument -I${OpenMP_omp_INCLUDE}" CACHE STRING "" FORCE)
 endif()
 find_package(OpenMP)
-if(OpenMP_FOUND)
+if(CMAKE_HOST_APPLE AND OpenMP_FOUND)
   # TODO: should change variables? try to use "target" framework of CMake.
   message("Modify C and CXX compilers flags for OpenMP...")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
