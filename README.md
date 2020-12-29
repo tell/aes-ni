@@ -1,7 +1,7 @@
 Experimental implementations using AES-NI
 ====
 
-[![Linux CI](https://github.com/tell/aes-ni/workflows/Linux%20CI/badge.svg?branch=develop)](https://github.com/tell/aes-ni/workflows/Linux%20CI)
+[![Linux CI](https://github.com/tell/aes-ni/workflows/Linux%20CI/badge.svg?branch=develop)](https://github.com/tell/aes-ni/actions?query=workflow%3A%22Linux+CI%22)
 
 # Note
 
