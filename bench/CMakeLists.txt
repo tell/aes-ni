@@ -4,7 +4,11 @@ message("Found benchmark source files = ${bench_srcs}")
 foreach(filename IN ITEMS ${bench_srcs})
     get_filename_component(basename "${filename}" NAME_WE)
     add_executable("${basename}" "${basename}.cpp")
-    target_link_libraries("${basename}" aes-ni spdlog::spdlog_header_only fmt::fmt-header-only)
+    target_link_libraries("${basename}"
+        aes-ni
+        spdlog::spdlog_header_only
+        fmt::fmt-header-only
+        $<$<BOOL:OpenMP_CXX_FOUND>:-lomp>)
     add_dependencies(benchmarks "${basename}")
 endforeach()
 
