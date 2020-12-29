@@ -24,7 +24,8 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        build_typr: [Debug, Release]
+        build_type: [Debug, Release]
+        cxx: [g++-7, g++-10]
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
