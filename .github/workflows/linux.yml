@@ -50,7 +50,7 @@ jobs:
           ${{matrix.install}}
 
       - name: Install googletest
-        if: ${{matrix.os}} == 'ubuntu-18.04'
+        if: ${{matrix.os == 'ubuntu-18.04'}}
         run: |
           cd /usr/src/googletest
           sudo cmake -G Ninja .
