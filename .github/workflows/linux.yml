@@ -3,7 +3,7 @@
 name: Linux CI
 
 env:
-  MODULE_PREFIX: $HOME
+  MODULE_PREFIX: third_party/module
 
 # Controls when the action will run. 
 on:
@@ -34,8 +34,9 @@ jobs:
       # Runs a single command using the runners shell
       - name: Show enviroments
         run: |
-          echo $HOME
+          pwd
           ls -l
+          mkdir -p "$MODULE_PREFIX"
 
       - name: Install tools
         run: |
