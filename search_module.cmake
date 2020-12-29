@@ -7,7 +7,7 @@ if(NOT (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party"))
 endif()
 
 if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake/fmt")
-  message("Found a directory fmt in ${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake/fmt")
+  message("Found a directory fmt in ${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake")
   set(fmt_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake/fmt")
 endif()
 find_package(fmt REQUIRED)
