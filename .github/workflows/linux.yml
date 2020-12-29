@@ -34,8 +34,7 @@ jobs:
       - name: Install packages
         run: |
           sudo apt-get update -q -y
-          sudo apt-get install -q -y build-essential cmake libgmp-dev
-          sudo apt-get install -q -y libspdlog-dev libgtest-dev
+          sudo apt-get install -q -y build-essential cmake libgmp-dev libgtest-dev
 
       - name: Install libfmt
         run: |
@@ -47,21 +46,21 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
             ..
-          make
-          make install
+          cmake --build .
+          cmake --install .
 
-#      - name: Install libspdlog
-#        run: |
-#          cd $GITHUB_WORKSPACE/..
-#          git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1
-#          cd spdlog
-#          mkdir -p build
-#          cd build
-#          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-#            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
-#            ..
-#          make
-#          make install
+      - name: Install libspdlog
+        run: |
+          cd $GITHUB_WORKSPACE/..
+          git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1
+          cd spdlog
+          mkdir -p build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
+            ..
+          cmake --build .
+          cmake --install .
 
       - name: Build
         run: |
