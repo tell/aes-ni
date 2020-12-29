@@ -1,7 +1,7 @@
 Experimental implementations using AES-NI
 ====
 
-[![Build Status](https://travis-ci.org/tell/aes-ni.svg?branch=master)](https://travis-ci.org/tell/aes-ni)
+[![Linux CI](https://github.com/tell/aes-ni/workflows/Linux%20CI/badge.svg?branch=develop)](https://github.com/tell/aes-ni/workflows/Linux%20CI)
 
 # Note
 
