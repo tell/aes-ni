@@ -72,9 +72,10 @@ jobs:
           cd $FMT_SRC_DIR
           cmake -G Ninja \
             -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             $FMT_SRC_DIR
-          sudo cmake --build . --target install
+          cmake --build . --target install
 
       - name: Install libspdlog
         run: |
@@ -84,13 +85,14 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             $SPDLOG_SRC_DIR
-          sudo cmake --build . --target install
+          cmake --build . --target install
 
-      - name: Build
+      - name: Config and Build
         run: |
-          mkdir -p build
+          cmake -E make_directory build
           cd build
-          cmake -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+          cmake -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             ..
           cmake --build .
