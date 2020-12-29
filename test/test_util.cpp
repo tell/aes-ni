@@ -1,6 +1,7 @@
 #include <array>
 
 #include <clt/util.hpp>
+#include <clt/util_omp.hpp>
 
 #include <gtest/gtest.h>
 
@@ -49,6 +50,8 @@ TEST_F(CLTUtilTest, join_uint64_t)
         ASSERT_EQ(str, "0706050403020100");
     }
 }
+
+TEST_F(CLTUtilTest, omp_diagnosis) { print_omp_diagnosis(); }
 
 int main(int argc, char **argv)
 {

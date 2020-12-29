@@ -11,7 +11,7 @@ if(CMAKE_HOST_APPLE)
 endif()
 find_package(OpenMP)
 if(OpenMP_FOUND)
-  # TODO: should change variables?
+  # TODO: should change variables? try to use "target" framework of CMake.
   message("Modify C and CXX compilers flags for OpenMP...")
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")

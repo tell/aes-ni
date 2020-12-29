@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <thread>
 
 #ifdef _OPENMP
@@ -16,8 +17,10 @@ void print_omp_diagnosis()
     fmt::print(std::cerr, "std::thread::hardware_concurrency() = {}\n", ncpu);
 #ifdef _OPENMP
     const auto omp_max_threads = omp_get_max_threads();
-    fmt::print("# omp_get_max_threads() = {} (OMP_NUM_THREADS)\n", omp_max_threads);
-    fmt::print("# NOTE: env. var. OMP_NUM_THREADS should be set manually.\n");
+    fmt::print(std::cerr, "# omp_get_max_threads() = {} (OMP_NUM_THREADS)\n",
+               omp_max_threads);
+    fmt::print(std::cerr,
+               "# NOTE: env. var. OMP_NUM_THREADS should be set manually.\n");
 #else
     fmt::print("OpenMP is disabled.\n");
 #endif

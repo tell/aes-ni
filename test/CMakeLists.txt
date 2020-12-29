@@ -10,9 +10,10 @@ function(add_unit_test testname)
         randen
         -lgmpxx
         -lgmp
+        $<$<BOOL:${OpenMP_CXX_FOUND}>:-lomp>
     )
     add_test(NAME ${testname}
-        COMMAND ${testname}
+        COMMAND $<TARGET_FILE:${testname}>
     )
 endfunction()
 
