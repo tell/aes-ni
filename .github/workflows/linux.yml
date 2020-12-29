@@ -49,6 +49,13 @@ jobs:
           sudo apt-get install -q -y build-essential ninja-build cmake libgmp-dev libgtest-dev
           ${{matrix.install}}
 
+      - name: Install googletest
+        if: ${{matrix.os}} == 'ubuntu-18.04'
+        run: |
+          cd /usr/src/googletest
+          sudo cmake -G Ninja .
+          sudo cmake --build . --target install
+
       - name: Install libfmt
         run: |
           cd $GITHUB_WORKSPACE/..
