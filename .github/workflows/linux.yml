@@ -22,7 +22,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-20.04, ubuntu-latest]
         build_type: [Debug, Release]
         cxx: [g++-8, g++-9, g++-10]
         cxxstd: [20]
