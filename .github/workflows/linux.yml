@@ -46,7 +46,7 @@ jobs:
       - name: Install packages
         run: |
           sudo apt-get update -q -y > /dev/null
-          sudo apt-get install -q -y build-essential cmake libgmp-dev libgtest-dev
+          sudo apt-get install -q -y build-essential ninja-build cmake libgmp-dev libgtest-dev
           ${{matrix.install}}
 
       - name: Install libfmt
