@@ -57,5 +57,12 @@ jobs:
           make
           make install
 
-      - name: Check installations
-        run: ls -R $MODULE_PREFIX
+      - name: Build
+        run: |
+          mkdir -p build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+            ..
+          make
+      - name: Test
+        run: cd build; ctest
