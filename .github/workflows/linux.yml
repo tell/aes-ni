@@ -56,7 +56,7 @@ jobs:
           cd fmt
           mkdir -p build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+          cmake -G ninja -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             ..
@@ -70,7 +70,7 @@ jobs:
           cd spdlog
           mkdir -p build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+          cmake -G ninja -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             ..
@@ -81,7 +81,7 @@ jobs:
         run: |
           mkdir -p build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+          cmake -G ninja -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             ..
           make
