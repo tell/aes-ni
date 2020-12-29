@@ -33,7 +33,7 @@ jobs:
 
       - name: Install packages
         run: |
-          sudo apt-get update -q -y
+          sudo apt-get update -q -y > /dev/null
           sudo apt-get install -q -y build-essential cmake libgmp-dev libgtest-dev
 
       - name: Install libfmt
