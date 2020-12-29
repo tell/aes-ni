@@ -31,31 +31,38 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Install libfmt
+      - name: Package settings
         run: |
-          cd $GITHUB_WORKSPACE/..
-          git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1
-          cd fmt
-          mkdir -p build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
-            ..
-          make
-          make install
+          sudo apt-get update -q -y
+          sudo apt-get upgrade -q -y
+          sudo apt-get install -q -y build-essential git cmake libgmp-dev
+          sudo apt-get install -q -y libfmt-dev libspdlog-dev libgtest-dev
 
-      - name: Install libspdlog
-        run: |
-          cd $GITHUB_WORKSPACE/..
-          git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1
-          cd spdlog
-          mkdir -p build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
-            ..
-          make
-          make install
+#      - name: Install libfmt
+#        run: |
+#          cd $GITHUB_WORKSPACE/..
+#          git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1
+#          cd fmt
+#          mkdir -p build
+#          cd build
+#          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+#            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
+#            ..
+#          make
+#          make install
+
+#      - name: Install libspdlog
+#        run: |
+#          cd $GITHUB_WORKSPACE/..
+#          git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1
+#          cd spdlog
+#          mkdir -p build
+#          cd build
+#          cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+#            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
+#            ..
+#          make
+#          make install
 
       - name: Build
         run: |
@@ -64,5 +71,6 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             ..
           make
+ 
       - name: Test
         run: cd build; ctest
