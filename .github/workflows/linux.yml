@@ -3,7 +3,7 @@
 name: Linux CI
 
 env:
-  MODULE_PREFIX: $GITHUB_WORKSPACE/third_party/module
+  MODULE_PREFIX: ${{github.workspace}}/third_party/module
 
 # Controls when the action will run. 
 on:
