@@ -84,17 +84,13 @@ jobs:
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             ..
           make
-<<<<<<< HEAD
 
-=======
-      
       - name: Show logs when failed
         if: ${{failure()}}
         run: |
           cat "${{github.workspace}}/build/CMakeFiles/CMakeOutput.log"
           echo ++++
           cat "${{github.workspace}}/build/CMakeFiles/CMakeError.log"
- 
->>>>>>> 43ed17717ed8a5a7951b0532d680755b6c41b306
+
       - name: Test
         run: cd build; ctest
