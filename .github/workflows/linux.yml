@@ -1,8 +1,5 @@
 name: Linux
 
-env:
-  MODULE_PREFIX: ${{github.workspace}}/third_party/module
-
 # Controls when the action will run.
 on:
   # Triggers the workflow on events but only for branches.
@@ -37,6 +34,8 @@ jobs:
     runs-on: ${{matrix.os}}
     env:
       CXX: ${{matrix.cxx}}
+      FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
+      MODULE_PREFIX: ${{github.workspace}}/third_party/module
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -57,19 +56,19 @@ jobs:
             sudo cmake --build . --target install; \
           fi
 
+      - name: Download libfmt
+        run: |
+          git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1 $FMT_SRC_DIR
+          cmake -E make_directory $FMT_SRC_DIR/build
+
       - name: Install libfmt
         run: |
-          cd $GITHUB_WORKSPACE/..
-          git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1
-          cd fmt
-          mkdir -p build
-          cd build
+          cd $FMT_SRC_DIR
           cmake -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
-            ..
-          cmake --build .
-          cmake --install .
+            $FMT_SRC_DIR
+          cmake --build . --target install
 
       - name: Install libspdlog
         run: |
