@@ -28,7 +28,7 @@ jobs:
         cxx: [g++-8, g++-10]
         include:
           - cxx: g++-8
-            install: sudo apt-get install -q -y ${{matrix.cxx}}
+            install: sudo apt-get install -q -y g++-8
     
     env:
       CXX: ${{matrix.cxx}}
