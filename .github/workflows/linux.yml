@@ -26,7 +26,9 @@ jobs:
       matrix:
         build_type: [Debug, Release]
         cxx: [g++-7, g++-10]
-        std: [17]
+    
+    env:
+      CXX: ${{matrix.cxx}}
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
