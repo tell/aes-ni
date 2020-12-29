@@ -50,11 +50,12 @@ jobs:
           ${{matrix.install}}
 
       - name: Install googletest
-        if: ${{matrix.os == 'ubuntu-18.04'}}
         run: |
-          cd /usr/src/googletest
-          sudo cmake -G Ninja .
-          sudo cmake --build . --target install
+          if grep "DISTRIB_RELEASE=18.04" /etc/lsb-release ; then \
+            cd /usr/src/googletest; \
+            sudo cmake -G Ninja .; \
+            sudo cmake --build . --target install; \
+          fi
 
       - name: Install libfmt
         run: |
