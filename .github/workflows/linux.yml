@@ -64,8 +64,8 @@ jobs:
       - name: Install libfmt
         run: |
           cd $FMT_SRC_DIR
-          cmake -G Ninja -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-            -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
+          cmake -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             $FMT_SRC_DIR
           cmake --build . --target install
