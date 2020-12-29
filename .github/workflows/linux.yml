@@ -35,7 +35,7 @@ jobs:
     env:
       CXX: ${{matrix.cxx}}
       FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
-      SPDLOG_SRC_DIR: 
+      SPDLOG_SRC_DIR: ${{github.workspace}}/third_party/spdlog
       MODULE_PREFIX: ${{github.workspace}}/third_party/module
 
     # Steps represent a sequence of tasks that will be executed as part of the job
