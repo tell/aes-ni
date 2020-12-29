@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Linux CI
+name: Linux
 
 env:
   MODULE_PREFIX: ${{github.workspace}}/third_party/module
@@ -85,6 +85,13 @@ jobs:
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
             ..
           make
+      
+      - name: Show logs when failed
+        if: ${{failure()}}
+        run: |
+          cat "${{github.workspace}}/build/CMakeFiles/CMakeOutput.log"
+          echo ++++
+          cat "${{github.workspace}}/build/CMakeFiles/CMakeError.log"
  
       - name: Test
         run: cd build; ctest
