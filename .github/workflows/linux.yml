@@ -47,7 +47,7 @@ jobs:
           cmake -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
             ..
-          make -j
+          make
           make install
 
       # Runs a set of commands using the runners shell
