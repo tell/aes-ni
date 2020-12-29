@@ -8,7 +8,7 @@ foreach(filename IN ITEMS ${bench_srcs})
         aes-ni
         spdlog::spdlog_header_only
         fmt::fmt-header-only
-        $<$<BOOL:${OpenMP_FOUND}>:-lomp>)
+        $<$<AND:$<BOOL:${OpenMP_FOUND}>,$<BOOL:${CMAKE_HOST_APPLE}>>:-lomp>)
     add_dependencies(benchmarks "${basename}")
 endforeach()
 
