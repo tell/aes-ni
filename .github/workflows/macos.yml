@@ -47,7 +47,10 @@ jobs:
           brew install -f gh ninja gmp
 
       - name: Download googletest
-        run: git clone https://github.com/google/googletest.git -b 389cb68b87193358358ae87cc56d257fd0d80189 --depth 1 $GTEST_SRC_DIR
+        run: |
+          git clone https://github.com/google/googletest.git $GTEST_SRC_DIR
+          cd $GTEST_SRC_DIR
+          git checkout -b 389cb68b87193358358ae87cc56d257fd0d80189
 
       - name: Download libfmt
         run: git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1 $FMT_SRC_DIR
