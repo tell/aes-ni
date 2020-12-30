@@ -44,7 +44,7 @@ jobs:
           sudo rm '/usr/local/bin/2to3'
           brew upgrade -f
           brew link --overwrite python@3.9
-          brew install -f gh ninja gmp
+          brew install -f ninja gmp
 
       - name: Download googletest
         run: |
