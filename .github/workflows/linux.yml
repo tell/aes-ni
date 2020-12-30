@@ -31,6 +31,8 @@ jobs:
             install: sudo apt-get install -q -y g++-9
           - cxx: g++-10
             install: sudo apt-get install -q -y g++-10
+          - cxx: clang++-10
+            install: sudo apt-get install -q -y clang++-10
 
     runs-on: ${{matrix.os}}
     env:
