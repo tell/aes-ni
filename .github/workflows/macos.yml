@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [macos-latest]
         build_type: [Debug, Release]
-        cxx: [clang++]
+        cxx: [g++-10, clang++]
         cxxstd: [20]
 
     runs-on: ${{matrix.os}}
@@ -39,6 +39,8 @@ jobs:
       - name: Setup packages
         run: |
           brew update > /dev/null
+          brew install -f python@3.9
+          brew link --overwrite python@3.9
           brew install -f ninja gmp googletest
 
       - name: Download libfmt
