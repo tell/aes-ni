@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-latest]
+        os: [macos-10.15]
         build_type: [Debug, Release]
         cxx: [g++-8, g++-9, g++-10, clang++]
         cxxstd: [20]
