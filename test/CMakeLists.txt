@@ -10,7 +10,7 @@ function(add_unit_test testname)
         randen
         -lgmpxx
         -lgmp
-        $<$<AND:$<BOOL:${CMAKE_HOST_APPLE}>,$<BOOL:${OpenMP_FOUND}>>:-lomp>
+        $<$<BOOL:${OpenMP_FOUND}>:OpenMP>
     )
     add_test(NAME ${testname}
         COMMAND $<TARGET_FILE:${testname}>
