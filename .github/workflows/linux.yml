@@ -97,7 +97,7 @@ jobs:
             ${{github.workspace}}
 
       - name: Build
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
         run: |
           cmake --build .
 
@@ -109,5 +109,5 @@ jobs:
           cat "${{github.workspace}}/build/CMakeFiles/CMakeError.log"
 
       - name: Test
-        working-directory: ${{runner.workspace}}/build
+        working-directory: ${{github.workspace}}/build
         run: ctest
