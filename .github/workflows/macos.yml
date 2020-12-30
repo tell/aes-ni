@@ -39,8 +39,8 @@ jobs:
       - name: Setup packages
         run: |
           brew update > /dev/null
-          brew upgrade
           sudo rm '/usr/local/bin/2to3'
+          brew upgrade > /dev/null
           brew link --overwrite python@3.9
           brew install -f ninja gmp googletest
 
