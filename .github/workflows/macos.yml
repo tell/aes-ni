@@ -30,7 +30,6 @@ jobs:
     env:
       CXX: ${{matrix.cxx}}
       CPATH: /usr/local/include
-      GTEST_SRC_DIR: ${{github.workspace}}/third_party/googletest
       FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
       SPDLOG_SRC_DIR: ${{github.workspace}}/third_party/spdlog
       MODULE_PREFIX: ${{github.workspace}}/third_party/module
