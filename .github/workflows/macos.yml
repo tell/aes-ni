@@ -46,7 +46,7 @@ jobs:
           sudo rm '/usr/local/bin/2to3'
           brew upgrade -f
           brew link --overwrite python@3.9
-          brew install -f ninja gmp googletest
+          brew install -f libomp ninja gmp googletest
 
       - name: Download libfmt
         run: git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1 $FMT_SRC_DIR
