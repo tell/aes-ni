@@ -48,23 +48,11 @@ jobs:
           brew link --overwrite python@3.9
           brew install -f ninja gmp googletest
 
-#       - name: Download googletest
-#         run: git clone https://github.com/google/googletest.git -b ${{matrix.gtest_tag}} --depth 2 $GTEST_SRC_DIR
-
       - name: Download libfmt
         run: git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1 $FMT_SRC_DIR
 
       - name: Download libspdlog
         run: git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1 $SPDLOG_SRC_DIR
-
-#       - name: Install googletest
-#         run: |
-#           cd $GTEST_SRC_DIR
-#           cmake -G Ninja \
-#             -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-#             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
-#             $GTEST_SRC_DIR
-#           sudo cmake --build . --target install
 
       - name: Install libfmt
         run: |
