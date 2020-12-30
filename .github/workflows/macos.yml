@@ -21,12 +21,13 @@ jobs:
       matrix:
         os: [macos-latest]
         build_type: [Debug, Release]
-        cxx: [g++-10, clang++]
+        cxx: [g++-8, g++-9, g++-10, clang++]
         cxxstd: [20]
 
     runs-on: ${{matrix.os}}
     env:
       CXX: ${{matrix.cxx}}
+      CPATH: /usr/local/include
       FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
       SPDLOG_SRC_DIR: ${{github.workspace}}/third_party/spdlog
       MODULE_PREFIX: ${{github.workspace}}/third_party/module
@@ -38,9 +39,9 @@ jobs:
 
       - name: Setup packages
         run: |
-          brew update > /dev/null
+          brew update
           sudo rm '/usr/local/bin/2to3'
-          brew upgrade > /dev/null
+          brew upgrade
           brew link --overwrite python@3.9
           brew install -f ninja gmp googletest
 
