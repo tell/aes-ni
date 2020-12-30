@@ -22,15 +22,6 @@ project(aes-ni VERSION 0.0.1)
 message(STATUS "CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
 message(STATUS "CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
 
-option(FORCE_COLORED_OUTPUT "Always produce ANSI-colored output (GNU/Clang only)." ON)
-if(${FORCE_COLORED_OUTPUT})
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-      add_compile_options("-fdiagnostics-color=always")
-    elseif("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-      add_compile_options("-fcolor-diagnostics")
-    endif()
-endif()
-
 include("${CMAKE_CURRENT_SOURCE_DIR}/search_module.cmake")
 
 if (ROOT_PROJECT)
