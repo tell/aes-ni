@@ -38,7 +38,7 @@ jobs:
 
       - name: Setup packages
         run: |
-          brew update
+          brew update > /dev/null
           brew install ninja gmp googletest
 
       - name: Download libfmt
