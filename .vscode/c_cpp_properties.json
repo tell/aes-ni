@@ -8,7 +8,7 @@
                 "${workspaceFolder}/third_party/randen/**"
             ],
             "defines": [],
-            "cStandard": "c18",
+            "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "${default}",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
@@ -25,7 +25,7 @@
             "macFrameworkPath": [
                 "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
             ],
-            "cStandard": "c18",
+            "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "${default}",
             "compileCommands": "${workspaceFolder}/build/compile_commands.json",
