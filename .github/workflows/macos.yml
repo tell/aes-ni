@@ -45,6 +45,8 @@ jobs:
           brew upgrade
           brew link --overwrite python@3.9
           brew install -f ninja gmp
+          echo $PATH
+          cmake --version
 
       - name: Download googletest
         run: git clone https://github.com/google/googletest.git -b release-1.10.0 --depth 1 $GTEST_SRC_DIR
