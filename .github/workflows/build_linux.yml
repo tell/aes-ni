@@ -2,9 +2,9 @@ name: Linux
 
 on:
   push:
-    branches: [master, release-candidate, develop]
+    branches: [master, develop]
   pull_request:
-    branches: [master, release-candidate, develop]
+    branches: [master, develop]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -19,15 +19,6 @@ jobs:
         build_type: [Debug, Release]
         cxx: [g++-8, g++-9, g++-10, clang++-10]
         cxxstd: [20]
-        include:
-          - cxx: g++-8
-            install: sudo apt-get install -q -y g++-8
-          - cxx: g++-9
-            install: sudo apt-get install -q -y g++-9
-          - cxx: g++-10
-            install: sudo apt-get install -q -y g++-10
-          - cxx: clang++-10
-            install: sudo apt-get install -q -y clang++-10
 
     runs-on: ${{matrix.os}}
     env:
@@ -45,7 +36,7 @@ jobs:
         run: |
           sudo apt-get update -q -y > /dev/null
           sudo apt-get install -q -y build-essential ninja-build cmake libgmp-dev libgtest-dev
-          ${{matrix.install}}
+          sudo apt-get install -q -y ${{matrix.cxx}}
 
       - name: Download libfmt
         run: |
