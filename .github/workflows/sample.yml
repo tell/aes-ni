@@ -10,12 +10,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup packages
+      - name: Simple sample
         run: echo This is a sample.
 
   demo2:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup packages
+      - name: Simple sample
         run: echo This is a sample.
