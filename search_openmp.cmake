@@ -1,6 +1,6 @@
 if(CMAKE_HOST_APPLE)
   # NOTE: See https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/FindOpenMP.cmake
-  message("Lookup OpenMP in macOS platform...")
+  message("To find OpenMP in macOS platform, the following variables are changed: CMAKE_C_IMPLICIT_LINK_DIRECTORIES and CMAKE_CXX_IMPLICIT_LINK_DIRECTORIES")
   foreach(LANG IN ITEMS C CXX)
     list(APPEND CMAKE_${LANG}_IMPLICIT_LINK_DIRECTORIES "/usr/local/lib" "/opt/local/lib/libomp")
     message("CMAKE_${LANG}_IMPLICIT_LINK_DIRECTORIES = ${CMAKE_${LANG}_IMPLICIT_LINK_DIRECTORIES}")
