@@ -2,7 +2,7 @@ name: Linux
 
 on:
   push:
-    branches: [master, release-candidate]
+    branches: [master, release-candidate, develop]
   pull_request:
     branches: [master, release-candidate, develop]
 
