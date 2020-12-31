@@ -8,8 +8,7 @@ function(add_unit_test testname)
         GTest::GTest
         aes-ni
         randen
-        -lgmpxx
-        -lgmp
+        GMP::GMPXX
         $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>
     )
     add_test(NAME ${testname}

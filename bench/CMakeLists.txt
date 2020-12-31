@@ -8,6 +8,7 @@ foreach(filename IN ITEMS ${bench_srcs})
         aes-ni
         spdlog::spdlog_header_only
         fmt::fmt-header-only
+        GMP::GMPXX
         $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
     add_dependencies(benchmarks "${basename}")
 endforeach()
