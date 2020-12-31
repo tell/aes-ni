@@ -22,7 +22,7 @@ jobs:
       matrix:
         os: [macos-10.15]
         build_type: [Debug, Release]
-        cxx: [g++-8, g++-9, g++-10, clang++]
+        cxx: [clang++]
         cxxstd: [20]
         gtest_tag: [release-1.10.0]
 
