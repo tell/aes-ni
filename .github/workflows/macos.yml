@@ -74,14 +74,18 @@ jobs:
             $SPDLOG_SRC_DIR
           cmake --build . --target install
 
-      - name: Config and Build
+      - name: Config
         run: |
           cmake -E make_directory build
           cd build
           cmake -G Ninja \
             -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
             -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
-            ..
+            ${{github.workspace}}
+
+      - name: Build
+        working-directory: ${{github.workspace}}/build
+        run: |
           cmake --build .
 
       - name: Show logs when failed
