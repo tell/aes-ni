@@ -1,7 +1,8 @@
 Experimental implementations using AES-NI
 ====
 
-[![Linux](https://github.com/tell/aes-ni/workflows/Linux/badge.svg?branch=develop)](https://github.com/tell/aes-ni/actions?query=workflow%3A%22Linux%22)
+[![Linux](https://github.com/tell/aes-ni/workflows/Linux/badge.svg)](https://github.com/tell/aes-ni/actions?query=workflow%3ALinux)
+[![macOS](https://github.com/tell/aes-ni/workflows/macOS/badge.svg)](https://github.com/tell/aes-ni/actions?query=workflow%3AmacOS)
 
 # Note
 
