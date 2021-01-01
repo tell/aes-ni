@@ -51,12 +51,10 @@ inline auto random_int_mod_n(const IntType mod, Func &&rng)
     const auto mask = least2pow(mod) - 1;
     assert((mask + 1) >= mod);
     IntType out;
-    rng(&out, byte_size);
-    out &= mask;
-    while (out >= mod) {
+    do {
         rng(&out, byte_size);
         out &= mask;
-    }
+    } while (out >= mod);
     return out;
 }
 
