@@ -26,6 +26,8 @@ jobs:
         include:
         - cxx: g++-9
           compilers: gcc-9 g++-9
+        - cxx: g++-10
+          compilers: gcc-10 g++-10
 
     runs-on: ${{ matrix.os }}
     env:
