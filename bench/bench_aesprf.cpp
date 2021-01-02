@@ -30,7 +30,7 @@ int main()
 {
     print_diagnosis();
     const auto key = gen_key();
-    fmt::print(cerr, "key = {}\n", join(key));
+    fmt::print(cerr, "key = {}\n", join(key, ":"));
     MMO128 hash(key.data());
     do_aesprf_iteration(hash);
     return 0;
