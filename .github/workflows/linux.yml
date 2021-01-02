@@ -46,15 +46,16 @@ jobs:
           python3 --version
           python3 -m pip --version
 
-      - name: Setup Conan
+      - name: Setup Conan without venv
         run: |
           python3 -m pip install -U conan > /dev/null
           $CONAN user
+          $CONAN profile update settings.compiler.libcxx=libstdc++11 default
           $CONAN --version
 
       - name: Install packages by Conan
         run: |
           mkdir -p $BUILD_DIR
           cd $BUILD_DIR
-          $CONAN install ${{ github.workspace }} --build=missing -s compiler.libcxx=libstdc++11 -s build_type=${{ matrix.build_type }}
+          $CONAN install ${{ github.workspace }} --build=missing -s build_type=${{ matrix.build_type }}
 
