@@ -12,7 +12,13 @@
 
 namespace clt {
 
-template <class ElemType> class default_format_str;
+template <class ElemType> class default_format_str {
+public:
+    static const std::string value;
+};
+template <class ElemType>
+const std::string default_format_str<ElemType>::value = "{}";
+
 template <> class default_format_str<uint64_t> {
 public:
     static const std::string value;
@@ -32,7 +38,7 @@ public:
 
 template <class IntType>
 inline std::string
-join(const IntType *in, const size_t &n,
+join(const IntType *in, const size_t &n, const std::string &separator = ",",
      const std::string &format = default_format_str<IntType>::value)
 {
     std::stringstream sst;
@@ -41,30 +47,30 @@ join(const IntType *in, const size_t &n,
     }
     sst << fmt::format(format, uint_fast64_t(in[0]));
     for (size_t i = 1; i < n; i++) {
-        sst << ":" << fmt::format(format, uint_fast64_t(in[i]));
+        sst << separator << fmt::format(format, uint_fast64_t(in[i]));
     }
     return sst.str();
 }
 
 template <class T, size_t N, class U = typename T::value_type>
-inline auto join(const T (&in)[N],
+inline auto join(const T (&in)[N], const std::string &separator = ",",
                  const std::string &format = default_format_str<U>::value)
 {
-    return join(in, N, format);
+    return join(in, N, separator, format);
 }
 
 template <class T, size_t N>
-inline auto join(const std::array<T, N> &in,
+inline auto join(const std::array<T, N> &in, const std::string &separator = ",",
                  const std::string &format = default_format_str<T>::value)
 {
-    return join(in.data(), N, format);
+    return join(in.data(), N, separator, format);
 }
 
 template <class T>
-inline auto join(const std::vector<T> &in,
+inline auto join(const std::vector<T> &in, const std::string &separator = ",",
                  const std::string &format = default_format_str<T>::value)
 {
-    return join(in.data(), in.size(), format);
+    return join(in.data(), in.size(), separator, format);
 }
 
 template <class T>
