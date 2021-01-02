@@ -21,12 +21,10 @@ jobs:
       matrix:
         os: [ubuntu-20.04, ubuntu-18.04]
         build_type: [Debug, Release]
-        cxx: [g++-8, g++-9, g++-10, clang++-10]
         cxxstd: [20]
 
     runs-on: ${{ matrix.os }}
     env:
-      CXX: ${{ matrix.cxx }}
       CONAN: /home/runner/.local/bin/conan
       BUILD_DIR: ${{ github.workspace }}/build
       FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
@@ -42,14 +40,13 @@ jobs:
         run: |
           sudo apt-get update -q -y > /dev/null
           sudo apt-get install -q -y build-essential python3 ninja-build cmake libgmp-dev libgtest-dev > /dev/null
-          sudo apt-get install -q -y ${{ matrix.cxx }} > /dev/null
           cmake --version
-          ${{ matrix.cxx }} --version
+          c++ --version
           python3 --version
 
       - name: Setup Conan
         run: |
-          python3 -m pip install -U conan
+          python3 -m pip install --upgrade conan
           $CONAN user
           $CONAN --version
 
