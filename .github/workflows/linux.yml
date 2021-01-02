@@ -36,7 +36,7 @@ jobs:
       - name: Setup apt packages
         run: |
           sudo apt-get update -q -y > /dev/null
-          sudo apt-get install -q -y build-essential ninja-build cmake libgmp-dev libgtest-dev > dev/null
+          sudo apt-get install -q -y build-essential ninja-build cmake libgmp-dev libgtest-dev > /dev/null
           sudo apt-get install -q -y ${{ matrix.cxx }} > /dev/null
           ${{ matrix.cxx }} --version
           cmake --version
