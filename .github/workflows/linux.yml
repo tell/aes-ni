@@ -27,7 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CXX: ${{ matrix.cxx }}
-      CONAN: ${{ env.HOME }}/.local/bin/conan
+      CONAN: /home/runner/.local/bin/conan
       BUILD_DIR: ${{ github.workspace }}/build
       FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
       SPDLOG_SRC_DIR: ${{github.workspace}}/third_party/spdlog
