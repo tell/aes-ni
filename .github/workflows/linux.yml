@@ -67,7 +67,7 @@ jobs:
           $CONAN user
           $CONAN profile new $CONAN_PROFILE --detect --force
           $CONAN profile update settings.compiler=${{ matrix.conan_compiler }} default
-          $CONAN profile update settings.compiler.version=${{ matrix.conan_compiler.version }} default
+          $CONAN profile update settings.compiler.version=${{ matrix.conan_compiler_version }} default
           $CONAN profile update settings.compiler.libcxx=libstdc++11 default
           $CONAN profile update settings.build_type=${{ matrix.build_type }} default
 
