@@ -50,7 +50,7 @@ jobs:
         run: |
           python3 -m pip install -U conan > /dev/null
           $CONAN user
-          $CONAN profile new
+          $CONAN profile new /home/runner/.conan/profiles/default --detect
           $CONAN profile update settings.compiler.libcxx=libstdc++11 default
           $CONAN --version
 
