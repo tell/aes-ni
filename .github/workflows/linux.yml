@@ -57,7 +57,5 @@ jobs:
         run: |
           mkdir -p $BUILD_DIR
           cd $BUILD_DIR
-          $CONAN install ${{ github.workspace }} \
-            -s compiler.libcxx=libstdc++11 \
-            -s build_type=${{ matrix.build_type }}
+          $CONAN install ${{ github.workspace }} --build=missing -s compiler.libcxx=libstdc++11 -s build_type=${{ matrix.build_type }}
 
