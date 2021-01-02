@@ -6,8 +6,8 @@ foreach(filename IN ITEMS ${bench_srcs})
     add_executable("${basename}" "${basename}.cpp")
     target_link_libraries("${basename}"
         aes-ni
+        fmt::fmt
         spdlog::spdlog_header_only
-        fmt::fmt-header-only
         GMP::GMPXX
         $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
     add_dependencies(benchmarks "${basename}")
@@ -16,8 +16,8 @@ endforeach()
 target_link_libraries(bench_randen randen)
 
 add_custom_target(run_benchmarks
-    ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/run_benchmarks.sh"
-    COMMAND ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/benchmark.plot"
-    COMMAND ln -s -f "${CMAKE_CURRENT_SOURCE_DIR}/run_plotting.sh"
+    cp -f "${CMAKE_CURRENT_SOURCE_DIR}/run_benchmarks.sh" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+    COMMAND cp -f "${CMAKE_CURRENT_SOURCE_DIR}/benchmark.plot" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
+    COMMAND cp -f "${CMAKE_CURRENT_SOURCE_DIR}/run_plotting.sh" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/"
     DEPENDS benchmarks
 )
