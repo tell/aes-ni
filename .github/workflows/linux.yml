@@ -26,6 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CONAN: /home/runner/.local/bin/conan
+      CONAN_PROFILE: /home/runner/.conan/profiles/default
       BUILD_DIR: ${{ github.workspace }}/build
       FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
       SPDLOG_SRC_DIR: ${{github.workspace}}/third_party/spdlog
@@ -51,7 +52,7 @@ jobs:
           python3 -m pip install -U conan > /dev/null
           $CONAN --version
           $CONAN user
-          $CONAN profile new /home/runner/.conan/profiles/default --detect
+          $CONAN profile new $CONAN_PROFILE --detect --force
           $CONAN profile update settings.compiler.libcxx=libstdc++11 default
 
       - name: Install packages by Conan
