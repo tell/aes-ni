@@ -60,7 +60,6 @@ jobs:
           $CONAN profile update settings.compiler.libcxx=libstdc++11 default
 
       - name: Install packages by Conan
-        working_directory: 
         run: |
           cd $BUILD_DIR
           $CONAN install ${{ github.workspace }} --build=missing -s build_type=${{ matrix.build_type }}
