@@ -80,16 +80,17 @@ jobs:
             ${{github.workspace}}
 
       - name: Build
-        working-directory: ${{github.workspace}}/build
+        working-directory: ${{ github.workspace }}/build
         run: |
           cmake --build .
 
       - name: Show logs when failed
-        if: ${{failure()}}
+        if: ${{ failure() }}
         run: |
-          cat "${{github.workspace}}/build/CMakeFiles/CMakeOutput.log" || true
+          cat "${{ github.workspace }}/build/CMakeFiles/CMakeOutput.log" || true
           echo ++++
-          cat "${{github.workspace}}/build/CMakeFiles/CMakeError.log" || true
+          cat "${{ github.workspace }}/build/CMakeFiles/CMakeError.log" || true
 
       - name: Test
-        run: cd build; ctest
+        working-directory: ${{ github.workspace }}/build
+        run: ctest --output-on-failure
