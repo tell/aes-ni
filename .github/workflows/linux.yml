@@ -36,8 +36,17 @@ jobs:
       - name: Setup packages
         run: |
           sudo apt-get update -q -y > /dev/null
-          sudo apt-get install -q -y build-essential ninja-build cmake libgmp-dev libgtest-dev
-          sudo apt-get install -q -y ${{matrix.cxx}}
+          sudo apt-get install -q -y build-essential python3 ninja-build cmake libgmp-dev libgtest-dev > /dev/null
+          sudo apt-get install -q -y ${{ matrix.cxx }} > /dev/null
+          cmake --version
+          ${{ matrix.cxx }} --version
+          python3 --version
+
+      - name: Setup Conan
+        run: |
+          python3 -m venv env
+          source env/bin/activate
+          pip3 install conan
 
       - name: Download libfmt
         run: |
