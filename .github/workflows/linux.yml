@@ -23,16 +23,15 @@ jobs:
         build_type: [Debug, Release]
         cxx: [g++-9, g++-10]
         cxxstd: [20]
-        build_dir: [ /home/runner/aes-ni/aes-ni/build ]
+        include:
+        - cxx: g++-9
+          compilers: gcc-9 g++-9
 
     runs-on: ${{ matrix.os }}
     env:
       CONAN: /home/runner/.local/bin/conan
       CONAN_PROFILE: /home/runner/.conan/profiles/default
       BUILD_DIR: ${{ github.workspace }}/build
-      FMT_SRC_DIR: ${{ github.workspace }}/third_party/fmt
-      SPDLOG_SRC_DIR: ${{ github.workspace }}/third_party/spdlog
-      MODULE_PREFIX: ${{ github.workspace }}/third_party/module
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -43,7 +42,7 @@ jobs:
         run: |
           sudo apt-get update -q -y > /dev/null
           sudo apt-get install -q -y build-essential python3 python3-setuptools ninja-build cmake libgmp-dev libgtest-dev > /dev/null
-          sudo apt-get install -q -u ${{ matrix.cxx }} > /dev/null
+          sudo apt-get install -q -u ${{ matrix.compilers }} > /dev/null
           python3 -m pip install -U pip > /dev/null
           mkdir -p $BUILD_DIR
           cmake --version
@@ -61,7 +60,7 @@ jobs:
           $CONAN profile update settings.build_type=${{ matrix.build_type }} default
 
       - name: Install packages by Conan
+        working-directory: ${{ github.workspace }}/build
         run: |
-          cd $BUILD_DIR
-          $CONAN install ${{ github.workspace }} --build=missing -s build_type=${{ matrix.build_type }}
+          $CONAN install ${{ github.workspace }} --build=missing
 
