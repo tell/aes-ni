@@ -40,13 +40,15 @@ jobs:
         run: |
           sudo apt-get update -q -y > /dev/null
           sudo apt-get install -q -y build-essential python3 ninja-build cmake libgmp-dev libgtest-dev > /dev/null
+          python3 -m pip install -U pip
           cmake --version
           c++ --version
           python3 --version
+          python3 -m pip --version
 
       - name: Setup Conan
         run: |
-          python3 -m pip install --upgrade conan
+          python3 -m pip install -U conan > /dev/null
           $CONAN user
           $CONAN --version
 
