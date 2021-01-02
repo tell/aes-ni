@@ -27,6 +27,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       CXX: ${{ matrix.cxx }}
+      CONAN: ${{ env.HOME }}/.local/bin/conan
       BUILD_DIR: ${{ github.workspace }}/build
       FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
       SPDLOG_SRC_DIR: ${{github.workspace}}/third_party/spdlog
@@ -48,13 +49,11 @@ jobs:
 
       - name: Setup Conan
         run: |
-          python3 -m venv env
-          source env/bin/activate
-          pip3 install -U conan
-          conan --version
+          python3 -m pip install -U conan
+          $CONAN --version
 
       - name: Install packages by Conan
         run: |
           mkdir -p $BUILD_DIR
           cd $BUILD_DIR
-          conan install ${{ github.workspace }}
+          $CONAN install ${{ github.workspace }}
