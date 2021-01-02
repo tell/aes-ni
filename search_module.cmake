@@ -11,17 +11,11 @@ if(NOT (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party"))
   make_directory("${CMAKE_CURRENT_SOURCE_DIR}/third_party")
 endif()
 
-if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake/fmt")
-  message("Found a directory fmt in ${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake")
-  set(fmt_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake/fmt")
-endif()
-find_package(fmt REQUIRED)
+find_package(fmt REQUIRED
+  HINTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake")
 
-if(IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake/spdlog")
-  message("Found a directory spdlog in ${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake")
-  set(spdlog_DIR "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake/spdlog")
-endif()
-find_package(spdlog REQUIRED)
+find_package(spdlog REQUIRED
+  HINTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake")
 
 #if(NOT (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen"))
 #  make_directory("${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen")
