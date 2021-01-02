@@ -23,16 +23,16 @@ jobs:
         build_type: [Debug, Release]
         cxx: [g++-9, g++-10]
         cxxstd: [20]
-        build_dir: ${{ github.workspace }}/build
+        build_dir: [${{ github.workspace }}/build]
 
     runs-on: ${{ matrix.os }}
     env:
       CONAN: /home/runner/.local/bin/conan
       CONAN_PROFILE: /home/runner/.conan/profiles/default
       BUILD_DIR: ${{ github.workspace }}/build
-      FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
-      SPDLOG_SRC_DIR: ${{github.workspace}}/third_party/spdlog
-      MODULE_PREFIX: ${{github.workspace}}/third_party/module
+      FMT_SRC_DIR: ${{ github.workspace }}/third_party/fmt
+      SPDLOG_SRC_DIR: ${{ github.workspace }}/third_party/spdlog
+      MODULE_PREFIX: ${{ github.workspace }}/third_party/module
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
