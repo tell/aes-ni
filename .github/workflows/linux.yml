@@ -21,13 +21,15 @@ jobs:
       matrix:
         os: [ubuntu-20.04, ubuntu-18.04]
         build_type: [Debug, Release]
-        cxx: [g++-9, g++-10]
+        cxx: [g++-9, g++-10, clang++-10]
         cxxstd: [20]
         include:
         - cxx: g++-9
           compilers: gcc-9 g++-9
         - cxx: g++-10
           compilers: gcc-10 g++-10
+        - cxx: clang++-10
+          compilers: clang-10 clang++-10
 
     runs-on: ${{ matrix.os }}
     env:
