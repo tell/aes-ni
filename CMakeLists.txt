@@ -47,7 +47,7 @@ endif()
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/src")
 
-if (ROOT_PROJECT)
+if(ROOT_PROJECT)
   add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/bench")
   enable_testing()
   add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/test")
