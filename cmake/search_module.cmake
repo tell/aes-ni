@@ -17,7 +17,6 @@ find_package(fmt REQUIRED
 find_package(spdlog REQUIRED
   HINTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/module/lib/cmake")
 
-if(ROOT_PROJECT)
 #if(NOT (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen"))
 #  make_directory("${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen")
 #endif()
@@ -29,6 +28,5 @@ if(ROOT_PROJECT)
 #      SHOW_PROGRESS TLS_VERIFY on)
 #  endif()
 #endforeach()
-  add_library(randen "${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen/randen.cc")
-  target_include_directories(randen PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen")
-endif()
+add_library(randen "${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen/randen.cc")
+target_include_directories(randen PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/third_party/randen")
