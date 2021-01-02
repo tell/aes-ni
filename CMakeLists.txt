@@ -22,9 +22,15 @@ project(aes-ni VERSION 0.0.1)
 message(STATUS "CMAKE_C_COMPILER = ${CMAKE_C_COMPILER}")
 message(STATUS "CMAKE_CXX_COMPILER = ${CMAKE_CXX_COMPILER}")
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/search_module.cmake")
+if(ROOT_PROJECT)
+  set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+  set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+  set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+endif()
 
-if (ROOT_PROJECT)
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/search_module.cmake")
+
+if(ROOT_PROJECT)
   message("Modify compiler flags.")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -march=native")
   message("CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}")

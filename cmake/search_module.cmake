@@ -1,10 +1,10 @@
 include(FindPackageHandleStandardArgs)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/search_gmp.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/search_gmp.cmake")
 
 find_package(Threads REQUIRED)
 
-include("${CMAKE_CURRENT_SOURCE_DIR}/search_openmp.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/search_openmp.cmake")
 
 if(NOT (IS_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/third_party"))
   message(WARNING "Exec mkdir ${CMAKE_CURRENT_SOURCE_DIR}/third_party")
