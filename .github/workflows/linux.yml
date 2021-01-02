@@ -23,7 +23,7 @@ jobs:
         build_type: [Debug, Release]
         cxx: [g++-9, g++-10]
         cxxstd: [20]
-        build_dir: [${{ github.workspace }}/build]
+        build_dir: [ /home/runner/aes-ni/aes-ni/build ]
 
     runs-on: ${{ matrix.os }}
     env:
