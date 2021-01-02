@@ -26,10 +26,16 @@ jobs:
         include:
         - cxx: g++-9
           compilers: gcc-9 g++-9
+          conan_compiler: gcc
+          conan_compiler_version: 9
         - cxx: g++-10
           compilers: gcc-10 g++-10
+          conan_compiler: gcc
+          conan_compiler_version: 10
         - cxx: clang++-10
           compilers: clang-10 clang++-10
+          conan_compiler: clang
+          conan_compiler_version: 10
 
     runs-on: ${{ matrix.os }}
     env:
@@ -60,6 +66,8 @@ jobs:
           $CONAN --version
           $CONAN user
           $CONAN profile new $CONAN_PROFILE --detect --force
+          $CONAN profile update settings.compiler=${{ matrix.conan_compiler }} default
+          $CONAN profile update settings.compiler.version=${{ matrix.conan_compiler.version }} default
           $CONAN profile update settings.compiler.libcxx=libstdc++11 default
           $CONAN profile update settings.build_type=${{ matrix.build_type }} default
 
