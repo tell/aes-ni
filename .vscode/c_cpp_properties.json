@@ -15,8 +15,7 @@
         {
             "name": "Linux 2",
             "includePath": [
-                "${workspaceFolder}/include/**",
-                "${workspaceFolder}/third_party/randen/**"
+                "${workspaceFolder}/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc-9",
