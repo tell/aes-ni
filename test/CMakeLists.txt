@@ -3,7 +3,7 @@ find_package(GTest REQUIRED)
 function(add_unit_test testname)
     add_executable(${testname} ${testname}.cpp)
     target_link_libraries(${testname}
-        fmt::fmt-header-only
+        fmt::fmt
         spdlog::spdlog_header_only
         GTest::GTest
         aes-ni

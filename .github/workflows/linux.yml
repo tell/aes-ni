@@ -21,36 +21,34 @@ jobs:
         cxx: [g++-8, g++-9, g++-10, clang++-10]
         cxxstd: [20]
 
-    runs-on: ${{matrix.os}}
+    runs-on: ${{ matrix.os }}
     env:
-      CXX: ${{matrix.cxx}}
-      FMT_SRC_DIR: ${{github.workspace}}/third_party/fmt
-      SPDLOG_SRC_DIR: ${{github.workspace}}/third_party/spdlog
-      MODULE_PREFIX: ${{github.workspace}}/third_party/module
+      CXX: ${{ matrix.cxx }}
+      FMT_SRC_DIR: ${{ github.workspace }}/third_party/fmt
+      SPDLOG_SRC_DIR: ${{ github.workspace }}/third_party/spdlog
+      MODULE_PREFIX: ${{ github.workspace }}/third_party/module
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
-      - name: Setup packages
+      - name: Setup apt packages
         run: |
           sudo apt-get update -q -y > /dev/null
-          sudo apt-get install -q -y build-essential ninja-build cmake libgmp-dev libgtest-dev
-          sudo apt-get install -q -y ${{matrix.cxx}}
+          sudo apt-get install -q -y build-essential ninja-build cmake libgmp-dev libgtest-dev > /dev/null
+          sudo apt-get install -q -y ${{ matrix.cxx }} > /dev/null
+          ${{ matrix.cxx }} --version
+          cmake --version
 
       - name: Download libfmt
-        run: |
-          git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1 $FMT_SRC_DIR
-          cmake -E make_directory $FMT_SRC_DIR/build
+        run: git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1 $FMT_SRC_DIR
 
       - name: Download libspdlog
-        run: |
-          git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1 $SPDLOG_SRC_DIR
-          cmake -E make_directory $SPDLOG_SRC_DIR/build
+        run: git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1 $SPDLOG_SRC_DIR
 
       - name: Install googletest for Ubuntu 18.04
-        if: ${{matrix.os == 'ubuntu-18.04'}}
+        if: ${{ matrix.os == 'ubuntu-18.04' }}
         run: |
           cd /usr/src/googletest
           sudo cmake -G Ninja .
@@ -60,9 +58,9 @@ jobs:
         run: |
           cd $FMT_SRC_DIR
           cmake -G Ninja \
-            -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
-            -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
+            -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} \
             $FMT_SRC_DIR
           cmake --build . --target install
 
@@ -70,9 +68,9 @@ jobs:
         run: |
           cd $SPDLOG_SRC_DIR
           cmake -G Ninja \
-            -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
-            -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
+            -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} \
             $SPDLOG_SRC_DIR
           cmake --build . --target install
 
@@ -81,22 +79,22 @@ jobs:
           cmake -E make_directory build
           cd build
           cmake -G Ninja \
-            -DCMAKE_BUILD_TYPE=${{matrix.build_type}} \
-            -DCMAKE_CXX_STANDARD=${{matrix.cxxstd}} \
-            ${{github.workspace}}
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} \
+            ${{ github.workspace }}
 
       - name: Build
-        working-directory: ${{github.workspace}}/build
+        working-directory: ${{ github.workspace }}/build
         run: |
           cmake --build .
 
       - name: Show logs when failed
-        if: ${{failure()}}
+        if: ${{ failure() }}
         run: |
-          cat "${{github.workspace}}/build/CMakeFiles/CMakeOutput.log" || true
+          cat "${{ github.workspace }}/build/CMakeFiles/CMakeOutput.log" || true
           echo ++++
-          cat "${{github.workspace}}/build/CMakeFiles/CMakeError.log" || true
+          cat "${{ github.workspace }}/build/CMakeFiles/CMakeError.log" || true
 
       - name: Test
-        working-directory: ${{github.workspace}}/build
-        run: ctest
+        working-directory: ${{ github.workspace }}/build
+        run: ctest --output-on-failure
