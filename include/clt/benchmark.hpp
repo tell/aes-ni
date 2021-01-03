@@ -94,6 +94,9 @@ template <class T> double median(T &vs)
 
     sort(begin(vs), end(vs));
     const auto n = size(vs);
+    if (n == 1) {
+        return vs[0];
+    }
     const auto n2 = n / 2;
     if ((n % 2) == 0) {
         return (vs[n2] + vs[n2 + 1]) / 2;
