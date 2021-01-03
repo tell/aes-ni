@@ -3,9 +3,7 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/include/**",
-                "${workspaceFolder}/third_party/fmt/**",
-                "${workspaceFolder}/third_party/randen/**"
+                "${workspaceFolder}/**"
             ],
             "defines": [],
             "cStandard": "c17",
@@ -31,9 +29,7 @@
         {
             "name": "Mac",
             "includePath": [
-                "${workspaceFolder}/include/**",
-                "${workspaceFolder}/third_party/fmt/**",
-                "${workspaceFolder}/third_party/randen/**"
+                "${workspaceFolder}/**"
             ],
             "defines": [],
             "macFrameworkPath": [
