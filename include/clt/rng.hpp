@@ -29,6 +29,7 @@ using path = std::string;
 #include <fmt/format.h>
 
 #include "util.hpp"
+#include "util_integer.hpp"
 
 namespace clt {
 namespace rng {
@@ -81,6 +82,24 @@ inline void getrandom([[maybe_unused]] void *out,
 #endif
 }
 
+template <class IntType, class Func>
+inline auto rejection_sample_modulo_n(const IntType mod, Func &&rng)
+{
+    static_assert(std::is_integral_v<IntType>);
+    static_assert(std::is_unsigned_v<IntType>);
+    const auto byte_size = sizeof(IntType);
+    assert(mod > 1);
+    const auto mask = least2pow(mod) - 1;
+    assert(mod <= (mask + 1));
+    IntType out;
+    rng(&out, byte_size);
+    out &= mask;
+    while (out >= mod) {
+        rng(&out, byte_size);
+        out &= mask;
+    }
+    return out;
+}
 } // namespace rng
 } // namespace clt
 
