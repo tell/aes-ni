@@ -9,6 +9,7 @@
 #include <gmpxx.h>
 
 #include "util.hpp"
+#include "rng.hpp"
 
 namespace clt {
 
@@ -26,45 +27,13 @@ inline mpz_class factorial(const uint64_t n)
     return fact;
 }
 
-template <class IntType> inline auto least2pow(IntType n) -> decltype(n + 1)
-{
-    static_assert(std::is_integral_v<IntType>);
-    static_assert(std::is_unsigned_v<IntType>);
-    constexpr auto bit_size = sizeof(IntType) * CHAR_BIT;
-    if (n == 0) {
-        return 0;
-    }
-    n -= 1;
-    for (size_t i = 1; i < bit_size; i <<= 1) {
-        n |= n >> i;
-    }
-    return n + 1;
-}
-
-template <class IntType, class Func>
-inline auto random_int_mod_n(const IntType mod, Func &&rng)
-{
-    static_assert(std::is_integral_v<IntType>);
-    static_assert(std::is_unsigned_v<IntType>);
-    const auto byte_size = sizeof(IntType);
-    assert(mod > 1);
-    const auto mask = least2pow(mod) - 1;
-    assert((mask + 1) >= mod);
-    IntType out;
-    do {
-        rng(&out, byte_size);
-        out &= mask;
-    } while (out >= mod);
-    return out;
-}
-
 namespace rng {
 template <class T, class Func>
 inline void shuffle_rejection(T *inplace, const size_t n, Func &&rng)
 {
     // NOTE: FY shuffle.
     for (size_t i = 1; i < n; i++) {
-        const auto j = random_int_mod_n(n - i + 1, rng);
+        const auto j = rejection_sample_modulo_n(n - i + 1, rng);
         std::swap(inplace[j], inplace[n - i]);
     }
 }

@@ -30,7 +30,7 @@ TEST_F(CLTUtilTest, join_uint8_t)
     }
     {
         const array<uint8_t, 4> ary{0, 1, 2, static_cast<uint8_t>(-1)};
-        const auto str = join(ary);
+        const auto str = join(ary, ":");
         ASSERT_EQ(str, "00:01:02:ff");
     }
 }
