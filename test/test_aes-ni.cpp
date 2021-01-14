@@ -136,9 +136,11 @@ TEST_F(AESNITest, simple_use_aes_ni_with_sample_key_and_texts)
 {
     AES128 cipher(sample_key_.data());
     const auto num_blocks = size(plaintexts_) / aes128::block_bytes;
-    vector<uint8_t> out(size(plaintexts_));
-    cipher.enc(out.data(), plaintexts_.data(), num_blocks);
-    ASSERT_EQ(out, ciphertexts_);
+    vector<uint8_t> out(size(plaintexts_)), in(size(plaintexts_));
+    in = plaintexts_;
+    cipher.enc(in.data(), in.data(), num_blocks);
+    ASSERT_EQ(in, ciphertexts_);
+    out = in;
     cipher.dec(out.data(), out.data(), num_blocks);
     ASSERT_EQ(out, plaintexts_);
 }
