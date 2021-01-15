@@ -22,7 +22,7 @@ void print_omp_diagnosis()
     fmt::print(std::cerr,
                "# NOTE: env. var. OMP_NUM_THREADS should be set manually.\n");
 #else
-    fmt::print("OpenMP is disabled.\n");
+    fmt::print(std::cerr, "OpenMP is disabled.\n");
 #endif
 }
 } // namespace clt
