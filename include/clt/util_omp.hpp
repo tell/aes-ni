@@ -14,7 +14,7 @@ namespace clt {
 void print_omp_diagnosis()
 {
     const auto ncpu = std::thread::hardware_concurrency();
-    fmt::print(std::cerr, "std::thread::hardware_concurrency() = {}\n", ncpu);
+    fmt::print(std::cerr, "# std::thread::hardware_concurrency() = {}\n", ncpu);
 #ifdef _OPENMP
     const auto omp_max_threads = omp_get_max_threads();
     fmt::print(std::cerr, "# omp_get_max_threads() = {} (OMP_NUM_THREADS)\n",
