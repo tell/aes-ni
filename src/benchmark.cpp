@@ -12,13 +12,13 @@ namespace {
 using namespace std;
 using namespace std::chrono;
 
-template <class... Args> constexpr inline decltype(auto) smt(Args &&... args)
+template <class... Args> constexpr inline decltype(auto) smt(Args &&...args)
 {
     return make_tuple(forward<Args>(args)...);
 }
 constexpr auto sec_spec_map =
-    smt(smt(seconds{}, 1e0), smt(milliseconds{}, 1e-3),
-        smt(microseconds{}, 1e-6), smt(nanoseconds{}, 1e-9));
+    smt(smt(seconds{}, double(1e0)), smt(milliseconds{}, double(1e-3)),
+        smt(microseconds{}, double(1e-6)), smt(nanoseconds{}, double(1e-9)));
 template <class T>
 constexpr inline auto get_time_scale_of_sec_spec_impl(index_sequence<>)
 {
@@ -43,18 +43,24 @@ template <class T> constexpr inline auto get_time_scale_of_sec_spec()
     constexpr auto N = tuple_size_v<decltype(sec_spec_map)>;
     return get_time_scale_of_sec_spec_impl<T, 0>(make_index_sequence<N>{});
 }
+} // namespace
 
-[[maybe_unused]] inline auto measure_walltime(const function<void()> &func)
+template <class SecondSpec>
+[[maybe_unused]] auto measure_walltime(const function<void()> &func)
 {
-    using sec_spec = microseconds;
-    constexpr auto time_scale = get_time_scale_of_sec_spec<sec_spec>();
+    constexpr auto time_scale = get_time_scale_of_sec_spec<SecondSpec>();
 
     const auto start = system_clock::now();
     (void)func();
     const auto stop = system_clock::now();
-    return duration_cast<sec_spec>(stop - start).count() * time_scale;
+    return duration_cast<SecondSpec>(stop - start).count() * time_scale;
 }
+template auto measure_walltime<seconds>(const function<void()> &func);
+template auto measure_walltime<milliseconds>(const function<void()> &func);
+template auto measure_walltime<microseconds>(const function<void()> &func);
+template auto measure_walltime<nanoseconds>(const function<void()> &func);
 
+namespace {
 [[maybe_unused]] inline auto measure_cputime(const function<void()> &func)
 {
     const double start = clock();
@@ -66,7 +72,7 @@ template <class T> constexpr inline auto get_time_scale_of_sec_spec()
 
 double measure_static(const function<void()> &func)
 {
-    return measure_walltime(func);
+    return measure_walltime<microseconds>(func);
 }
 
 } // namespace bench

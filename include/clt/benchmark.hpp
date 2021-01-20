@@ -34,6 +34,8 @@ inline void print_diagnosis()
     fmt::print(std::cerr, "CLOCKS_PER_SEC = {}\n", CLOCKS_PER_SEC);
 }
 
+template <class SecondSpec>
+auto measure_walltime(const std::function<void()> &func);
 double measure_static(const std::function<void()> &func);
 
 inline bool print_throughput_call_once(const std::string &unit_label = "bytes")
