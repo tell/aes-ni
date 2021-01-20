@@ -46,7 +46,7 @@ template <class T> constexpr inline auto get_time_scale_of_sec_spec()
 } // namespace
 
 template <class SecondSpec>
-[[maybe_unused]] auto measure_walltime(const function<void()> &func)
+[[maybe_unused]] double measure_walltime(const function<void()> &func)
 {
     constexpr auto time_scale = get_time_scale_of_sec_spec<SecondSpec>();
 
@@ -55,10 +55,10 @@ template <class SecondSpec>
     const auto stop = system_clock::now();
     return duration_cast<SecondSpec>(stop - start).count() * time_scale;
 }
-template auto measure_walltime<seconds>(const function<void()> &func);
-template auto measure_walltime<milliseconds>(const function<void()> &func);
-template auto measure_walltime<microseconds>(const function<void()> &func);
-template auto measure_walltime<nanoseconds>(const function<void()> &func);
+template double measure_walltime<seconds>(const function<void()> &func);
+template double measure_walltime<milliseconds>(const function<void()> &func);
+template double measure_walltime<microseconds>(const function<void()> &func);
+template double measure_walltime<nanoseconds>(const function<void()> &func);
 
 namespace {
 [[maybe_unused]] inline auto measure_cputime(const function<void()> &func)
