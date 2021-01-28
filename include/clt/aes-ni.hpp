@@ -88,6 +88,8 @@ class AESPRF128 {
 
 public:
     explicit AESPRF128(const void *key) noexcept;
+    explicit AESPRF128(const AES128::key_t &key) noexcept
+        : AESPRF128(key.data()){};
     explicit AESPRF128() noexcept : AESPRF128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128 &x);
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x);
@@ -108,6 +110,7 @@ class AESPRF128_CTR {
 
 public:
     explicit AESPRF128_CTR(const void *key) noexcept;
+    explicit AESPRF128_CTR(const AES128::key_t &key) noexcept : prf_(key){};
     explicit AESPRF128_CTR() noexcept : AESPRF128_CTR(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x);
     void operator()(void *out, const size_t num_bytes) noexcept;
