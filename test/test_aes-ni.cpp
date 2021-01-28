@@ -176,6 +176,24 @@ TEST_F(AESNITest, mmo_with_sample_key_and_texts)
     }
 }
 
+TEST_F(AESNITest, mmo_with_sample_key_as_array_and_texts)
+{
+    AES128::key_t key;
+    copy(sample_key_.begin(), sample_key_.end(), key.begin());
+    MMO128 crh(key);
+    const auto num_blocks = size(plaintexts_) / clt::aes128::block_bytes;
+    vector<uint8_t> out(size(plaintexts_));
+    crh(out.data(), plaintexts_.data(), num_blocks);
+    vector<uint8_t> expected_out(size(plaintexts_));
+    for (size_t i = 0; i < size(expected_out); i++) {
+        expected_out[i] = plaintexts_[i] ^ ciphertexts_[i];
+    }
+    ASSERT_EQ(out, expected_out);
+    if (!check_random_bytes(out)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
+}
+
 TEST_F(AESNITest, aes_ctr_stream)
 {
     AES128 cipher(random_key_.data());

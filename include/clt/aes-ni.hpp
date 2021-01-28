@@ -68,11 +68,12 @@ class MMO128 {
 
 public:
     explicit MMO128(const void *key) noexcept;
+    explicit MMO128(const AES128::key_t &key) noexcept : MMO128(key.data()) {}
     explicit MMO128() noexcept : MMO128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const MMO128 &x);
     void operator()(void *out, const void *in) const noexcept;
-    void operator()(void *out, const void *in, const size_t num_blocks) const
-        noexcept;
+    void operator()(void *out, const void *in,
+                    const size_t num_blocks) const noexcept;
 };
 
 class AESPRF128_CTR;
@@ -91,8 +92,8 @@ public:
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128 &x);
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x);
     void operator()(void *out, const void *in) const noexcept;
-    void operator()(void *out, const void *in, const size_t num_blocks) const
-        noexcept;
+    void operator()(void *out, const void *in,
+                    const size_t num_blocks) const noexcept;
     auto ctr_stream(void *out, const uint64_t num_blocks,
                     const uint64_t start_count) const noexcept
         -> decltype(num_blocks + start_count);
