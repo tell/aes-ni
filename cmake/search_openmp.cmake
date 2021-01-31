@@ -1,5 +1,5 @@
 if(CMAKE_HOST_APPLE)
-  # NOTE: See https://gitlab.kitware.com/cmake/cmake/-/blob/master/Modules/FindOpenMP.cmake
+  # NOTE: See https://gitlab.kitware.com/cmake/cmake/-/blob/8a2fd1bfe006b9c5e3985d0473aabc9c9dd15603/Modules/FindOpenMP.cmake
   message("To find OpenMP in macOS platform, the following procedures might change variables: CMAKE_{C,CXX}_IMPLICIT_LINK_DIRECTORIES, OpenMP_{C,CXX}_INCLUDE_DIR, and OpenMP_{C,CXX}_FLAG")
   foreach(lang IN ITEMS C CXX)
     if(CMAKE_${lang}_COMPILER_ID STREQUAL "AppleClang")
