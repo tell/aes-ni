@@ -1,4 +1,3 @@
-include(FindPackageHandleStandardArgs)
 
 include("${CMAKE_SOURCE_DIR}/cmake/search_gmp.cmake")
 

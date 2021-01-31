@@ -1,3 +1,5 @@
+include(FindPackageHandleStandardArgs)
+
 find_path(GMP_INCLUDE_DIR
   NAMES gmp.h
   PATHS ENV GMP_PREFIX
