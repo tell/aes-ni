@@ -91,7 +91,7 @@ inline void print_benchmark(Func &&func, const std::string &fmt_str,
     }
 }
 
-template <class T> double median(T &vs)
+template <class T> typename T::value_type median(T &vs)
 {
     using std::begin;
     using std::end;
