@@ -63,10 +63,10 @@ void AES128::enc(void *out, const void *in) const noexcept
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
-void AES128::enc(void *out, const void *in, const size_t num_blocks) const
-    noexcept
+void AES128::enc(void *out, const void *in,
+                 const size_t num_blocks) const noexcept
 {
-    _mm256_zeroall();
+    // _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     constexpr size_t grain_size = 4;
@@ -106,7 +106,7 @@ auto AES128::ctr_stream(void *out, const uint64_t num_blocks,
                         const uint64_t start_count) const noexcept
     -> decltype(num_blocks + start_count)
 {
-    _mm256_zeroall();
+    // _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     auto ctr = _mm_cvtsi64_si128(start_count);
@@ -168,10 +168,10 @@ void AES128::dec(void *out, const void *in) const noexcept
     _mm_storeu_si128(reinterpret_cast<__m128i *>(out), m);
 }
 
-void AES128::dec(void *out, const void *in, const size_t num_blocks) const
-    noexcept
+void AES128::dec(void *out, const void *in,
+                 const size_t num_blocks) const noexcept
 {
-    _mm256_zeroall();
+    // _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_dec(
         keys, expanded_keys_ + 10 * aes128::block_bytes, expanded_keys_);
@@ -233,7 +233,7 @@ void MMO128::operator()(void *out, const void *in) const noexcept
 void MMO128::operator()(void *out, const void *in,
                         const size_t num_blocks) const noexcept
 {
-    _mm256_zeroall();
+    // _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
@@ -274,7 +274,7 @@ void AESPRF128::operator()(void *out, const void *in) const noexcept
 void AESPRF128::operator()(void *out, const void *in,
                            const size_t num_blocks) const noexcept
 {
-    _mm256_zeroall();
+    // _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     const auto *p_in = reinterpret_cast<const __m128i *>(in);
@@ -293,7 +293,7 @@ auto AESPRF128::ctr_stream(void *out, const uint64_t num_blocks,
                            const uint64_t start_count) const noexcept
     -> decltype(num_blocks + start_count)
 {
-    _mm256_zeroall();
+    // _mm256_zeroall();
     __m128i keys[11];
     internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
     auto ctr = _mm_cvtsi64_si128(start_count);

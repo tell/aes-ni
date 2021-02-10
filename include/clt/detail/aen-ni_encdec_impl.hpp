@@ -180,7 +180,7 @@ template <size_t Round> using round_t = std::integer_sequence<size_t, Round>;
 
 template <class... Args>
 inline void aes128_enc_impl(const round_t<10> &, const __m128i *keys,
-                            Args &&... args)
+                            Args &&...args)
 {
     using swallow = std::initializer_list<int>;
     (void)swallow{(void(args = _mm_aesenclast_si128(args, keys[10])), 0)...};
@@ -190,7 +190,7 @@ template <size_t Round,
           class T = std::enable_if_t<(1 <= Round) && (Round < 10)>,
           class... Args>
 inline void aes128_enc_impl(const round_t<Round> &, const __m128i *keys,
-                            Args &&... args)
+                            Args &&...args)
 {
     using swallow = std::initializer_list<int>;
     (void)swallow{(void(args = _mm_aesenc_si128(args, keys[Round])), 0)...};
@@ -199,7 +199,7 @@ inline void aes128_enc_impl(const round_t<Round> &, const __m128i *keys,
 
 template <class... Args>
 inline void aes128_enc_impl(const round_t<0> &, const __m128i *keys,
-                            Args &&... args)
+                            Args &&...args)
 {
     using swallow = std::initializer_list<int>;
     (void)swallow{(void(args = _mm_xor_si128(args, keys[0])), 0)...};
@@ -209,7 +209,7 @@ inline void aes128_enc_impl(const round_t<0> &, const __m128i *keys,
 inline void hash_impl(uint8_t *out, const uint8_t *in, const size_t num_blocks,
                       const __m128i *keys) noexcept
 {
-    _mm256_zeroall();
+    // _mm256_zeroall();
     // __m128i keys[11];
     // aes128_load_expkey_for_enc(keys, exp_keys);
     constexpr size_t grain_size = 4;
