@@ -12,27 +12,34 @@
 
 namespace clt {
 
-template <class ElemType> class default_format_str {
-public:
+template <class ElemType> struct default_format_str {
     static const std::string value;
 };
 template <class ElemType>
 const std::string default_format_str<ElemType>::value = "{}";
 
-template <> class default_format_str<uint64_t> {
-public:
+template <> struct default_format_str<int64_t> {
     static const std::string value;
 };
-template <> class default_format_str<uint32_t> {
-public:
+template <> struct default_format_str<int32_t> {
     static const std::string value;
 };
-template <> class default_format_str<uint16_t> {
-public:
+template <> struct default_format_str<int16_t> {
     static const std::string value;
 };
-template <> class default_format_str<uint8_t> {
-public:
+template <> struct default_format_str<int8_t> {
+    static const std::string value;
+};
+template <> struct default_format_str<uint64_t> {
+    static const std::string value;
+};
+template <> struct default_format_str<uint32_t> {
+    static const std::string value;
+};
+template <> struct default_format_str<uint16_t> {
+    static const std::string value;
+};
+template <> struct default_format_str<uint8_t> {
     static const std::string value;
 };
 
