@@ -57,6 +57,8 @@ public:
 
 AES128::key_t gen_key();
 
+class MMO128_CTR;
+
 class MMO128 {
     /**
      * CRH based on AES128 (MMO).
@@ -71,9 +73,33 @@ public:
     explicit MMO128(const AES128::key_t &key) noexcept : MMO128(key.data()) {}
     explicit MMO128() noexcept : MMO128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const MMO128 &x);
+    friend std::ostream &operator<<(std::ostream &ost, const MMO128_CTR &x);
     void operator()(void *out, const void *in) const noexcept;
     void operator()(void *out, const void *in,
                     const size_t num_blocks) const noexcept;
+    auto ctr_stream(void *out, const uint64_t num_blocks,
+                    const uint64_t start_count) const noexcept
+        -> decltype(num_blocks + start_count);
+    auto ctr_byte_stream(void *out, const uint64_t num_bytes,
+                         const uint64_t start_count) const noexcept
+        -> decltype(num_bytes + start_count);
+};
+
+class MMO128_CTR {
+    MMO128 prf_;
+    uint64_t counter_;
+
+public:
+    explicit MMO128_CTR(const void *key) noexcept;
+    explicit MMO128_CTR(const AES128::key_t &key) noexcept
+        : prf_(key), counter_{0}
+    {
+    }
+    explicit MMO128_CTR() noexcept : MMO128_CTR(aes128::zero_key) {}
+    friend std::ostream &operator<<(std::ostream &ost, const MMO128_CTR &x);
+    void operator()(void *out, const size_t num_bytes) noexcept;
+    void set_counter(const uint64_t counter) noexcept { counter_ = counter; };
+    auto get_counter() const noexcept { return counter_; };
 };
 
 class AESPRF128_CTR;
