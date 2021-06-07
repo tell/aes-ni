@@ -249,6 +249,49 @@ void MMO128::operator()(void *out, const void *in,
     }
 }
 
+auto MMO128::ctr_stream(void *out, const uint64_t num_blocks,
+                        const uint64_t start_count) const noexcept
+    -> decltype(num_blocks + start_count)
+{
+    // _mm256_zeroall();
+    __m128i keys[11];
+    internal::aes128_load_expkey_for_enc(keys, expanded_keys_);
+    auto ctr = _mm_cvtsi64_si128(start_count);
+    const auto inc_v = _mm_cvtsi64_si128(1);
+    for (size_t i = 0; i < num_blocks; i++) {
+        __m128i m = ctr;
+        using internal::single::aes128_enc_impl;
+        aes128_enc_impl<0>(m, keys);
+        m = _mm_xor_si128(m, ctr);
+        _mm_storeu_si128(reinterpret_cast<__m128i *>(out) + i, m);
+        ctr = _mm_add_epi64(ctr, inc_v);
+    }
+    return num_blocks + start_count;
+}
+
+auto MMO128::ctr_byte_stream(void *out, const uint64_t num_bytes,
+                             const uint64_t start_count) const noexcept
+    -> decltype(num_bytes + start_count)
+{
+    const auto num_blocks = num_bytes / aes128::block_bytes;
+    const auto rem_bytes = num_bytes % aes128::block_bytes;
+    const auto counter = ctr_stream(out, num_blocks, start_count);
+    if (rem_bytes > 0) {
+        std::array<uint8_t, aes128::block_bytes> m;
+#ifndef NDEBUG
+        const auto counter_ =
+#endif
+            ctr_stream(m.data(), 1, counter);
+        assert(counter_ == counter + 1);
+        auto *const ptr_rem_out =
+            reinterpret_cast<uint8_t *>(out) + num_blocks * aes128::block_bytes;
+        std::copy(m.begin(), m.begin() + rem_bytes, ptr_rem_out);
+        return counter + 1;
+    } else {
+        return counter;
+    }
+}
+
 AESPRF128::AESPRF128(const void *key) noexcept
 {
     __m128i keys[aes128::num_rounds + 1];
