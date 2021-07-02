@@ -198,17 +198,41 @@ TEST_F(AESNITest, aes_ctr_stream)
 {
     AES128 cipher(random_key_.data());
     AES128_CTR ctr(random_key_.data());
-    vector<uint64_t> buff, enc_buff, dec_buff, str_buff;
+    vector<uint64_t> buff, enc_buff, str_buff;
     constexpr size_t num_blocks = 1 << 10;
     static_assert((aes128::block_bytes % sizeof(uint64_t)) == 0);
     buff.resize(num_blocks * aes128::block_bytes / sizeof(uint64_t));
     enc_buff.resize(buff.size());
-    dec_buff.resize(buff.size());
     str_buff.resize(buff.size());
 
     init_iota(buff, num_blocks, 2);
     cipher.enc(enc_buff.data(), buff.data(), num_blocks);
     const auto counter = cipher.ctr_stream(str_buff.data(), num_blocks, 0);
+    ASSERT_EQ(str_buff, enc_buff);
+    ASSERT_EQ(counter, num_blocks);
+
+    ctr(str_buff.data(), num_blocks);
+    ASSERT_EQ(str_buff, enc_buff);
+
+    if (!check_random_bytes(enc_buff)) {
+        spdlog::warn("Statistical check failed, but not fatal.");
+    }
+}
+
+TEST_F(AESNITest, mmo_ctr_stream)
+{
+    MMO128 crh(random_key_.data());
+    MMO128_CTR ctr(random_key_.data());
+    vector<uint64_t> buff, enc_buff, str_buff;
+    constexpr size_t num_blocks = 1 << 10;
+    static_assert((aes128::block_bytes % sizeof(uint64_t)) == 0);
+    buff.resize(num_blocks * aes128::block_bytes / sizeof(uint64_t));
+    enc_buff.resize(buff.size());
+    str_buff.resize(buff.size());
+
+    init_iota(buff, num_blocks, 2);
+    crh(enc_buff.data(), buff.data(), num_blocks);
+    const auto counter = crh.ctr_stream(str_buff.data(), num_blocks, 0);
     ASSERT_EQ(str_buff, enc_buff);
     ASSERT_EQ(counter, num_blocks);
 

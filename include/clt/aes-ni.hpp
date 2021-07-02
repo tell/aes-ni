@@ -90,7 +90,7 @@ class MMO128_CTR {
     uint64_t counter_;
 
 public:
-    explicit MMO128_CTR(const void *key) noexcept;
+    explicit MMO128_CTR(const void *key) noexcept : prf_(key), counter_(0) {}
     explicit MMO128_CTR(const AES128::key_t &key) noexcept
         : prf_(key), counter_{0}
     {
