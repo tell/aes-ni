@@ -40,7 +40,7 @@ public:
     RandomDevice(const RandomDevice &) = delete;
     RandomDevice &operator=(const RandomDevice &) = delete;
     explicit RandomDevice(const path &dev_random);
-    explicit RandomDevice() : RandomDevice("/dev/urandom"){};
+    RandomDevice() : RandomDevice("/dev/urandom"){};
     bool operator()(void *buff, const size_t byte_size);
 };
 

@@ -131,15 +131,12 @@ auto AES128::ctr_byte_stream(void *out, const uint64_t num_bytes,
     const auto counter = ctr_stream(out, num_blocks, start_count);
     if (rem_bytes > 0) {
         std::array<uint8_t, aes128::block_bytes> m;
-#ifndef NDEBUG
-        const auto counter_ =
-#endif
-            ctr_stream(m.data(), 1, counter);
+        const auto counter_ = ctr_stream(m.data(), 1, counter);
         assert(counter_ == counter + 1);
         auto *const ptr_rem_out =
             reinterpret_cast<uint8_t *>(out) + num_blocks * aes128::block_bytes;
         std::copy(m.begin(), m.begin() + rem_bytes, ptr_rem_out);
-        return counter + 1;
+        return counter_;
     } else {
         return counter;
     }
@@ -278,15 +275,12 @@ auto MMO128::ctr_byte_stream(void *out, const uint64_t num_bytes,
     const auto counter = ctr_stream(out, num_blocks, start_count);
     if (rem_bytes > 0) {
         std::array<uint8_t, aes128::block_bytes> m;
-#ifndef NDEBUG
-        const auto counter_ =
-#endif
-            ctr_stream(m.data(), 1, counter);
+        const auto counter_ = ctr_stream(m.data(), 1, counter);
         assert(counter_ == counter + 1);
         auto *const ptr_rem_out =
             reinterpret_cast<uint8_t *>(out) + num_blocks * aes128::block_bytes;
         std::copy(m.begin(), m.begin() + rem_bytes, ptr_rem_out);
-        return counter + 1;
+        return counter_;
     } else {
         return counter;
     }
@@ -360,15 +354,12 @@ auto AESPRF128::ctr_byte_stream(void *out, const uint64_t num_bytes,
     const auto counter = ctr_stream(out, num_blocks, start_count);
     if (rem_bytes > 0) {
         std::array<uint8_t, aes128::block_bytes> m;
-#ifndef NDEBUG
-        const auto counter_ =
-#endif
-            ctr_stream(m.data(), 1, counter);
+        const auto counter_ = ctr_stream(m.data(), 1, counter);
         assert(counter_ == counter + 1);
         auto *const ptr_rem_out =
             reinterpret_cast<uint8_t *>(out) + num_blocks * aes128::block_bytes;
         std::copy(m.begin(), m.begin() + rem_bytes, ptr_rem_out);
-        return counter + 1;
+        return counter_;
     } else {
         return counter;
     }

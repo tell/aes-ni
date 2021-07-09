@@ -72,7 +72,7 @@ struct Permutation {
     using index_t = uint64_t;
     using perm_t = std::vector<index_t>;
     perm_t indices_;
-    explicit Permutation() = default;
+    Permutation() = default;
     explicit Permutation(const size_t degree)
     {
         indices_.resize(degree);

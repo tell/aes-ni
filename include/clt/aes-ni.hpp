@@ -27,7 +27,7 @@ public:
     using key_t = std::array<uint8_t, aes128::key_bytes>;
     explicit AES128(const void *key) noexcept;
     explicit AES128(const key_t &key) noexcept : AES128(key.data()) {}
-    explicit AES128() : AES128(aes128::zero_key) {}
+    AES128() : AES128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AES128 &x);
     friend std::ostream &operator<<(std::ostream &ost, const AES128_CTR &x);
     void enc(void *out, const void *in) const noexcept;
@@ -48,7 +48,7 @@ class AES128_CTR {
 
 public:
     explicit AES128_CTR(const void *key) noexcept;
-    explicit AES128_CTR() noexcept : AES128_CTR(aes128::zero_key) {}
+    AES128_CTR() noexcept : AES128_CTR(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AES128_CTR &x);
     void operator()(void *out, const size_t num_bytes) noexcept;
     void set_counter(const uint64_t counter) noexcept { counter_ = counter; };
@@ -71,7 +71,7 @@ class MMO128 {
 public:
     explicit MMO128(const void *key) noexcept;
     explicit MMO128(const AES128::key_t &key) noexcept : MMO128(key.data()) {}
-    explicit MMO128() noexcept : MMO128(aes128::zero_key) {}
+    MMO128() noexcept : MMO128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const MMO128 &x);
     friend std::ostream &operator<<(std::ostream &ost, const MMO128_CTR &x);
     void operator()(void *out, const void *in) const noexcept;
@@ -95,7 +95,7 @@ public:
         : prf_(key), counter_{0}
     {
     }
-    explicit MMO128_CTR() noexcept : MMO128_CTR(aes128::zero_key) {}
+    MMO128_CTR() noexcept : MMO128_CTR(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const MMO128_CTR &x);
     void operator()(void *out, const size_t num_bytes) noexcept;
     void set_counter(const uint64_t counter) noexcept { counter_ = counter; };
@@ -116,7 +116,7 @@ public:
     explicit AESPRF128(const void *key) noexcept;
     explicit AESPRF128(const AES128::key_t &key) noexcept
         : AESPRF128(key.data()){};
-    explicit AESPRF128() noexcept : AESPRF128(aes128::zero_key) {}
+    AESPRF128() noexcept : AESPRF128(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128 &x);
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x);
     void operator()(void *out, const void *in) const noexcept;
@@ -138,7 +138,7 @@ public:
     explicit AESPRF128_CTR(const void *key) noexcept;
     explicit AESPRF128_CTR(const AES128::key_t &key) noexcept
         : prf_(key), counter_(0){};
-    explicit AESPRF128_CTR() noexcept : AESPRF128_CTR(aes128::zero_key) {}
+    AESPRF128_CTR() noexcept : AESPRF128_CTR(aes128::zero_key) {}
     friend std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x);
     void operator()(void *out, const size_t num_bytes) noexcept;
     void set_counter(const uint64_t counter) noexcept { counter_ = counter; };
