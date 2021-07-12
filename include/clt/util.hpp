@@ -46,15 +46,15 @@ template <> struct default_format_str<uint8_t> {
 template <class IntType>
 inline std::string
 join(const IntType *in, const size_t &n, const std::string &separator = ",",
-     const std::string &format = default_format_str<IntType>::value)
+     const std::string &format_str = default_format_str<IntType>::value)
 {
     std::stringstream sst;
     if (n == 0) {
         return "";
     }
-    sst << fmt::format(format, in[0]);
+    sst << fmt::format(format_str, in[0]);
     for (size_t i = 1; i < n; i++) {
-        sst << separator << fmt::format(format, in[i]);
+        sst << separator << fmt::format(format_str, in[i]);
     }
     return sst.str();
 }
