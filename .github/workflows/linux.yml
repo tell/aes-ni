@@ -43,9 +43,9 @@ jobs:
 
       - name: Download libfmt
         run: |
-        git clone https://github.com/fmtlib/fmt.git $FMT_SRC_DIR
-        cd $FMT_SRC_DIR
-        git checkout -b v8.0.1 8.0.1
+          git clone https://github.com/fmtlib/fmt.git $FMT_SRC_DIR
+          cd $FMT_SRC_DIR
+          git checkout -b v8.0.1 8.0.1
 
       - name: Download libspdlog
         run: git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1 $SPDLOG_SRC_DIR
