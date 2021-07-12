@@ -45,8 +45,8 @@ template <> struct default_format_str<uint8_t> {
 
 template <class IntType>
 inline std::string
-join(const IntType *in, const size_t &n, const std::string &separator = ",",
-     const std::string &format_str = default_format_str<IntType>::value)
+join(const IntType *in, const size_t &n, const std::string separator = ",",
+     const std::string format_str = default_format_str<IntType>::value)
 {
     std::stringstream sst;
     if (n == 0) {
