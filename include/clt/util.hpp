@@ -10,6 +10,12 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#if defined(FMT_VERSION) && (FMT_VERSION >= 8 * 10000)
+#define CLT_FMT_RUNTIME(x) fmt::runtime(x)
+#else
+#define CLT_FMT_RUNTIME(x) x
+#endif
+
 namespace clt {
 
 template <class ElemType> struct default_format_str {
@@ -52,9 +58,9 @@ join(const IntType *in, const size_t &n, const std::string separator = ",",
         return "";
     }
     std::stringstream sst;
-    sst << fmt::format(fmt::runtime(format_str), in[0]);
+    sst << fmt::format(CLT_FMT_RUNTIME(format_str), in[0]);
     for (size_t i = 1; i < n; i++) {
-        sst << separator << fmt::format(fmt::runtime(format_str), in[i]);
+        sst << separator << fmt::format(CLT_FMT_RUNTIME(format_str), in[i]);
     }
     return sst.str();
 }

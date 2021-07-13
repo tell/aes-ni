@@ -7,6 +7,8 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#include "util.hpp"
+
 namespace clt {
 namespace bench {
 
@@ -66,7 +68,7 @@ inline void print_throughput(const std::string &label, const size_t num_bytes,
             fmt::print(std::cerr,
                        "Obtained throughput is the infinity, try again...\n");
         } else {
-            fmt::print(fmt::runtime(format_str), num_bytes, elapsed_time, bytes_per_sec);
+            fmt::print(CLT_FMT_RUNTIME(format_str), num_bytes, elapsed_time, bytes_per_sec);
             break;
         }
     }
