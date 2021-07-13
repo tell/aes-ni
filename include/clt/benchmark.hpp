@@ -59,14 +59,14 @@ inline void print_throughput(const std::string &label, const size_t num_bytes,
     [[maybe_unused]] static bool call_once__ =
         ([&]() { return print_throughput_call_once(unit_label); })();
     while (true) {
-        const std::string format = label + ",{},{:e},{:e}\n";
+        const std::string format_str = label + ",{},{:e},{:e}\n";
         const auto elapsed_time = measure_static(std::function<void()>(func));
         const auto bytes_per_sec = num_bytes / elapsed_time;
         if (std::isinf(bytes_per_sec)) {
             fmt::print(std::cerr,
                        "Obtained throughput is the infinity, try again...\n");
         } else {
-            fmt::print(format, num_bytes, elapsed_time, bytes_per_sec);
+            fmt::print(fmt::runtime(format_str), num_bytes, elapsed_time, bytes_per_sec);
             break;
         }
     }
