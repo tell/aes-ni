@@ -52,9 +52,9 @@ join(const IntType *in, const size_t &n, const std::string separator = ",",
     if (n == 0) {
         return "";
     }
-    sst << fmt::format(format_str, in[0]);
+    sst << fmt::format(format_str.c_str(), in[0]);
     for (size_t i = 1; i < n; i++) {
-        sst << separator << fmt::format(format_str, in[i]);
+        sst << separator << fmt::format(format_str.c_str(), in[i]);
     }
     return sst.str();
 }
