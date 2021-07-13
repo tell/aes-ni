@@ -87,7 +87,7 @@ inline void print_benchmark(Func &&func, const std::string &fmt_str,
                        "Obtained throughput is the infinity, try again...\n");
         } else {
 #pragma omp critical
-            fmt::print(fmt_str, num, elapsed_time, num_per_sec);
+            fmt::print(CLT_FMT_RUNTIME(fmt_str), num, elapsed_time, num_per_sec);
             break;
         }
     }

@@ -63,7 +63,7 @@ inline void do_shuffle_ys_iteration_10()
             time_samples[j] = elapsed_time;
         }
         const auto time_median = median(time_samples);
-        fmt::print(fmt_str, num_elems, time_median);
+        fmt::print(CLT_FMT_RUNTIME(fmt_str), num_elems, time_median);
     }
 }
 
