@@ -48,13 +48,13 @@ inline std::string
 join(const IntType *in, const size_t &n, const std::string separator = ",",
      const std::string format_str = default_format_str<IntType>::value)
 {
-    std::stringstream sst;
     if (n == 0) {
         return "";
     }
-    sst << fmt::format(format_str.c_str(), in[0]);
+    std::stringstream sst;
+    sst << fmt::format(fmt::runtime(format_str), in[0]);
     for (size_t i = 1; i < n; i++) {
-        sst << separator << fmt::format(format_str.c_str(), in[i]);
+        sst << separator << fmt::format(fmt::runtime(format_str), in[i]);
     }
     return sst.str();
 }

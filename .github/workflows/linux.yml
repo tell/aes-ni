@@ -49,7 +49,10 @@ jobs:
           git checkout -b v${{ matrix.libfmt }} ${{ matrix.libfmt }}
 
       - name: Download libspdlog
-        run: git clone https://github.com/gabime/spdlog.git -b v1.8.2 --depth 1 $SPDLOG_SRC_DIR
+        run: |
+          git clone https://github.com/gabime/spdlog.git $SPDLOG_SRC_DIR
+          cd $SPDLOG_SRC_DIR
+          git checkout -b our_reference 6491abb519a6a15792c1c6717270ce6c9ba4d72e
 
       - name: Install googletest for Ubuntu 18.04
         if: ${{ matrix.os == 'ubuntu-18.04' }}
