@@ -79,7 +79,6 @@ jobs:
             -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
             -DCMAKE_INSTALL_PREFIX=$MODULE_PREFIX \
             -DCMAKE_CXX_STANDARD=${{ matrix.cxxstd }} \
-            -DSPDLOG_FMT_EXTERNAL_HO=ON \
             $SPDLOG_SRC_DIR
           cmake --build . --target install
 
