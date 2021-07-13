@@ -2,7 +2,6 @@
 #include <numeric>
 
 #include <gtest/gtest.h>
-#include <spdlog/spdlog.h>
 
 #include <clt/shuffle.hpp>
 #include <clt/aes-ni.hpp>
@@ -125,7 +124,7 @@ TEST_F(ShuffleTest, shuffle_FY_statistics)
     }
 
     if (!check_udist_by_chisq(counter, expectation)) {
-        spdlog::warn("Statistical check failed, but not fatal.");
+        fmt::print(cerr, "WARN: Statistical check failed, but not fatal.\n");
     }
 }
 
@@ -170,7 +169,7 @@ TEST_F(ShuffleTest, shuffle_RS_statistics)
         counter[rank_perm.get_ui()]++;
     }
     if (!check_udist_by_chisq(counter, expectation)) {
-        spdlog::warn("Statistical check failed, but not fatal.");
+        fmt::print(cerr, "WARN: Statistical check failed, but not fatal.\n");
     }
 }
 

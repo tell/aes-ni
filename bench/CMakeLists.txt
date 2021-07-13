@@ -7,7 +7,7 @@ foreach(filename IN ITEMS ${bench_srcs})
     target_link_libraries("${basename}"
         aes-ni
         fmt::fmt
-        spdlog::spdlog_header_only
+        # spdlog::spdlog_header_only
         GMP::GMPXX
         $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>)
     add_dependencies(benchmarks "${basename}")

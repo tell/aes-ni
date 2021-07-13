@@ -1,5 +1,3 @@
-#include <spdlog/spdlog.h>
-
 #include <clt/aes-ni.hpp>
 #include <clt/statistics.hpp>
 #include <clt/benchmark.hpp>
@@ -13,7 +11,7 @@ inline void do_aesprf_ctr_iteration()
     const AES128::key_t key = gen_key();
     fmt::print(cerr, "key = {}\n", join(key, ":"));
     if (!check_random_bytes(key)) {
-        spdlog::warn("Skew key.");
+        fmt::print(cerr, "WARN: Skew key.\n");
     }
     AES128 cipher(key);
     size_t current = start_byte_size;
