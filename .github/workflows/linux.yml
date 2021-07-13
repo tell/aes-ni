@@ -53,6 +53,7 @@ jobs:
           git clone https://github.com/gabime/spdlog.git $SPDLOG_SRC_DIR
           cd $SPDLOG_SRC_DIR
           git checkout -b our_reference 6491abb519a6a15792c1c6717270ce6c9ba4d72e
+          git log -1 | cat
 
       - name: Install googletest for Ubuntu 18.04
         if: ${{ matrix.os == 'ubuntu-18.04' }}
