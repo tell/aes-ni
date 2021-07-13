@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "../aes-ni.hpp"
 #include "../util.hpp"
 
 namespace clt {
