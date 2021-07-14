@@ -1,7 +1,9 @@
+#include <cmath>
 #include <array>
 
 #include <clt/util.hpp>
 #include <clt/util_omp.hpp>
+#include <clt/benchmark2.hpp>
 
 #include <gtest/gtest.h>
 
@@ -52,6 +54,43 @@ TEST_F(CLTUtilTest, join_uint64_t)
 }
 
 TEST_F(CLTUtilTest, omp_diagnosis) { print_omp_diagnosis(); }
+
+TEST_F(CLTUtilTest, benchmark2)
+{
+    using exp = clt::bench::Experiment;
+
+    exp t;
+    {
+        const auto results = t.run();
+        ASSERT_EQ(results.size(), t.total_execution_times());
+        fmt::print("0: size = {}\n", results.size());
+        const auto [smean, uvar] = clt::bench::desc_stats(results);
+        fmt::print("0:    sample mean = {:e}\n", smean);
+        fmt::print("0: unbiased stdev = {:e}\n", sqrt(uvar));
+        const auto [lb, ub] =
+            clt::bench::confidence_interval_mean(smean, uvar, results.size());
+        fmt::print("0: CI mean = [{:e}, {:e}]\n", lb, ub);
+    }
+    {
+        t.limit_time_ = chrono::seconds(2);
+        uint32_t x;
+        t.setup_func_ = [&x]() { x = 0; };
+        t.target_func_ = [&x]() {
+            this_thread::sleep_for(chrono::milliseconds(500));
+            x++;
+        };
+        t.check_func_ = [&x, &t]() { return x <= t.num_reptition_; };
+        const auto results = t.run();
+        EXPECT_LT(results.size(), t.total_execution_times());
+        fmt::print("1: size = {}\n", results.size());
+        const auto [smean, uvar] = clt::bench::desc_stats(results);
+        fmt::print("1:    sample mean = {:e}\n", smean);
+        fmt::print("1: unbiased stdev = {:e}\n", sqrt(uvar));
+        const auto [lb, ub] =
+            clt::bench::confidence_interval_mean(smean, uvar, results.size());
+        fmt::print("1: CI mean = [{:e}, {:e}]\n", lb, ub);
+    }
+}
 
 int main(int argc, char **argv)
 {

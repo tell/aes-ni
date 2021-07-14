@@ -10,3 +10,9 @@ find_package(fmt REQUIRED
 
 # find_package(spdlog REQUIRED
 #   HINTS "${CMAKE_SOURCE_DIR}/third_party/module/lib/cmake")
+
+set(BOOST_ROOT_MacPorts "/opt/local/libexec/boost/1.76")
+if(EXISTS ${BOOST_ROOT_MacPorts})
+  set(BOOST_ROOT ${BOOST_ROOT_MacPorts})
+endif()
+find_package(Boost REQUIRED)
