@@ -1,6 +1,7 @@
 #include <clt/benchmark2.hpp>
 
 using namespace std;
+using namespace std::chrono;
 
 namespace clt::bench {
 Experiment::vec_duration_t Experiment::run()
