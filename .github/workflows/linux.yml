@@ -42,6 +42,14 @@ jobs:
           ${{ matrix.cxx }} --version
           cmake --version
 
+     - name: Install Boost
+        run: |
+          wget https://boostorg.jfrog.io/artifactory/main/release/1.76.0/source/boost_1_76_0.tar.bz2
+          tar xf boost_1_76_0.tar.bz2
+          cd boost_1_76_0
+          ./bootstrap.sh
+          sudo ./b2 -j $(nproc) install
+
       - name: Download libfmt
         run: |
           git clone https://github.com/fmtlib/fmt.git $FMT_SRC_DIR
