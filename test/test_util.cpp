@@ -67,9 +67,9 @@ TEST_F(CLTUtilTest, benchmark2)
         const auto [smean, uvar] = clt::bench::desc_stats(results);
         fmt::print("0:    sample mean = {:e}\n", smean);
         fmt::print("0: unbiased stdev = {:e}\n", sqrt(uvar));
-        const auto [lb, ub] =
-            clt::bench::confidence_interval_mean(smean, uvar, results.size());
-        fmt::print("0: CI mean = [{:e}, {:e}]\n", lb, ub);
+        const auto [alpha, bound] =
+            clt::bench::confidence_interval_bound(uvar, results.size());
+        fmt::print("0: CI bound {:2.0f}% = +/-{:e}\n", 100 * alpha, bound);
     }
     {
         t.limit_time_ = chrono::seconds(2);
@@ -86,9 +86,9 @@ TEST_F(CLTUtilTest, benchmark2)
         const auto [smean, uvar] = clt::bench::desc_stats(results);
         fmt::print("1:    sample mean = {:e}\n", smean);
         fmt::print("1: unbiased stdev = {:e}\n", sqrt(uvar));
-        const auto [lb, ub] =
-            clt::bench::confidence_interval_mean(smean, uvar, results.size());
-        fmt::print("1: CI mean = [{:e}, {:e}]\n", lb, ub);
+        const auto [alpha, bound] =
+            clt::bench::confidence_interval_bound(uvar, results.size());
+        fmt::print("1: CI bound {:2.0f}% = +/-{:e}\n", 100 * alpha, bound);
     }
 }
 

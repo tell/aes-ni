@@ -33,20 +33,27 @@ template <class T> inline auto desc_stats(const T &data)
     return mean_and_sample_variance(fp_data);
 }
 
+/**
+ * Output alpha and bound.
+ * alpha-percent CI is [smean - bound, smean + bound].
+ */
 template <class RealType>
-inline auto confidence_interval_mean(const RealType smean, const RealType uvar,
-                                     const size_t nsamples,
-                                     const double alpha = 0.95)
+inline auto confidence_interval_bound(const RealType uvar,
+                                      const size_t nsamples,
+                                      const double alpha = 0.95)
 {
     using std::sqrt;
     using norm_t = boost::math::normal_distribution<>;
     using boost::math::quantile;
 
+    assert(0 <= alpha);
+    assert(alpha <= 1);
     const auto residue = (1 - alpha) / 2;
-    const auto norm = norm_t(smean, sqrt(uvar / nsamples));
-    const auto ubound = quantile(norm, 1 - residue);
-    const auto lbound = quantile(norm, residue);
-    return std::make_tuple(lbound, ubound);
+    const auto ustdev = std::sqrt(uvar / nsamples);
+    const auto stdnorm = norm_t{};
+    const auto tail = quantile(stdnorm, 1 - residue);
+    const auto bound = tail * ustdev;
+    return std::make_tuple(alpha, bound);
 }
 
 struct Experiment {
