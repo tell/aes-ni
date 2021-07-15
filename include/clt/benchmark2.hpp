@@ -64,7 +64,7 @@ struct Experiment {
     Experiment()
         : setup_func_([]() {}), target_func_([]() {}),
           check_func_([]() { return true; }), num_setup_(10000),
-          num_reptition_(100), limit_time_(10)
+          num_reptition_(500), limit_time_(5)
     {
     }
     size_t total_execution_times() const noexcept
