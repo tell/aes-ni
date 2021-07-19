@@ -28,22 +28,15 @@ template <class T> inline auto calc_stats(const T &data)
     constexpr double nscale = ratio_t::num;
     constexpr double dscale = ratio_t::den;
 
-    const vec_fp_t fp_data = ([ nscale, dscale, &data ]() -> auto {
-        vec_fp_t fp_data_temp(data.size());
-        copy(data | transformed([nscale, dscale](auto &&x) {
-                 return x.count() * nscale / dscale;
-             }),
-             fp_data_temp.begin());
-        return fp_data_temp;
-    }());
+    vec_fp_t fp_data(data.size());
+    copy(data | transformed([nscale, dscale](auto &&x) {
+             return x.count() * nscale / dscale;
+         }),
+         fp_data.begin());
     const auto [smean, uvar] = mean_and_sample_variance(fp_data);
-    vec_fp_t copy_fp_data;
-    copy_fp_data = fp_data;
-    const auto smedian = median(copy_fp_data);
-    copy_fp_data = fp_data;
-    const auto smad = median_absolute_deviation(copy_fp_data);
-    copy_fp_data = fp_data;
-    const auto siqr = interquartile_range(copy_fp_data);
+    const auto smedian = median(fp_data);
+    const auto smad = median_absolute_deviation(fp_data);
+    const auto siqr = interquartile_range(fp_data);
     return std::make_tuple(smean, uvar, smedian, smad, siqr);
 }
 
