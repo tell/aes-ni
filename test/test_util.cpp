@@ -64,12 +64,16 @@ TEST_F(CLTUtilTest, benchmark2)
         const auto results = t.run();
         ASSERT_EQ(results.size(), t.total_execution_times());
         fmt::print("0: size = {}\n", results.size());
-        const auto [smean, uvar] = clt::bench::desc_stats(results);
+        const auto [smean, uvar, smedian, smad, siqr] =
+            clt::bench::calc_stats(results);
         fmt::print("0:    sample mean = {:e}\n", smean);
         fmt::print("0: unbiased stdev = {:e}\n", sqrt(uvar));
         const auto [alpha, bound] =
             clt::bench::confidence_interval_bound(uvar, results.size());
         fmt::print("0: CI bound {:2.0f}% = +/-{:e}\n", 100 * alpha, bound);
+        fmt::print("0:         median = {:e}\n", smedian);
+        fmt::print("0:            mad = {:e}\n", smad);
+        fmt::print("0:            iqr = {:e}\n", siqr);
     }
     {
         t.limit_time_ = chrono::seconds(2);
@@ -83,12 +87,16 @@ TEST_F(CLTUtilTest, benchmark2)
         const auto results = t.run();
         EXPECT_LT(results.size(), t.total_execution_times());
         fmt::print("1: size = {}\n", results.size());
-        const auto [smean, uvar] = clt::bench::desc_stats(results);
+        const auto [smean, uvar, smedian, smad, siqr] =
+            clt::bench::calc_stats(results);
         fmt::print("1:    sample mean = {:e}\n", smean);
         fmt::print("1: unbiased stdev = {:e}\n", sqrt(uvar));
         const auto [alpha, bound] =
             clt::bench::confidence_interval_bound(uvar, results.size());
         fmt::print("1: CI bound {:2.0f}% = +/-{:e}\n", 100 * alpha, bound);
+        fmt::print("1:         median = {:e}\n", smedian);
+        fmt::print("1:            mad = {:e}\n", smad);
+        fmt::print("1:            iqr = {:e}\n", siqr);
     }
 }
 

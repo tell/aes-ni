@@ -13,7 +13,7 @@
 
 namespace clt::bench {
 
-template <class T> inline auto desc_stats(const T &data)
+template <class T> inline auto calc_stats(const T &data)
 {
     using vec_fp_t = std::vector<double>;
     using duration_t = typename T::value_type;
@@ -21,16 +21,30 @@ template <class T> inline auto desc_stats(const T &data)
     using boost::copy;
     using boost::adaptors::transformed;
     using boost::math::statistics::mean_and_sample_variance;
+    using boost::math::statistics::median;
+    using boost::math::statistics::median_absolute_deviation;
+    using boost::math::statistics::interquartile_range;
 
     constexpr double nscale = ratio_t::num;
     constexpr double dscale = ratio_t::den;
 
-    vec_fp_t fp_data(data.size());
-    copy(data | transformed([nscale, dscale](auto &&x) {
-             return x.count() * nscale / dscale;
-         }),
-         fp_data.begin());
-    return mean_and_sample_variance(fp_data);
+    const vec_fp_t fp_data = ([ nscale, dscale, &data ]() -> auto {
+        vec_fp_t fp_data_temp(data.size());
+        copy(data | transformed([nscale, dscale](auto &&x) {
+                 return x.count() * nscale / dscale;
+             }),
+             fp_data_temp.begin());
+        return fp_data_temp;
+    }());
+    const auto [smean, uvar] = mean_and_sample_variance(fp_data);
+    vec_fp_t copy_fp_data;
+    copy_fp_data = fp_data;
+    const auto smedian = median(copy_fp_data);
+    copy_fp_data = fp_data;
+    const auto smad = median_absolute_deviation(copy_fp_data);
+    copy_fp_data = fp_data;
+    const auto siqr = interquartile_range(copy_fp_data);
+    return std::make_tuple(smean, uvar, smedian, smad, siqr);
 }
 
 /**
