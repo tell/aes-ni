@@ -62,7 +62,7 @@ TEST_F(CLTUtilTest, benchmark2)
     exp t;
     {
         const auto results = t.run();
-        ASSERT_EQ(results.size(), t.total_execution_times());
+        ASSERT_LE(results.size(), t.total_number_of_execution());
         fmt::print("0: size = {}\n", results.size());
         const auto [smean, uvar, smedian, smad, siqr] =
             clt::bench::calc_stats(results);
@@ -85,7 +85,7 @@ TEST_F(CLTUtilTest, benchmark2)
         };
         t.check_func_ = [&x, &t]() { return x <= t.num_reptition_; };
         const auto results = t.run();
-        EXPECT_LT(results.size(), t.total_execution_times());
+        EXPECT_LT(results.size(), t.total_number_of_execution());
         fmt::print("1: size = {}\n", results.size());
         const auto [smean, uvar, smedian, smad, siqr] =
             clt::bench::calc_stats(results);
