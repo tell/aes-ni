@@ -1,0 +1,8 @@
+cff-version: 1.1.0
+message: Please cite this software as below when you use it.
+authors:
+  - family-names: Teruya
+    given-names: Tadanori
+title: Experimental implementations using AES-NI
+version: 0.0.3
+date-released: 2021-07-29

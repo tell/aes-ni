@@ -19,7 +19,7 @@ if(ROOT_PROJECT)
 endif()
 
 enable_language(CXX)
-project(aes-ni VERSION 0.0.2)
+project(aes-ni VERSION 0.0.3)
 
 if(ROOT_PROJECT)
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
