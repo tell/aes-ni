@@ -40,7 +40,7 @@ jobs:
           sudo rm '/usr/local/bin/2to3'
           brew upgrade -f > /dev/null
           brew link --overwrite python@3.9 > /dev/null
-          brew install -f libomp ninja gmp googletest > /dev/null
+          brew install -f libomp ninja gmp boost googletest > /dev/null
 
       - name: Download libfmt
         run: git clone https://github.com/fmtlib/fmt.git -b 7.1.3 --depth 1 $FMT_SRC_DIR
