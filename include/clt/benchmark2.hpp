@@ -81,7 +81,7 @@ struct Experiment {
           num_reptition_(500), limit_time_(5)
     {
     }
-    size_t total_number_of_execution() const noexcept
+    size_t max_total_number_of_execution() const noexcept
     {
         return num_setup_ * num_reptition_;
     }
