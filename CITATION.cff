@@ -3,6 +3,9 @@ message: Please cite this software as below when you use it.
 authors:
   - family-names: Teruya
     given-names: Tadanori
+    orchid: https://orcid.org/0000-0003-4362-4887
 title: Experimental implementations using AES-NI
 version: 0.0.3
+utl: https://github.com/tell/aes-ni
+license: MIT
 date-released: 2021-07-29
