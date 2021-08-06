@@ -20,12 +20,11 @@ Experiment::vec_duration_t Experiment::run()
             const auto end_time = timer_t::now();
             assert(check_func_());
 
-            {
-                const auto elapsed_time =
-                    duration_cast<duration_t>(end_time - begin_time);
-                results.emplace_back(elapsed_time);
-                cum_etime += elapsed_time;
-            }
+            const auto elapsed_time =
+                duration_cast<duration_t>(end_time - begin_time);
+            results.emplace_back(elapsed_time);
+            cum_etime += elapsed_time;
+
             const auto total_elapsed_time = timer_t::now() - start_time;
             if ((limit_time_ < duration_cast<limit_time_t>(cum_etime)) ||
                 ((ratio * limit_time_) <
