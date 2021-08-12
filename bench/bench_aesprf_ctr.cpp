@@ -9,7 +9,7 @@ using namespace clt::bench;
 inline void do_aesprf_ctr_iteration()
 {
     const AES128::key_t key = gen_key();
-    fmt::print(cerr, "key = {}\n", join(key, ":"));
+    fmt::print(cerr, "key = {:>02x}\n", fmt::join(key, ":"));
     AESPRF128 prf(key.data());
     size_t current = start_byte_size;
     vector<uint8_t> buff;

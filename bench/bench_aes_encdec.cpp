@@ -49,7 +49,7 @@ int main()
 {
     print_diagnosis();
     const AES128::key_t key = gen_key();
-    fmt::print(cerr, "key = {}\n", join(key, ":"));
+    fmt::print(cerr, "key = {:>02x}\n", fmt::join(key, ":"));
     AES128 cipher(key);
     do_enc_dec_iteration(cipher);
     return 0;

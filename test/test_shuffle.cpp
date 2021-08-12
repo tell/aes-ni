@@ -18,7 +18,7 @@ protected:
     void SetUp()
     {
         set_random_key();
-        fmt::print("random_key_ = {}\n", join(random_key_));
+        fmt::print("random_key_ = {:>02x}\n", fmt::join(random_key_, ":"));
     }
 };
 

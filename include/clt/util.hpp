@@ -50,7 +50,7 @@ template <> struct default_format_str<uint8_t> {
 };
 
 template <class IntType>
-inline std::string
+[[deprecated("Use fmt::join.")]] inline std::string
 join(const IntType *in, const size_t &n, const std::string separator = ",",
      const std::string format_str = default_format_str<IntType>::value)
 {
@@ -66,22 +66,25 @@ join(const IntType *in, const size_t &n, const std::string separator = ",",
 }
 
 template <class T, size_t N, class U = typename T::value_type>
-inline auto join(const T (&in)[N], const std::string &separator = ",",
-                 const std::string &format = default_format_str<U>::value)
+[[deprecated("Use fmt::join.")]] inline auto
+join(const T (&in)[N], const std::string &separator = ",",
+     const std::string &format = default_format_str<U>::value)
 {
     return join(in, N, separator, format);
 }
 
 template <class T, size_t N>
-inline auto join(const std::array<T, N> &in, const std::string &separator = ",",
-                 const std::string &format = default_format_str<T>::value)
+[[deprecated("Use fmt::join.")]] inline auto
+join(const std::array<T, N> &in, const std::string &separator = ",",
+     const std::string &format = default_format_str<T>::value)
 {
     return join(in.data(), N, separator, format);
 }
 
 template <class T>
-inline auto join(const std::vector<T> &in, const std::string &separator = ",",
-                 const std::string &format = default_format_str<T>::value)
+[[deprecated("Use fmt::join.")]] inline auto
+join(const std::vector<T> &in, const std::string &separator = ",",
+     const std::string &format = default_format_str<T>::value)
 {
     return join(in.data(), in.size(), separator, format);
 }

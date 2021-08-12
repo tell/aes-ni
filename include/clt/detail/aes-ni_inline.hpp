@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include <fmt/format.h>
+
 #include "../aes-ni.hpp"
 #include "../util.hpp"
 
@@ -31,10 +33,10 @@ inline std::ostream &operator<<(std::ostream &ost, const AES128 &x)
         sizeof(x.expanded_keys_) / aes128::block_bytes;
     ost << "AES128[";
     for (size_t i = 0; i < num_exp_keys; i++) {
-        ost << "[";
-        ost << join(&x.expanded_keys_[i * aes128::block_bytes],
-                    aes128::block_bytes);
-        ost << "]";
+        ost << fmt::format(
+            "[{:>02x}]",
+            fmt::join(&x.expanded_keys_[i * aes128::block_bytes],
+                      &x.expanded_keys_[(i + 1) * aes128::block_bytes], ":"));
     }
     ost << "]";
     return ost;
@@ -52,10 +54,11 @@ inline std::ostream &operator<<(std::ostream &ost, const AES128_CTR &x)
     ost << "AES128_CTR[";
     ost << fmt::format("counter={:d},", x.counter_);
     for (size_t i = 0; i < num_exp_keys; i++) {
-        ost << "[";
-        ost << join(&x.cipher_.expanded_keys_[i * aes128::block_bytes],
-                    aes128::block_bytes);
-        ost << "]";
+        ost << fmt::format(
+            "[{:>02x}]",
+            fmt::join(&x.cipher_.expanded_keys_[i * aes128::block_bytes],
+                      &x.cipher_.expanded_keys_[(i + 1) * aes128::block_bytes],
+                      ":"));
     }
     ost << "]";
     return ost;
@@ -72,10 +75,10 @@ inline std::ostream &operator<<(std::ostream &ost, const MMO128 &x)
         sizeof(x.expanded_keys_) / aes128::block_bytes;
     ost << "MMO128[";
     for (size_t i = 0; i < num_exp_keys; i++) {
-        ost << "[";
-        ost << join(&x.expanded_keys_[i * aes128::block_bytes],
-                    aes128::block_bytes);
-        ost << "]";
+        ost << fmt::format(
+            "[{:>02x}]",
+            fmt::join(&x.expanded_keys_[i * aes128::block_bytes],
+                      &x.expanded_keys_[(i + 1) * aes128::block_bytes], ":"));
     }
     ost << "]";
     return ost;
@@ -88,10 +91,11 @@ inline std::ostream &operator<<(std::ostream &ost, const MMO128_CTR &x)
     ost << "MMO128_CTR[";
     ost << fmt::format("counter={:d},", x.counter_);
     for (size_t i = 0; i < num_exp_keys; i++) {
-        ost << "[";
-        ost << join(&x.prf_.expanded_keys_[i * aes128::block_bytes],
-                    aes128::block_bytes);
-        ost << "]";
+        ost << fmt::format(
+            "[{:>02x}]",
+            fmt::join(&x.prf_.expanded_keys_[i * aes128::block_bytes],
+                      &x.prf_.expanded_keys_[(i + 1) * aes128::block_bytes],
+                      ":"));
     }
     ost << "]";
     return ost;
@@ -108,10 +112,10 @@ inline std::ostream &operator<<(std::ostream &ost, const AESPRF128 &x)
         sizeof(x.expanded_keys_) / aes128::block_bytes;
     ost << "AESPRF128[";
     for (size_t i = 0; i < num_exp_keys; i++) {
-        ost << "[";
-        ost << join(&x.expanded_keys_[i * aes128::block_bytes],
-                    aes128::block_bytes);
-        ost << "]";
+        ost << fmt::format(
+            "[{:>02x}]",
+            fmt::join(&x.expanded_keys_[i * aes128::block_bytes],
+                      &x.expanded_keys_[(i + 1) * aes128::block_bytes], ":"));
     }
     ost << "]";
     return ost;
@@ -128,10 +132,11 @@ inline std::ostream &operator<<(std::ostream &ost, const AESPRF128_CTR &x)
     ost << "AESPRF128_CTR[";
     ost << fmt::format("counter={:d},", x.counter_);
     for (size_t i = 0; i < num_exp_keys; i++) {
-        ost << "[";
-        ost << join(&x.prf_.expanded_keys_[i * aes128::block_bytes],
-                    aes128::block_bytes);
-        ost << "]";
+        ost << fmt::format(
+            "[{:>02x}]",
+            fmt::join(&x.prf_.expanded_keys_[i * aes128::block_bytes],
+                      &x.prf_.expanded_keys_[(i + 1) * aes128::block_bytes],
+                      ":"));
     }
     ost << "]";
     return ost;
