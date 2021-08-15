@@ -10,6 +10,14 @@
 #include <fmt/format.h>
 #include <fmt/ostream.h>
 
+#ifdef _MSC_VER // MSCVの場合
+#define CLT_pragma(x) __pragma(x)
+#define CLT_message(x) CLT_pragma(message(x))
+#else // MSVC以外の場合
+#define CLT_pragma(x) _Pragma(#x)
+#define CLT_message(x) CLT_pragma(message x)
+#endif
+
 #if defined(FMT_VERSION) && (FMT_VERSION >= 8 * 10000)
 #define CLT_FMT_RUNTIME(x) fmt::runtime(x)
 #else

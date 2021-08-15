@@ -6,10 +6,18 @@
 #include <functional>
 #include <algorithm>
 
+#include <boost/version.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/copy.hpp>
+#if BOOST_VERSION < 107200
 #include <boost/math/statistics/univariate_statistics.hpp>
+#else
+#include <boost/math/tools/univariate_statistics.hpp>
+#define CLT_BENCHMARK2_OLD_BOOST
+#endif
 #include <boost/math/distributions/normal.hpp>
+
+#include "util.hpp"
 
 namespace clt::bench {
 
@@ -20,10 +28,21 @@ template <class T> inline auto calc_stats(const T &data)
     using ratio_t = typename duration_t::period;
     using boost::copy;
     using boost::adaptors::transformed;
+#ifndef CLT_BENCHMARK2_OLD_BOOST
     using boost::math::statistics::mean_and_sample_variance;
     using boost::math::statistics::median;
     using boost::math::statistics::median_absolute_deviation;
     using boost::math::statistics::interquartile_range;
+#else
+    CLT_message("Workaround patch for old boost.");
+    const auto mean_and_sample_variance = [](auto &v) {
+        return std::make_tuple(boost::math::tools::mean(v),
+                               boost::math::tools::sample_variance(v));
+    };
+    using boost::math::tools::median;
+    using boost::math::tools::median_absolute_deviation;
+    const auto interquartile_range = [](auto &&) -> double { return 0; };
+#endif
 
     constexpr double nscale = ratio_t::num;
     constexpr double dscale = ratio_t::den;
