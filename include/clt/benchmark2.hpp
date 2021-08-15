@@ -41,7 +41,7 @@ template <class T> inline auto calc_stats(const T &data)
     };
     using boost::math::tools::median;
     using boost::math::tools::median_absolute_deviation;
-    const auto interquartile_range = [](auto &&) -> double { return 0; };
+    const auto interquartile_range = [](auto) -> double { return 0; };
 #endif
 
     constexpr double nscale = ratio_t::num;
