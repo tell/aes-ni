@@ -9,7 +9,7 @@
 #include <boost/version.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/copy.hpp>
-#if BOOST_VERSION < 107200
+#if BOOST_VERSION >= 107200
 #include <boost/math/statistics/univariate_statistics.hpp>
 #else
 #include <boost/math/tools/univariate_statistics.hpp>
