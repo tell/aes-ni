@@ -62,6 +62,7 @@ TEST_F(CLTUtilTest, benchmark2)
     exp t;
     {
         const auto results = t.run();
+        fmt::print("0: Experiment is finished.\n");
         ASSERT_LE(results.size(), t.max_total_number_of_execution());
         fmt::print("0: size = {}\n", results.size());
         const auto [smean, uvar, smedian, smad, siqr] =
@@ -85,6 +86,8 @@ TEST_F(CLTUtilTest, benchmark2)
         };
         t.check_func_ = [&x, &t]() { return x <= t.num_reptition_; };
         const auto results = t.run();
+        fmt::print("1: Experiment is finished.\n");
+        ASSERT_LE(results.size(), t.max_total_number_of_execution());
         EXPECT_LT(results.size(), t.max_total_number_of_execution());
         fmt::print("1: size = {}\n", results.size());
         const auto [smean, uvar, smedian, smad, siqr] =
