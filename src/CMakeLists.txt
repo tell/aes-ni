@@ -1,5 +1,5 @@
 file(GLOB aes-ni_lib_srcs RELATIVE "${aes-ni_SOURCE_DIR}/src" "*.cpp")
 message("Found library source files = ${aes-ni_lib_srcs}")
 add_library(aes-ni ${aes-ni_lib_srcs})
-target_include_directories(aes-ni PUBLIC "${aes-ni_SOURCE_DIR}/include")
+target_include_directories(aes-ni PUBLIC "${aes-ni_SOURCE_DIR}/include" "${Boost_INCLUDE_DIRS}")
 target_link_libraries(aes-ni PRIVATE fmt::fmt Boost::boost)
