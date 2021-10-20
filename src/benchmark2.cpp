@@ -14,7 +14,7 @@ Experiment::vec_duration_t Experiment::run()
     duration_t cum_etime = {};
     for (size_t i = 0; i < num_setup_; i++) {
         (void)setup_func_();
-        for (size_t j = 0; j < num_reptition_; j++) {
+        for (size_t j = 0; j < num_repetition_; j++) {
             const auto begin_time = timer_t::now();
             (void)target_func_();
             const auto end_time = timer_t::now();

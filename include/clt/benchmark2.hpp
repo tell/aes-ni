@@ -118,18 +118,18 @@ struct Experiment {
     std::function<void()> target_func_;
     std::function<bool()> check_func_;
     size_t num_setup_;
-    size_t num_reptition_;
+    size_t num_repetition_;
     std::chrono::seconds limit_time_;
 
     Experiment()
         : setup_func_([]() {}), target_func_([]() {}),
           check_func_([]() { return true; }), num_setup_(10000),
-          num_reptition_(500), limit_time_(5)
+          num_repetition_(500), limit_time_(5)
     {
     }
     size_t max_total_number_of_execution() const noexcept
     {
-        return num_setup_ * num_reptition_;
+        return num_setup_ * num_repetition_;
     }
     vec_duration_t run();
 };
