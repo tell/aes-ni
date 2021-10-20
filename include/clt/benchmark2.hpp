@@ -81,8 +81,7 @@ template <class T> inline auto calc_stats(const T &data)
          fp_data.begin());
     const auto [smean, uvar] = mean_and_sample_variance(fp_data);
     const auto smedian = median(fp_data);
-    const auto smedian2 = median(fp_data);
-    const auto smad = median_absolute_deviation(fp_data, smedian);
+    const auto smad = median_absolute_deviation(fp_data);
     const auto siqr = interquartile_range(fp_data);
     return std::make_tuple(smean, uvar, smedian, smad, siqr);
 }
