@@ -85,7 +85,7 @@ TEST_F(CLTUtilTest, benchmark2)
             this_thread::sleep_for(chrono::milliseconds(500));
             x++;
         };
-        t.check_func_ = [&x, &t]() { return x <= t.num_reptition_; };
+        t.check_func_ = [&x, &t]() { return x <= t.num_repetition_; };
         fmt::print("1: start.\n");
         const auto results = t.run();
         fmt::print("1: finish.\n");
