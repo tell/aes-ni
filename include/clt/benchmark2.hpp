@@ -80,8 +80,12 @@ template <class T> inline auto calc_stats(const T &data)
          }),
          fp_data.begin());
     if (data.size() < 2) {
-        const auto point = fp_data.size() ? fp_data[0] : 0.0;
-        return std::make_tuple(point, 0.0, point, 0.0, 0.0);
+        const auto point = fp_data.size()
+                               ? fp_data[0]
+                               : std::numeric_limits<double>::quiet_NaN();
+        return std::make_tuple(point, std::numeric_limits<double>::quiet_NaN(),
+                               point, std::numeric_limits<double>::quiet_NaN(),
+                               std::numeric_limits<double>::quiet_NaN());
     }
     const auto [smean, uvar] = mean_and_sample_variance(fp_data);
     const auto smedian = median(fp_data);
