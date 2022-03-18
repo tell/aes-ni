@@ -79,11 +79,11 @@ template <class T> inline auto calc_stats(const T &data)
              return x.count() * nscale / dscale;
          }),
          fp_data.begin());
-    const auto [smean, uvar] = mean_and_sample_variance(fp_data);
     if (data.size() < 2) {
-        const auto point = fp_data[0] ? fp_data.size() == 0 : 0.0;
-        return std::make_tuple(smean, uvar, point, 0.0, 0.0);
+        const auto point = fp_data.size() ? fp_data[0] : 0.0;
+        return std::make_tuple(point, 0.0, point, 0.0, 0.0);
     }
+    const auto [smean, uvar] = mean_and_sample_variance(fp_data);
     const auto smedian = median(fp_data);
     const auto smad = median_absolute_deviation(fp_data, smedian);
     const auto siqr = interquartile_range(fp_data);
