@@ -53,7 +53,8 @@ template <class T> inline auto interquartile_range(T &v)
 
 template <class T> inline auto calc_stats(const T &data)
 {
-    using vec_fp_t = std::vector<double>;
+    using fp_t = double;
+    using vec_fp_t = std::vector<fp_t>;
     using duration_t = typename T::value_type;
     using ratio_t = typename duration_t::period;
     using boost::copy;
@@ -71,27 +72,35 @@ template <class T> inline auto calc_stats(const T &data)
     using workaround::interquartile_range;
 #endif
 
-    constexpr double nscale = ratio_t::num;
-    constexpr double dscale = ratio_t::den;
+    const auto n = data.size();
+    constexpr fp_t nscale = ratio_t::num;
+    constexpr fp_t dscale = ratio_t::den;
 
-    vec_fp_t fp_data(data.size());
-    copy(data | transformed([nscale, dscale](auto &&x) {
+    vec_fp_t fp_data(n);
+    copy(data | transformed([nscale, dscale](const auto &x) {
              return x.count() * nscale / dscale;
          }),
          fp_data.begin());
-    if (data.size() < 2) {
-        const auto point = fp_data.size()
-                               ? fp_data[0]
-                               : std::numeric_limits<double>::quiet_NaN();
-        return std::make_tuple(point, std::numeric_limits<double>::quiet_NaN(),
-                               point, std::numeric_limits<double>::quiet_NaN(),
-                               std::numeric_limits<double>::quiet_NaN());
+    if (n < 2) {
+        if (n == 0) {
+            return std::make_tuple(std::numeric_limits<fp_t>::quiet_NaN(),
+                                   std::numeric_limits<fp_t>::quiet_NaN(),
+                                   std::numeric_limits<fp_t>::quiet_NaN(),
+                                   std::numeric_limits<fp_t>::quiet_NaN(),
+                                   std::numeric_limits<fp_t>::quiet_NaN());
+        } else {
+            return std::make_tuple(
+                fp_data[0], std::numeric_limits<fp_t>::quiet_NaN(), fp_data[0],
+                std::numeric_limits<fp_t>::quiet_NaN(),
+                std::numeric_limits<fp_t>::quiet_NaN());
+        }
+    } else {
+        const auto [smean, uvar] = mean_and_sample_variance(fp_data);
+        const auto smedian = median(fp_data);
+        const auto smad = median_absolute_deviation(fp_data, smedian);
+        const auto siqr = interquartile_range(fp_data);
+        return std::make_tuple(smean, uvar, smedian, smad, siqr);
     }
-    const auto [smean, uvar] = mean_and_sample_variance(fp_data);
-    const auto smedian = median(fp_data);
-    const auto smad = median_absolute_deviation(fp_data, smedian);
-    const auto siqr = interquartile_range(fp_data);
-    return std::make_tuple(smean, uvar, smedian, smad, siqr);
 }
 
 /**
