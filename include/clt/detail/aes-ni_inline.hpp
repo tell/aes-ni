@@ -26,8 +26,6 @@ inline auto allocate_byte_size(const size_t num_bytes)
 
 inline std::ostream &operator<<(std::ostream &ost, const AES128 &x)
 {
-    using clt::join;
-
     static_assert((sizeof(x.expanded_keys_) % aes128::block_bytes) == 0);
     constexpr size_t num_exp_keys =
         sizeof(x.expanded_keys_) / aes128::block_bytes;

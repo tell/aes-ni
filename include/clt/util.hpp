@@ -57,46 +57,6 @@ template <> struct default_format_str<uint8_t> {
     static const std::string value;
 };
 
-template <class IntType>
-[[deprecated("Use fmt::join.")]] inline std::string
-join(const IntType *in, const size_t &n, const std::string separator = ",",
-     const std::string format_str = default_format_str<IntType>::value)
-{
-    if (n == 0) {
-        return "";
-    }
-    std::stringstream sst;
-    sst << fmt::format(CLT_FMT_RUNTIME(format_str), in[0]);
-    for (size_t i = 1; i < n; i++) {
-        sst << separator << fmt::format(CLT_FMT_RUNTIME(format_str), in[i]);
-    }
-    return sst.str();
-}
-
-template <class T, size_t N, class U = typename T::value_type>
-[[deprecated("Use fmt::join.")]] inline auto
-join(const T (&in)[N], const std::string &separator = ",",
-     const std::string &format = default_format_str<U>::value)
-{
-    return join(in, N, separator, format);
-}
-
-template <class T, size_t N>
-[[deprecated("Use fmt::join.")]] inline auto
-join(const std::array<T, N> &in, const std::string &separator = ",",
-     const std::string &format = default_format_str<T>::value)
-{
-    return join(in.data(), N, separator, format);
-}
-
-template <class T>
-[[deprecated("Use fmt::join.")]] inline auto
-join(const std::vector<T> &in, const std::string &separator = ",",
-     const std::string &format = default_format_str<T>::value)
-{
-    return join(in.data(), in.size(), separator, format);
-}
-
 template <class T>
 void init_iota(T &out, const size_t n, const size_t elem_per_block = 2)
 {
