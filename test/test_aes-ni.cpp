@@ -83,7 +83,11 @@ protected:
     static void SetUpTestCase()
     {
         const Demangle cls_name{typeid(AESNITest)};
-        fmt::print("Execute {}::{}\n", cls_name, __func__);
+        if (cls_name) {
+            fmt::print("Execute {}::{}\n", cls_name, __func__);
+        } else {
+            fmt::print("Execute (unknown)::{}\n", __func__);
+        }
 
         // Set test vectors.
         set_sample_key();
