@@ -6,6 +6,7 @@
 #include <fmt/ostream.h>
 #include <gtest/gtest.h>
 
+#include <clt/util_demangle.hpp>
 #include <clt/aes-ni.hpp>
 #include <clt/rng.hpp>
 #include <clt/rdrand.hpp>
@@ -81,6 +82,9 @@ protected:
     }
     static void SetUpTestCase()
     {
+        const Demangle cls_name{typeid(AESNITest)};
+        fmt::print("Execute {}::{}\n", cls_name, __func__);
+
         // Set test vectors.
         set_sample_key();
         set_plaintexts();
@@ -89,17 +93,20 @@ protected:
         ASSERT_EQ(size(plaintexts_), size(ciphertexts_));
         ASSERT_EQ(size(plaintexts_) % aes128::block_bytes, 0);
         if (!check_random_bytes(sample_key_)) {
-            fmt::print(cerr, "WARN: Statistical check failed, but not fatal.\n");
+            fmt::print(cerr,
+                       "WARN: Statistical check failed, but not fatal.\n");
         }
         if (!check_random_bytes(ciphertexts_)) {
-            fmt::print(cerr, "WARN: Statistical check failed, but not fatal.\n");
+            fmt::print(cerr,
+                       "WARN: Statistical check failed, but not fatal.\n");
         }
     }
-    void SetUp()
+    virtual void SetUp()
     {
         set_random_key();
         if (!check_random_bytes(random_key_)) {
-            fmt::print(cerr, "WARN: Statistical check failed, but not fatal.\n");
+            fmt::print(cerr,
+                       "WARN: Statistical check failed, but not fatal.\n");
         }
     }
 };
@@ -275,7 +282,8 @@ TEST_F(AESNITest, aesprf_ctr_byte_stream)
         ASSERT_GE(counter, i);
         ASSERT_EQ(counter - i, num_blocks);
         if (!check_random_bytes(buff)) {
-            fmt::print(cerr, "WARN: Statistical check failed, but not fatal.\n");
+            fmt::print(cerr,
+                       "WARN: Statistical check failed, but not fatal.\n");
         }
     }
 }
