@@ -81,7 +81,10 @@ template <class T> inline auto calc_stats(const T &data)
              return x.count() * nscale / dscale;
          }),
          fp_data.begin());
-    if (n < 2) {
+    if (n < 3) {
+        /*
+         * NOTE: some statistical function only accept n >= 3.
+         */
         if (n == 0) {
             return std::make_tuple(std::numeric_limits<fp_t>::quiet_NaN(),
                                    std::numeric_limits<fp_t>::quiet_NaN(),
