@@ -26,9 +26,20 @@ Experiment::vec_duration_t Experiment::run()
             cum_etime += elapsed_time;
 
             const auto total_elapsed_time = timer_t::now() - start_time;
-            if ((limit_time_ < duration_cast<limit_time_t>(cum_etime)) ||
-                ((ratio * limit_time_) <
-                 duration_cast<limit_time_t>(total_elapsed_time))) {
+
+            // NOTE: Check early termination.
+            const bool termination_flag =
+                // NOTE: Performed the minimum required number of runs.
+                (repeat_at_least_ <= results.size()) &&
+                (
+                    // NOTE: Cumulative elapsed time is exceeded.
+                    (limit_time_ < duration_cast<limit_time_t>(cum_etime)) ||
+                    // NOTE: Total working time (includes everything,
+                    //       not only the target) is exceeded.
+                    ((ratio * limit_time_) <
+                     duration_cast<limit_time_t>(total_elapsed_time)));
+
+            if (termination_flag) {
                 return results;
             }
         }

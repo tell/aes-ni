@@ -140,11 +140,12 @@ struct Experiment {
     size_t num_setup_;
     size_t num_repetition_;
     std::chrono::seconds limit_time_;
+    size_t repeat_at_least_;
 
     Experiment()
         : setup_func_([]() {}), target_func_([]() {}),
           check_func_([]() { return true; }), num_setup_(10000),
-          num_repetition_(500), limit_time_(5)
+          num_repetition_(500), limit_time_(5), repeat_at_least_(10)
     {
     }
     size_t max_total_number_of_execution() const noexcept

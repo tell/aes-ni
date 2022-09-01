@@ -10,8 +10,7 @@
 using namespace std;
 using namespace clt;
 
-class CLTUtilTest : public ::testing::Test {
-};
+class CLTUtilTest : public ::testing::Test {};
 
 TEST_F(CLTUtilTest, join_uint8_t)
 {
@@ -102,6 +101,7 @@ TEST_F(CLTUtilTest, benchmark2)
         fmt::print("1:         median = {:e}\n", smedian);
         fmt::print("1:            mad = {:e}\n", smad);
         fmt::print("1:            iqr = {:e}\n", siqr);
+        ASSERT_LE(results.size(), t.repeat_at_least_);
     }
 }
 
